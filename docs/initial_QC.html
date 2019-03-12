@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Ittai Eres" />
+
+<meta name="date" content="2019-03-12" />
+
+<title>Hi-C Data Normalization and Initial Quality Control, Homer</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.3/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">HiCiPSC</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/IttaiEres/HiCiPSC">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Hi-C Data Normalization and Initial Quality Control, Homer</h1>
+<h4 class="author"><em>Ittai Eres</em></h4>
+<h4 class="date"><em>2019-03-12</em></h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#report"> Report <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2019-03-12
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>HiCiPSC/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.2.0). The <em>Report</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="report" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20190311code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20190311)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20190311code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20190311)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree607efb8977bdc4c1aac78d13cb00c890520ccfb9targetblank607efb8a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/607efb8977bdc4c1aac78d13cb00c890520ccfb9" target="_blank">607efb8</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree607efb8977bdc4c1aac78d13cb00c890520ccfb9targetblank607efb8a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Untracked files:
+    Untracked:  Rplot.jpeg
+    Untracked:  S2A.jpeg
+    Untracked:  S2B.jpeg
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the R Markdown and HTML files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view them.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/607efb8977bdc4c1aac78d13cb00c890520ccfb9/analysis/initial_QC.Rmd" target="_blank">607efb8</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-03-12
+</td>
+<td>
+Initialize website with index and initial QC file.
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<p>First, load necessary libraries: limma, plyr, tidyr, data.table, reshape2, cowplot, plotly, dplyr, Hmisc, gplots, stringr, heatmaply, RColorBrewer, edgeR, tidyverse, and compiler</p>
+<div id="initial-data-read-in-and-quality-control" class="section level3">
+<h3>Initial Data read-in and quality control</h3>
+<p>First, I read in the data and normalize it with cyclic pairwise loess normalization. These data have come from compiling all of the significant contacts in any individual across species as called by Homer (p&lt;0.01), and then extracting the interaction frequency values for each contact across all individuals. LiftOver was used to convert coordinates between species, with bins being rounded to the nearest 10kb. Here, I look at histograms of the distributions of the contact frequencies on an individual-by-individual basis, to see if they are comparable. I also look at a plot of the mean vs. the variance as an additional quality control metric; this is typically done on RNA-seq count data. In that case, it’s done to check if the normalized data are distributed in a particular fashion (e.g. a poisson model would have a linear mean-variance relationship). In the limma/voom pipeline, count data are log-cpm transformed and a loess trend line of variance vs. mean is then fit to create weights for individual genes to be fed into linear modeling with limma. Since this is not a QC metric typically used for Hi-C data, the only thing I hope to see is no particularly strong relationship between variance and mean.</p>
+<pre class="r"><code>###Read in data, normalize it with cyclic loess (pairwise), clean it from any rows that have missing values.
+full.data &lt;- fread(&quot;~/Desktop/Hi-C/final.10kb.homer.df&quot;, header=TRUE, stringsAsFactors = FALSE, data.table=FALSE, showProgress = FALSE)
+full.contacts &lt;- full.data[complete.cases(full.data[,304:311]), 304:311]
+full.contacts &lt;- as.data.frame(normalizeCyclicLoess(full.contacts, span=1/4, iterations=3, method=&quot;pairs&quot;))
+full.data &lt;- full.data[complete.cases(full.data[,304:311]),]
+full.data[,304:311] &lt;- full.contacts
+
+hum.dists &lt;- melt(full.contacts[,c(1:2,5:6)])</code></pre>
+<pre><code>No id variables; using all as measure variables</code></pre>
+<pre class="r"><code>chi.dists &lt;- melt(full.contacts[,c(3:4,7:8)])</code></pre>
+<pre><code>No id variables; using all as measure variables</code></pre>
+<pre class="r"><code>#Change names here
+hum.dists$variable &lt;- gsub(&quot;_norm&quot;, &quot;&quot;, hum.dists$variable)
+chi.dists$variable &lt;- gsub(&quot;_norm&quot;, &quot;&quot;, chi.dists$variable)
+
+###First, a quick look at histograms of the distributions of the significant Hi-C hits from homer, in both humans and chimps.
+#FIGS2A
+ggplot(data=hum.dists, aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle(&quot;Distributions of Homer-Significant Hi-C Contacts; Humans&quot;) + xlab(&quot;Homer-Normalized Interaction Frequency&quot;) + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 4500)) #Human Dist&#39;ns</code></pre>
+<p><img src="figure/initial_QC.Rmd/Initial%20Hi-C%20Data%20Read-in%20and%20QC-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#FIGS2B
+ggplot(data=chi.dists, aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle(&quot;Distributions of Homer-Significant Hi-C Contacts; Chimpanzees&quot;) + xlab(&quot;Homer-Normalized Interaction Frequency&quot;) + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 4500)) #Chimp Dist&#39;ns</code></pre>
+<p><img src="figure/initial_QC.Rmd/Initial%20Hi-C%20Data%20Read-in%20and%20QC-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Both sets of distributions look fairly bimodal, with chimps in particular showing a peak around 0.
+
+###As an initial quality control metric, take a look at the mean vs. variance plot for the normalized data. Also go ahead and add on columns for mean frequencies and variances both within and across the species, while they&#39;re being calculated here anyway:
+select(full.data, &quot;A-21792_norm&quot;, &quot;B-28126_norm&quot;, &quot;E-28815_norm&quot;, &quot;F-28834_norm&quot;) %&gt;% apply(., 1, mean) -&gt; full.data$Hmean
+select(full.data, &quot;C-3649_norm&quot;, &quot;D-40300_norm&quot;, &quot;G-3624_norm&quot;, &quot;H-3651_norm&quot;) %&gt;% apply(., 1, mean) -&gt; full.data$Cmean
+select(full.data, &quot;A-21792_norm&quot;, &quot;B-28126_norm&quot;, &quot;E-28815_norm&quot;, &quot;F-28834_norm&quot;, &quot;C-3649_norm&quot;, &quot;D-40300_norm&quot;, &quot;G-3624_norm&quot;, &quot;H-3651_norm&quot;) %&gt;% apply(., 1, mean) -&gt; full.data$ALLmean #Get means across species.
+select(full.data, &quot;A-21792_norm&quot;, &quot;B-28126_norm&quot;, &quot;E-28815_norm&quot;, &quot;F-28834_norm&quot;) %&gt;% apply(., 1, var) -&gt; full.data$Hvar #Get human variances.
+select(full.data, &quot;C-3649_norm&quot;, &quot;D-40300_norm&quot;, &quot;G-3624_norm&quot;, &quot;H-3651_norm&quot;) %&gt;% apply(., 1, var) -&gt; full.data$Cvar #Get chimp variances.
+select(full.data, &quot;A-21792_norm&quot;, &quot;B-28126_norm&quot;, &quot;E-28815_norm&quot;, &quot;F-28834_norm&quot;, &quot;C-3649_norm&quot;, &quot;D-40300_norm&quot;, &quot;G-3624_norm&quot;, &quot;H-3651_norm&quot;) %&gt;% apply(., 1, var) -&gt; full.data$ALLvar #Get variance across species.
+{plot(full.data$ALLmean, full.data$ALLvar, main=&quot;Mean vs. Variance in Homer-corrected contact frequency&quot;, xlab=&quot;Mean Hi-C Contact Frequency&quot;, ylab=&quot;Variance in Hi-C Contact Frequency&quot;)
+  abline(lm(full.data$ALLmean~full.data$ALLvar), col=&quot;red&quot;)}</code></pre>
+<p><img src="figure/initial_QC.Rmd/Initial%20Hi-C%20Data%20Read-in%20and%20QC-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Though there is a slight downward trend, on the whole, there is not a strong correlation between the contact frequency and the variance across individuals for it.
+summary(lm(full.data$ALLmean~full.data$ALLvar))$r.squared</code></pre>
+<pre><code>[1] 0.1076116</code></pre>
+<pre class="r"><code>summary(lm(full.data$ALLmean~full.data$ALLvar))$adj.r.squared</code></pre>
+<pre><code>[1] 0.1076113</code></pre>
+<p>On the whole, the distributions look fairly comparable across individuals and species, and the mean vs. variance plots show weak correlation at best between the two metrics. An actual check of the r squared also shows it to be low, at ~0.11. Now knowing the data are comparable in this sense, the next question would be whether they are different enough between the species to separate them from one another with unsupervised clustering and PCA methods.</p>
+</div>
+<div id="data-clustering-with-principal-components-analysis-pca-and-correlation-heatmap-clustering." class="section level3">
+<h3>Data clustering with Principal Components Analysis (PCA) and correlation heatmap clustering.</h3>
+<p>Now I use PCA, breaking down the interaction frequency values into principal components that best represent the variability within the data. This technique uses orthogonal transformation to convert the many dimensions in variability of this dataset into a lower-dimensional picture that can be used to separate out functional groups in the data. In this case, the expectation is that the strongest principal component, representing the plurality of the variance, will separate out humans and chimps along its axis, grouping the two species independently, as we expect their interaction frequency values to cluster together. I then also compute pairwise pearson correlations between each of the individuals across all Hi-C contacts, and use unsupervised hierarchical clustering to create a heatmap that once again will group individuals based on similarity in interaction frequency values. Again, I would expect this technique to separate out the species very distinctly from one another.</p>
+<pre class="r"><code>###Now do principal components analysis (PCA) on these data to see how they separate:
+meta.data &lt;- data.frame(&quot;SP&quot;=c(&quot;H&quot;, &quot;H&quot;, &quot;C&quot;, &quot;C&quot;, &quot;H&quot;, &quot;H&quot;, &quot;C&quot;, &quot;C&quot;), &quot;SX&quot;=c(&quot;F&quot;, &quot;M&quot;, &quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;F&quot;), &quot;Batch&quot;=c(1, 1, 1, 1, 2, 2, 2, 2), &quot;PE_reads&quot;=c(1084472930, 1103077950, 1015696574, 1047650944, 980287418, 1037054332, 930089380, 964085606), &quot;tags_per_BP&quot;=c(0.351291, 0.357315, 0.342325, 0.353097, 0.317553, 0.335937, 0.313494, 0.324936), &quot;inter_reads&quot;=c(0.1825411, 0.1734168, 0.1559306, 0.2010798, 0.1711258, 0.1479523, 0.1604700, 0.1712287)) #need the metadata first to make this interesting; obtain some of this information from my study design and other parts of it from homer&#39;s outputs
+pca &lt;- prcomp(t(full.contacts), scale=TRUE, center=TRUE)
+
+#Similar to figure 1A, but done on the whole set of data, without subsetting down to hits found significant in at least 4 individuals (regardless of species).
+ggplot(data=as.data.frame(pca$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title=&quot;PCA on normalized Hi-C Contact Frequency&quot;) + guides(color=guide_legend(order=1), size=FALSE, shape=guide_legend(order=2)) + xlab(paste(&quot;PC1 (&quot;, signif(100*summary(pca)$importance[2,1],2), &quot;% of variance)&quot;)) + ylab((paste(&quot;PC2 (&quot;, signif(100*summary(pca)$importance[2,2],2), &quot;% of variance)&quot;))) + labs(color=&quot;Batch&quot;, shape=&quot;Species&quot;) + scale_shape_manual(labels=c(&quot;Chimp&quot;, &quot;Human&quot;), values=c(16, 17)) #PCA shows the species separating nicely along PC1, which explains the highest proportion of the variance (as seen from scree plot below). This is nice and suggests that there ARE true differences in the data between species we are likely to detect here. None of the other PCs correlate with the number of PE reads, the tags per base pair statistic, or the fraction of interchromosomal reads, all from the homer output (not shown).</code></pre>
+<p><img src="figure/initial_QC.Rmd/Clustering%20w/%20PCA%20and%20Heatmaps-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>barplot(summary(pca)$importance[2,], xlab=&quot;PCs&quot;, ylab=&quot;Proportion of Variance Explained&quot;, main=&quot;PCA on normalized Hi-C contact frequency&quot;) #Scree plot showing all the PCs and the proportion of the variance they explain.</code></pre>
+<p><img src="figure/initial_QC.Rmd/Clustering%20w/%20PCA%20and%20Heatmaps-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>###Heatmap clustering of these data as another quality control metric:
+corheat &lt;- cor(full.contacts, use=&quot;complete.obs&quot;, method=&quot;pearson&quot;) #Corheat for the full data set, and heatmap
+#colnames(corheat) &lt;- c(&quot;A_HF&quot;, &quot;B_HM&quot;, &quot;C_CM&quot;, &quot;D_CF&quot;, &quot;E_HM&quot;, &quot;F_HF&quot;, &quot;G_CM&quot;, &quot;H_CF&quot;)
+colnames(corheat) &lt;- c(&quot;HF1&quot;, &quot;HM1&quot;, &quot;CM1&quot;, &quot;CF1&quot;, &quot;HM2&quot;, &quot;HF2&quot;, &quot;CM2&quot;, &quot;CF2&quot;) #Better for presentation
+rownames(corheat) &lt;- colnames(corheat)
+
+#Similar to figure 1B, but done on the whole set of data, without subsetting down to hits found significant in at least 4 individuals (regardless of species).
+heatmaply(corheat, main=&quot;Pairwise Pearson Correlation @ 10kb&quot;, k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))</code></pre>
+<div id="htmlwidget-c151967fee53a3bcc514" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c151967fee53a3bcc514">{"x":{"data":[{"x":[4.5,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"y":[1.18517552954421,1.18517552954421,null,1.18517552954421,1.06687081321649,null,1.06687081321649,1.06687081321649,null,1.06687081321649,1.03441233125822,null,1.03441233125822,1.03441233125822,null,1.03441233125822,1.00124047394332,null,1.00124047394332,1.00124047394332,null,1.00124047394332,0,null,1.00124047394332,1.00124047394332,null,1.00124047394332,0,null,1.03441233125822,1.03441233125822,null,1.03441233125822,0,null,1.06687081321649,1.06687081321649,null,1.06687081321649,0],"text":["y: 1.1851755","y: 1.1851755",null,"y: 1.1851755","y: 1.1851755",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0668708","y: 1.0668708"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid,1)","legendgroup":"(#39BEB1,solid,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4.5,1.875,null,1.875,1.875,null,1.875,1,null,1,1,null,1.875,2.75,null,2.75,2.75,null,2.75,2,null,2,2,null,2.75,3.5,null,3.5,3.5,null,3.5,3,null,3,3,null,3.5,4,null,4,4],"y":[1.18517552954421,1.18517552954421,null,1.18517552954421,1.00188827852063,null,1.00188827852063,1.00188827852063,null,1.00188827852063,0,null,1.00188827852063,1.00188827852063,null,1.00188827852063,0.961508716398257,null,0.961508716398257,0.961508716398257,null,0.961508716398257,0,null,0.961508716398257,0.961508716398257,null,0.961508716398257,0.9392561944276,null,0.9392561944276,0.9392561944276,null,0.9392561944276,0,null,0.9392561944276,0.9392561944276,null,0.9392561944276,0],"text":["y: 1.1851755","y: 1.1851755",null,"y: 1.1851755","y: 1.1851755",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid,1)","legendgroup":"(#E495A5,solid,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4.5,1.875,1,2.75,2,3.5,3,4,7.125,6.25,5.5,5,6,7,8],"y":[1.18517552954421,1.00188827852063,0,0.961508716398257,0,0.9392561944276,0,0,1.06687081321649,1.03441233125822,1.00124047394332,0,0,0,0],"text":["y: 1.1851755","y: 1.0018883","y: 0.0000000","y: 0.9615087","y: 0.0000000","y: 0.9392562","y: 0.0000000","y: 0.0000000","y: 1.0668708","y: 1.0344123","y: 1.0012405","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"type":"scatter","mode":"markers","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"xaxis":"x2","yaxis":"y","frame":null},{"x":[1,2,3,4,5,6,7,8],"y":[1,2,3,4,5,6,7,8],"z":[[1,0.141533380681047,0.158839274622791,0.153050453403804,0.0589406966114147,0.0230409524307309,0,0.00437708703382176],[0.141533380681047,1,0.175877488292864,0.176062646102501,0.0740342739152109,0.0453483816077108,0.0212883522049347,0.0243494183113591],[0.158839274622791,0.175877488292864,1,0.194560650524792,0.0962416337564241,0.0539072528015847,0.0322678232360692,0.0305706707847016],[0.153050453403804,0.176062646102501,0.194560650524792,1,0.0969371194063134,0.0551784141031276,0.0295367439769798,0.033060053894094],[0.0589406966114147,0.0740342739152109,0.0962416337564241,0.0969371194063134,1,0.143101641294004,0.117561206778976,0.118110209324742],[0.0230409524307309,0.0453483816077108,0.0539072528015847,0.0551784141031276,0.143101641294004,1,0.124001712649372,0.104693672326057],[0,0.0212883522049347,0.0322678232360692,0.0295367439769798,0.117561206778976,0.124001712649372,1,0.085223977912317],[0.00437708703382176,0.0243494183113591,0.0305706707847016,0.033060053894094,0.118110209324742,0.104693672326057,0.085223977912317,1]],"text":[["row: CF1<br>column: CF1<br>value: 1.0000","row: CF1<br>column: CF2<br>value: 0.2921","row: CF1<br>column: CM1<br>value: 0.3064","row: CF1<br>column: CM2<br>value: 0.3016","row: CF1<br>column: HM2<br>value: 0.2240","row: CF1<br>column: HF2<br>value: 0.1944","row: CF1<br>column: HM1<br>value: 0.1754","row: CF1<br>column: HF1<br>value: 0.1790"],["row: CF2<br>column: CF1<br>value: 0.2921","row: CF2<br>column: CF2<br>value: 1.0000","row: CF2<br>column: CM1<br>value: 0.3205","row: CF2<br>column: CM2<br>value: 0.3206","row: CF2<br>column: HM2<br>value: 0.2365","row: CF2<br>column: HF2<br>value: 0.2128","row: CF2<br>column: HM1<br>value: 0.1930","row: CF2<br>column: HF1<br>value: 0.1955"],["row: CM1<br>column: CF1<br>value: 0.3064","row: CM1<br>column: CF2<br>value: 0.3205","row: CM1<br>column: CM1<br>value: 1.0000","row: CM1<br>column: CM2<br>value: 0.3359","row: CM1<br>column: HM2<br>value: 0.2548","row: CM1<br>column: HF2<br>value: 0.2199","row: CM1<br>column: HM1<br>value: 0.2020","row: CM1<br>column: HF1<br>value: 0.2006"],["row: CM2<br>column: CF1<br>value: 0.3016","row: CM2<br>column: CF2<br>value: 0.3206","row: CM2<br>column: CM1<br>value: 0.3359","row: CM2<br>column: CM2<br>value: 1.0000","row: CM2<br>column: HM2<br>value: 0.2554","row: CM2<br>column: HF2<br>value: 0.2209","row: CM2<br>column: HM1<br>value: 0.1998","row: CM2<br>column: HF1<br>value: 0.2027"],["row: HM2<br>column: CF1<br>value: 0.2240","row: HM2<br>column: CF2<br>value: 0.2365","row: HM2<br>column: CM1<br>value: 0.2548","row: HM2<br>column: CM2<br>value: 0.2554","row: HM2<br>column: HM2<br>value: 1.0000","row: HM2<br>column: HF2<br>value: 0.2934","row: HM2<br>column: HM1<br>value: 0.2724","row: HM2<br>column: HF1<br>value: 0.2728"],["row: HF2<br>column: CF1<br>value: 0.1944","row: HF2<br>column: CF2<br>value: 0.2128","row: HF2<br>column: CM1<br>value: 0.2199","row: HF2<br>column: CM2<br>value: 0.2209","row: HF2<br>column: HM2<br>value: 0.2934","row: HF2<br>column: HF2<br>value: 1.0000","row: HF2<br>column: HM1<br>value: 0.2777","row: HF2<br>column: HF1<br>value: 0.2618"],["row: HM1<br>column: CF1<br>value: 0.1754","row: HM1<br>column: CF2<br>value: 0.1930","row: HM1<br>column: CM1<br>value: 0.2020","row: HM1<br>column: CM2<br>value: 0.1998","row: HM1<br>column: HM2<br>value: 0.2724","row: HM1<br>column: HF2<br>value: 0.2777","row: HM1<br>column: HM1<br>value: 1.0000","row: HM1<br>column: HF1<br>value: 0.2457"],["row: HF1<br>column: CF1<br>value: 0.1790","row: HF1<br>column: CF2<br>value: 0.1955","row: HF1<br>column: CM1<br>value: 0.2006","row: HF1<br>column: CM2<br>value: 0.2027","row: HF1<br>column: HM2<br>value: 0.2728","row: HF1<br>column: HF2<br>value: 0.2618","row: HF1<br>column: HM1<br>value: 0.2457","row: HF1<br>column: HF1<br>value: 1.0000"]],"colorscale":[[0,"#440154"],[0.00437708703382176,"#440256"],[0.0212883522049347,"#46095C"],[0.0230409524307309,"#460A5D"],[0.0243494183113591,"#460A5D"],[0.0295367439769798,"#470C5F"],[0.0305706707847016,"#470D60"],[0.0322678232360692,"#470D60"],[0.033060053894094,"#470D60"],[0.0453483816077108,"#471265"],[0.0539072528015847,"#481668"],[0.0551784141031276,"#481668"],[0.0589406966114147,"#481769"],[0.0740342739152109,"#481C6E"],[0.085223977912317,"#482071"],[0.0962416337564241,"#482475"],[0.0969371194063134,"#482475"],[0.104693672326057,"#482677"],[0.117561206778976,"#472A7A"],[0.118110209324742,"#472A7A"],[0.124001712649372,"#472D7B"],[0.141533380681047,"#46327E"],[0.143101641294004,"#46327E"],[0.153050453403804,"#453581"],[0.158839274622791,"#453882"],[0.175877488292864,"#433D84"],[0.176062646102501,"#433D84"],[0.194560650524792,"#414287"],[1,"#FDE725"]],"type":"heatmap","showscale":false,"autocolorscale":false,"showlegend":false,"xaxis":"x","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1],"y":[1],"name":"99_36d3fb004922f4db2232a5299c6a5935","type":"scatter","mode":"markers","opacity":0,"hoverinfo":"none","showlegend":false,"marker":{"color":[0,1],"colorscale":[[0,"#440154"],[0.0526315789473684,"#481567"],[0.105263157894737,"#482677"],[0.157894736842105,"#453781"],[0.210526315789474,"#3F4788"],[0.263157894736842,"#39558C"],[0.315789473684211,"#32648E"],[0.368421052631579,"#2D718E"],[0.421052631578947,"#287D8E"],[0.473684210526316,"#238A8D"],[0.526315789473684,"#1F968B"],[0.578947368421053,"#20A386"],[0.631578947368421,"#29AF7F"],[0.684210526315789,"#3CBB75"],[0.736842105263158,"#56C667"],[0.789473684210526,"#74D055"],[0.842105263157895,"#94D840"],[0.894736842105263,"#B8DE29"],[0.947368421052632,"#DCE318"],[1,"#FDE725"]],"colorbar":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"thickness":23.04,"title":null,"titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"tickmode":"array","ticktext":["0.2","0.4","0.6","0.8","1.0"],"tickvals":[0.0297983456391227,0.272348759229342,0.514899172819561,0.757449586409781,1],"tickfont":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"ticklen":2,"len":0.5}},"xaxis":"x","yaxis":"y2","frame":null},{"x":[1.18517552954421,1.18517552954421,null,1.18517552954421,1.06687081321649,null,1.06687081321649,1.06687081321649,null,1.06687081321649,1.03441233125822,null,1.03441233125822,1.03441233125822,null,1.03441233125822,1.00124047394332,null,1.00124047394332,1.00124047394332,null,1.00124047394332,0,null,1.00124047394332,1.00124047394332,null,1.00124047394332,0,null,1.03441233125822,1.03441233125822,null,1.03441233125822,0,null,1.06687081321649,1.06687081321649,null,1.06687081321649,0],"y":[4.5,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"text":["y: 1.1851755","y: 1.1851755",null,"y: 1.1851755","y: 1.1851755",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0668708","y: 1.0668708"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid,1)","legendgroup":"(#39BEB1,solid,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1.18517552954421,1.18517552954421,null,1.18517552954421,1.00188827852063,null,1.00188827852063,1.00188827852063,null,1.00188827852063,0,null,1.00188827852063,1.00188827852063,null,1.00188827852063,0.961508716398257,null,0.961508716398257,0.961508716398257,null,0.961508716398257,0,null,0.961508716398257,0.961508716398257,null,0.961508716398257,0.9392561944276,null,0.9392561944276,0.9392561944276,null,0.9392561944276,0,null,0.9392561944276,0.9392561944276,null,0.9392561944276,0],"y":[4.5,1.875,null,1.875,1.875,null,1.875,1,null,1,1,null,1.875,2.75,null,2.75,2.75,null,2.75,2,null,2,2,null,2.75,3.5,null,3.5,3.5,null,3.5,3,null,3,3,null,3.5,4,null,4,4],"text":["y: 1.1851755","y: 1.1851755",null,"y: 1.1851755","y: 1.1851755",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid,1)","legendgroup":"(#E495A5,solid,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1.18517552954421,1.00188827852063,0,0.961508716398257,0,0.9392561944276,0,0,1.06687081321649,1.03441233125822,1.00124047394332,0,0,0,0],"y":[4.5,1.875,1,2.75,2,3.5,3,4,7.125,6.25,5.5,5,6,7,8],"text":["y: 1.1851755","y: 1.0018883","y: 0.0000000","y: 0.9615087","y: 0.0000000","y: 0.9392562","y: 0.0000000","y: 0.0000000","y: 1.0668708","y: 1.0344123","y: 1.0012405","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null}],"layout":{"xaxis":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["CF1","CF2","CM1","CM2","HM2","HF2","HM1","HF1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["CF1","CF2","CM1","CM2","HM2","HF2","HM1","HF1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-45,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y2","title":"","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"xaxis2":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"y2","type":"linear","autorange":false,"range":[0,1.18517552954421],"tickmode":"array","ticktext":["0.0","0.3","0.6","0.9"],"tickvals":[0,0.3,0.6,0.9],"categoryorder":"array","categoryarray":["0.0","0.3","0.6","0.9"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":"","titlefont":{"color":null,"family":null,"size":0},"hoverformat":".2f"},"yaxis2":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["CF1","CF2","CM1","CM2","HM2","HF2","HM1","HF1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["CF1","CF2","CM1","CM2","HM2","HF2","HM1","HF1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":"","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"yaxis":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"x","type":"linear","autorange":false,"range":[0,1.18517552954421],"tickmode":"array","ticktext":["0.0","0.3","0.6","0.9"],"tickvals":[0,0.3,0.6,0.9],"categoryorder":"array","categoryarray":["0.0","0.3","0.6","0.9"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":"","titlefont":{"color":null,"family":null,"size":0},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0.8,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0,"y1":0.8},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.8,"x1":1,"y0":0,"y1":0.8}],"margin":{"t":30,"r":30,"b":50,"l":50},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":1,"yanchor":"top"},"hovermode":"closest","barmode":"relative","paper_bgcolor":"rgba(255,255,255,1)","title":"Pairwise Pearson Correlation @ 10kb"},"attrs":{"126001f59e68b":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"12600472ebfc1":{"colour":{},"shape":{},"size":{},"x":{},"y":{}},"126007f273998":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20]},"1260028c9fe4d":{"fill":{},"text":{},"x":{},"y":{},"type":"heatmap"},"126007a358d5e":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"1260051d45500":{"colour":{},"shape":{},"size":{},"x":{},"y":{}}},"source":"A","config":{"doubleClick":"reset","modeBarButtonsToAdd":[],"cloud":false,"displaylogo":false,"modeBarButtonsToRemove":["sendDataToCloud","select2d","lasso2d","autoScale2d","hoverClosestCartesian","hoverCompareCartesian","sendDataToCloud"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>#We can see that all the humans cluster together, as do all the chimps. This is very good, despite the fact that the correlations are fairly low.</code></pre>
+</div>
+<div id="variance-exploration" class="section level3">
+<h3>Variance exploration</h3>
+<p>Now I look at several metrics to assess variance in the data, checking which species hits were discovered as significant in and how many individuals a given hit was discovered in. I look at this to understand if there are some cutoffs that should be made to reduce the noisiness of the data and maximize the significance of further findings.</p>
+<pre class="r"><code>###Add columns to full.data to indicate species of discovery and number of individuals discovered in. These pieces of information are good to know about each of the hits generally, but can also be used to make decisions about filtering out certain classes of hits if variance is associated with any of these metrics.  
+humNAs &lt;- rowSums(is.na(full.data[,1:149])) #148 is when there is no human info. 37 NAs per individual.
+chimpNAs &lt;- rowSums(is.na(full.data[,150:297])) #Same as above of course.
+full.data$found_in_H &lt;- (4-humNAs/37) #Set a new column identifying number of humans hit was found in
+full.data$found_in_C &lt;- (4-chimpNAs/37) #Set a new column identifying number of chimps hit was found in
+full.data$disc_species &lt;- ifelse(full.data$found_in_C&gt;0&amp;full.data$found_in_H&gt;0, &quot;B&quot;, ifelse(full.data$found_in_C==0, &quot;H&quot;, &quot;C&quot;)) #Set a column identifying which species (H, C, or Both) the hit in question was identified in. Works with nested ifelses.
+full.data$tot_indiv_IDd &lt;- full.data$found_in_C+full.data$found_in_H #Add a column specifying total number of individuals homer found the significant hit in.
+
+###Take a look at what proportion of the significant hits were discovered in either of the species (or both of them).
+sum(full.data$disc_species==&quot;H&quot;) #~1.2 million</code></pre>
+<pre><code>[1] 1186069</code></pre>
+<pre class="r"><code>sum(full.data$disc_species==&quot;C&quot;) #~1.1 million</code></pre>
+<pre><code>[1] 1057817</code></pre>
+<pre class="r"><code>sum(full.data$disc_species==&quot;B&quot;) #~690 k</code></pre>
+<pre><code>[1] 688624</code></pre>
+<pre class="r"><code>#This is reassuring, as similar numbers of discoveries in both species suggests comparable power for detection.
+
+###Now I look at variance in interaction frequency as a function of the number of individuals in which a pair was independently called as significant. Essentially, I&#39;m checking here to see if there is some kind of cutoff I should make for the significant hits--i.e., if the variance looks to drop off significantly after a hit is discovered in at least 2 individuals, this suggests possibly filtering out any hit only discovered in 1 individual.
+myplot &lt;- data.frame(disc_species=full.data$disc_species, found_in_H=full.data$found_in_H, found_in_C=full.data$found_in_C, tot_indiv_IDd=full.data$tot_indiv_IDd, Hvar=full.data$Hvar, Cvar=full.data$Cvar, ALLvar=full.data$ALLvar)
+ggplot(data=myplot, aes(group=tot_indiv_IDd, x=tot_indiv_IDd, y=ALLvar)) + geom_boxplot() + ggtitle(&quot;Number of Individuals a Hi-C Hit is Discovered in Relative to Variance&quot;) + xlab(&quot;Number of Individuals Where Hi-C Contact Called Significant&quot;) + ylab(&quot;Variance in Interaction Frequency&quot;)</code></pre>
+<p><img src="figure/initial_QC.Rmd/Variance%20QC-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#FIGS1
+FIGS1A &lt;- ggplot(data=myplot, aes(group=tot_indiv_IDd, x=tot_indiv_IDd, y=ALLvar)) + geom_boxplot() + ggtitle(&quot;Number of Individuals a Hi-C Hit is Discovered in Relative to Variance&quot;) + xlab(&quot;Number of Individuals Where Hi-C Contact Called Significant&quot;) + ylab(&quot;Variance in Interaction Frequency&quot;)
+ggplot(data=myplot, aes(group=tot_indiv_IDd, x=tot_indiv_IDd, y=ALLvar)) + geom_boxplot() + scale_y_continuous(limits=c(0, 1)) + ggtitle(&quot;Number of Individuals a Hi-C Hit is Discovered in Relative to Variance&quot;) + xlab(&quot;Number of Individuals Where Hi-C Contact Called Significant&quot;) + ylab(&quot;Variance in Interaction Frequency&quot;)</code></pre>
+<pre><code>Warning: Removed 737679 rows containing non-finite values (stat_boxplot).</code></pre>
+<p><img src="figure/initial_QC.Rmd/Variance%20QC-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>FIGS1B &lt;- ggplot(data=myplot, aes(group=tot_indiv_IDd, x=tot_indiv_IDd, y=ALLvar)) + geom_boxplot() + scale_y_continuous(limits=c(0, 1)) + ggtitle(&quot;Number of Individuals a Hi-C Hit is Discovered in Relative to Variance&quot;) + xlab(&quot;Number of Individuals Where Hi-C Contact Called Significant&quot;) + ylab(&quot;Variance in Interaction Frequency&quot;)
+FIGS1 &lt;- plot_grid(FIGS1A, FIGS1B, labels=c(&quot;A&quot;, &quot;B&quot;), align = &quot;h&quot;)</code></pre>
+<pre><code>Warning: Removed 737679 rows containing non-finite values (stat_boxplot).</code></pre>
+<pre class="r"><code>save_plot(&quot;~/Desktop/FIGS1A.png&quot;, FIGS1)</code></pre>
+<p>From this, it would appear that variance drops off drastically after discovery in at least 4 individuals. I observed a similar pattern when looking at number of individuals a hit is discovered in vs. species-specific variances, as well as similar reductions when looking at variance in hits within species vs. number of individuals discovered in (not shown). Hence I now repeat all of the QC analyses done above, but this time conditioned upon discovery in 4 individuals. Moving forward I will ultimately filter out all the hits that were not found in at least 4 individuals, though I sometimes check the full dataset as well just for sanity’s sake.</p>
+</div>
+<div id="initial-quality-control-analyses-conditioned-upon-discovery-in-at-least-4-individuals" class="section level3">
+<h3>Initial Quality Control Analyses Conditioned Upon Discovery in at Least 4 Individuals</h3>
+<p>Given the results just seen for variance, I now repeat all the analyses I carried out previously on the data conditioned upon homer discovering a hit as significant in at least 4 individuals. Based upon a reviewer concern, I also check these things for hits that were discovered as significant in all 4 individuals within a given species (i.e. significant contacts that are not “polymorphic”)</p>
+<pre class="r"><code>#Repeating all QC with the condition of discovery in 4 individuals:
+data.4 &lt;- filter(full.data, tot_indiv_IDd&gt;=4) #Enforcing this condition brings us down from ~3 million hits to ~347k hits.
+data.4.species &lt;- filter(full.data, found_in_H==4|found_in_C==4) #Enforcing this reviewer-suggested condition of only including contacts significant in all individuals from a species brings us down to ~164k hits.
+
+###See how distributions look with condition of 4 individuals.
+ggplot(data=melt(data.4[,c(304:305, 308:309)]), aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle(&quot;Distributions of Homer-Significant Hi-C Contacts, Humans | 4&quot;) + xlab(&quot;Homer-Normalized Interaction Frequency&quot;) + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 450))#Human Dist&#39;ns</code></pre>
+<pre><code>No id variables; using all as measure variables</code></pre>
+<p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=melt(data.4[,c(306:307, 310:311)]), aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle(&quot;Distributions of Homer-Significant Hi-C Contacts, Chimps | 4&quot;) + xlab(&quot;Homer-Normalized Interaction Frequency&quot;) + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 450)) #Chimp Dist&#39;ns</code></pre>
+<pre><code>No id variables; using all as measure variables</code></pre>
+<p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Overall the distributions look fairly similar to before, with the bimodality seen before being much less stark here. Most of the negative interaction frequency significant hits have dropped out, and there is still a strong mass around 0 (especially in the chimp distributions). The majority of the mass of the hits now seems to hover around 1.8 or so.
+
+#Check the same thing but for contacts fixed within species:
+ggplot(data=melt(data.4.species[,c(304:305, 308:309)]), aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle(&quot;Distributions of Homer-Significant Hi-C Contacts, Humans | 4 Fixed&quot;) + xlab(&quot;Homer-Normalized Interaction Frequency&quot;) + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 450))#Human Dist&#39;ns</code></pre>
+<pre><code>No id variables; using all as measure variables</code></pre>
+<p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=melt(data.4.species[,c(306:307, 310:311)]), aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle(&quot;Distributions of Homer-Significant Hi-C Contacts, Chimps | 4 Fixed&quot;) + xlab(&quot;Homer-Normalized Interaction Frequency&quot;) + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 450)) #Chimp Dist&#39;ns</code></pre>
+<pre><code>No id variables; using all as measure variables</code></pre>
+<p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>###Mean vs. variance plot with condition of 4 individuals:
+{plot(data.4$ALLmean, data.4$ALLvar, main=&quot;Mean vs. Variance in Homer-corrected contact frequency | 4&quot;, xlab = &quot;Mean Hi-C Contact Frequency&quot;, ylab=&quot;Variance in Hi-C Contact Frequency&quot;)
+  abline(lm(data.4$ALLmean~data.4$ALLvar), col=&quot;red&quot;)}</code></pre>
+<p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>summary(lm(data.4$ALLmean~data.4$ALLvar))$r.squared</code></pre>
+<pre><code>[1] 0.02812765</code></pre>
+<pre class="r"><code>summary(lm(data.4$ALLmean~data.4$ALLvar))$adj.r.squared</code></pre>
+<pre><code>[1] 0.02812485</code></pre>
+<pre class="r"><code>#Looks very similar to the same plot above for the whole dataset; with slightly fewer outliers in the top left of the plot and a different trend in the red line modeling the mean regressed upon the variance. Here, the line is fairly flat, perhaps trending slightly upwards, whereas the entire dataset sees it have a moderate negative slope. Overall, would really prefer there to be no relationship here, but, again, this is not an ideal metric for Hi-C data, so it&#39;s not a particularly worrisome result. the r squared also is quite low (0.028).
+
+#Same for fixed in each species:
+{plot(data.4.species$ALLmean, data.4.species$ALLvar, main=&quot;Mean vs. Variance in Homer-corrected contact frequency | 4 Fixed&quot;, xlab = &quot;Mean Hi-C Contact Frequency&quot;, ylab=&quot;Variance in Hi-C Contact Frequency&quot;)
+  abline(lm(data.4.species$ALLmean~data.4.species$ALLvar), col=&quot;red&quot;)}</code></pre>
+<p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>summary(lm(data.4.species$ALLmean~data.4.species$ALLvar))$r.squared</code></pre>
+<pre><code>[1] 0.008487146</code></pre>
+<pre class="r"><code>summary(lm(data.4.species$ALLmean~data.4.species$ALLvar))$adj.r.squared</code></pre>
+<pre><code>[1] 0.008481111</code></pre>
+<pre class="r"><code>#Again, a slight upward trend is seen, but the relationship is quite weak--r squared of 0.008.
+
+###Now to do PCA on the data conditioned upon discovery in 4 individuals--would expect many of the same patterns here, perhaps with even stronger separation due to only grabbing hits that are shared by 4 individuals:
+pca4 &lt;- prcomp(t(data.4[,304:311]), scale=TRUE, center=TRUE)
+
+#FIG1A
+ggplot(data=as.data.frame(pca4$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title=&quot;PCA on Normalized Hi-C Contact Frequency&quot;) + guides(color=guide_legend(order=1, title=&quot;Batch&quot;), size=FALSE, shape=guide_legend(order=2, title=&quot;Species&quot;)) + xlab(paste(&quot;PC1 (&quot;, signif(100*summary(pca4)$importance[2,1],2), &quot;% of variance)&quot;)) + ylab((paste(&quot;PC2 (&quot;, signif(100*summary(pca4)$importance[2,2],2), &quot;% of variance)&quot;))) + labs(color=&quot;Batch&quot;, shape=&quot;Species&quot;) + scale_shape_manual(labels=c(&quot;Chimp&quot;, &quot;Human&quot;), values=c(16, 17)) #Metadata hasn&#39;t changed so use the same metadata from above. PCA shows a similar separation along species lines for PC1, with this time it representing 24.171% of the variance (up from 20.49% earlier). This is rather unsurprising, since we have subset down to hits that are more shared than the total set we had before.</code></pre>
+<p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>barplot(summary(pca4)$importance[2,], xlab=&quot;PCs&quot;, ylab=&quot;Proportion of Variance Explained&quot;, main=&quot;PCA on normalized Hi-C contact frequency&quot;) #Scree plot showing all the PCs and the proportion of the variance they explain. This is similar to above, with no PCs beyond a 7th one, and the first PC taking the vast majority of the variance while the others hover near 12%. No variables in experimentation, library prep, sequencing batch, or anything else seem to correlate with these PCs.</code></pre>
+<p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Actually statistically test correlation w/ PCs:
+PC1 &lt;- pca4$x[,1]
+PC2 &lt;- pca4$x[,2]
+PC3 &lt;- pca4$x[,3]
+PC4 &lt;- pca4$x[,4]
+PC5 &lt;- pca4$x[,5]
+PC6 &lt;- pca4$x[,6]
+PC7 &lt;- pca4$x[,7]
+PCS &lt;- data.frame(PC1, PC2, PC3, PC4, PC5, PC6, PC7)
+summary &lt;- summary(pca4)
+PC_pvals &lt;- matrix(data=NA, nrow=7, ncol=6, dimnames=list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;, &quot;PC6&quot;, &quot;PC7&quot;), c(&quot;Species&quot;, &quot;Sex&quot;, &quot;Batch&quot;, &quot;PE_reads&quot;, &quot;tags_per_BP&quot;, &quot;inter_reads&quot;)))
+PC_rsquareds &lt;- matrix(data=NA, nrow=7, ncol=6, dimnames=list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;, &quot;PC6&quot;, &quot;PC7&quot;), c(&quot;Species&quot;, &quot;Sex&quot;, &quot;Batch&quot;, &quot;PE_reads&quot;, &quot;tags_per_BP&quot;, &quot;inter_reads&quot;)))
+for(i in 1:7){
+  #For species
+  speciesPC1 &lt;- lm(PCS[,i] ~ as.factor(meta.data$SP))
+  fstat &lt;- as.data.frame(summary(speciesPC1)$fstatistic)
+  p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,1] &lt;- p_fstat
+  PC_rsquareds[i,1] &lt;- summary(speciesPC1)$r.squared
+  
+  #For sex
+  sexPC1 &lt;- lm(PCS[,i] ~ as.factor(meta.data$SX))
+  fstat &lt;- as.data.frame(summary(sexPC1)$fstatistic)
+  p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,2] &lt;- p_fstat
+  PC_rsquareds[i,2] &lt;- summary(sexPC1)$r.squared
+  
+  #For batch
+  btcPC1 &lt;- lm(PCS[,i] ~ as.factor(meta.data$Batch))
+  fstat &lt;- as.data.frame(summary(btcPC1)$fstatistic)
+  p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,3] &lt;- p_fstat
+  PC_rsquareds[i,3] &lt;- summary(btcPC1)$r.squared
+  
+  #For PE_reads
+  PEPC1 &lt;- lm(PCS[,i] ~ meta.data$PE_reads)
+  fstat &lt;- as.data.frame(summary(PEPC1)$fstatistic)
+  p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,4] &lt;- p_fstat
+  PC_rsquareds[i,4] &lt;- summary(PEPC1)$r.squared
+  
+  #For tags
+  tagsPC1 &lt;- lm(PCS[,i] ~ meta.data$tags_per_BP)
+  fstat &lt;- as.data.frame(summary(tagsPC1)$fstatistic)
+  p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,5] &lt;- p_fstat
+  PC_rsquareds[i,5] &lt;- summary(tagsPC1)$r.squared
+  
+  #For inter
+  interPC1 &lt;- lm(PCS[,i] ~ meta.data$inter_reads)
+  fstat &lt;- as.data.frame(summary(interPC1)$fstatistic)
+  p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,6] &lt;- p_fstat
+  PC_rsquareds[i,6] &lt;- summary(interPC1)$r.squared
+}
+PC_pvals</code></pre>
+<pre><code>         Species        Sex      Batch   PE_reads tags_per_BP inter_reads
+PC1 2.199084e-06 0.89410140 0.82762305 0.08306967   0.4162871  0.89012226
+PC2 8.476933e-01 0.63365009 0.05252363 0.28149929   0.1689697  0.05773082
+PC3 8.009030e-01 0.62475973 0.48718261 0.28722360   0.1654083  0.93235638
+PC4 9.476353e-01 0.02066748 0.66273167 0.98208331   0.9974648  0.67607958
+PC5 9.823623e-01 0.75209783 0.28215075 0.39670984   0.2933573  0.31892644
+PC6 9.873455e-01 0.24571167 0.96034286 0.80290246   0.7561813  0.36092781
+PC7 9.816176e-01 0.55255454 0.27645287 0.51392897   0.4313247  0.29167386</code></pre>
+<pre class="r"><code>PC_rsquareds</code></pre>
+<pre><code>         Species         Sex        Batch     PE_reads  tags_per_BP
+PC1 9.808831e-01 0.003203562 0.0085488465 4.182812e-01 1.126790e-01
+PC2 6.657192e-03 0.040285292 0.4920198755 1.891727e-01 2.894772e-01
+PC3 1.144877e-02 0.042382922 0.0836525906 1.851745e-01 2.935635e-01
+PC4 7.807753e-04 0.618194228 0.0338509794 9.131995e-05 1.828203e-06
+PC5 8.849812e-05 0.017903221 0.1887135525 1.218537e-01 1.809798e-01
+PC6 4.555294e-05 0.216177784 0.0004476097 1.121650e-02 1.730444e-02
+PC7 9.612991e-05 0.061852991 0.1927665459 7.421000e-02 1.059942e-01
+    inter_reads
+PC1 0.003449966
+PC2 0.477456646
+PC3 0.001303785
+PC4 0.031110479
+PC5 0.164427326
+PC6 0.140129734
+PC7 0.182122065</code></pre>
+<pre class="r"><code>#So PC1 correlates strongly and significantly with species, whereas PC4 has some moderate correlation with sex--but nothing else has a significant effect.
+
+###Repeat the above, but conditioned upon discovery in 4 individuals within a species--would expect many of the same patterns here, this time with much stronger separation due to only grabbing hits that are fixed in a species:
+pca4 &lt;- prcomp(t(data.4.species[,304:311]), scale=TRUE, center=TRUE)
+
+ggplot(data=as.data.frame(pca4$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title=&quot;PCA on Normalized Hi-C Contact Frequency&quot;) + guides(color=guide_legend(order=1, title=&quot;Batch&quot;), size=FALSE, shape=guide_legend(order=2, title=&quot;Species&quot;)) + xlab(paste(&quot;PC1 (&quot;, signif(100*summary(pca4)$importance[2,1],2), &quot;% of variance)&quot;)) + ylab((paste(&quot;PC2 (&quot;, signif(100*summary(pca4)$importance[2,2],2), &quot;% of variance)&quot;))) + labs(color=&quot;Batch&quot;, shape=&quot;Species&quot;) + scale_shape_manual(labels=c(&quot;Chimp&quot;, &quot;Human&quot;), values=c(16, 17)) #Metadata hasn&#39;t changed so use the same metadata from above. PCA shows a similar separation along species lines for PC1, with this time it representing 24.171% of the variance (up from 20.49% earlier). This is rather unsurprising, since we have subset down to hits that are more shared than the total set we had before.</code></pre>
+<p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>barplot(summary(pca4)$importance[2,], xlab=&quot;PCs&quot;, ylab=&quot;Proportion of Variance Explained&quot;, main=&quot;PCA on normalized Hi-C contact frequency&quot;) #Scree plot showing all the PCs and the proportion of the variance they explain. This is similar to above, with no PCs beyond a 7th one, and the first PC taking the vast majority of the variance while the others hover near 12%. No variables in experimentation, library prep, sequencing batch, or anything else seem to correlate with these PCs.</code></pre>
+<p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Actually statistically test correlation w/ PCs:
+PC1 &lt;- pca4$x[,1]
+PC2 &lt;- pca4$x[,2]
+PC3 &lt;- pca4$x[,3]
+PC4 &lt;- pca4$x[,4]
+PC5 &lt;- pca4$x[,5]
+PC6 &lt;- pca4$x[,6]
+PC7 &lt;- pca4$x[,7]
+PCS &lt;- data.frame(PC1, PC2, PC3, PC4, PC5, PC6, PC7)
+summary &lt;- summary(pca4)
+PC_pvals &lt;- matrix(data=NA, nrow=7, ncol=6, dimnames=list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;, &quot;PC6&quot;, &quot;PC7&quot;), c(&quot;Species&quot;, &quot;Sex&quot;, &quot;Batch&quot;, &quot;PE_reads&quot;, &quot;tags_per_BP&quot;, &quot;inter_reads&quot;)))
+PC_rsquareds &lt;- matrix(data=NA, nrow=7, ncol=6, dimnames=list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;, &quot;PC6&quot;, &quot;PC7&quot;), c(&quot;Species&quot;, &quot;Sex&quot;, &quot;Batch&quot;, &quot;PE_reads&quot;, &quot;tags_per_BP&quot;, &quot;inter_reads&quot;)))
+for(i in 1:7){
+  #For species
+  speciesPC1 &lt;- lm(PCS[,i] ~ as.factor(meta.data$SP))
+  fstat &lt;- as.data.frame(summary(speciesPC1)$fstatistic)
+  p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,1] &lt;- p_fstat
+  PC_rsquareds[i,1] &lt;- summary(speciesPC1)$r.squared
+  
+  #For sex
+  sexPC1 &lt;- lm(PCS[,i] ~ as.factor(meta.data$SX))
+  fstat &lt;- as.data.frame(summary(sexPC1)$fstatistic)
+  p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,2] &lt;- p_fstat
+  PC_rsquareds[i,2] &lt;- summary(sexPC1)$r.squared
+  
+  #For batch
+  btcPC1 &lt;- lm(PCS[,i] ~ as.factor(meta.data$Batch))
+  fstat &lt;- as.data.frame(summary(btcPC1)$fstatistic)
+  p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,3] &lt;- p_fstat
+  PC_rsquareds[i,3] &lt;- summary(btcPC1)$r.squared
+  
+  #For PE_reads
+  PEPC1 &lt;- lm(PCS[,i] ~ meta.data$PE_reads)
+  fstat &lt;- as.data.frame(summary(PEPC1)$fstatistic)
+  p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,4] &lt;- p_fstat
+  PC_rsquareds[i,4] &lt;- summary(PEPC1)$r.squared
+  
+  #For tags
+  tagsPC1 &lt;- lm(PCS[,i] ~ meta.data$tags_per_BP)
+  fstat &lt;- as.data.frame(summary(tagsPC1)$fstatistic)
+  p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,5] &lt;- p_fstat
+  PC_rsquareds[i,5] &lt;- summary(tagsPC1)$r.squared
+  
+  #For inter
+  interPC1 &lt;- lm(PCS[,i] ~ meta.data$inter_reads)
+  fstat &lt;- as.data.frame(summary(interPC1)$fstatistic)
+  p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,6] &lt;- p_fstat
+  PC_rsquareds[i,6] &lt;- summary(interPC1)$r.squared
+}
+PC_pvals</code></pre>
+<pre><code>         Species       Sex      Batch  PE_reads tags_per_BP inter_reads
+PC1 7.652116e-08 0.9388975 0.90588992 0.1101099   0.4897443  0.84521168
+PC2 9.137237e-01 0.7953693 0.04114024 0.2299095   0.1372477  0.05787434
+PC3 8.822923e-01 0.4996362 0.57917517 0.2934863   0.1894047  0.87875726
+PC4 9.808643e-01 0.0688759 0.76645999 0.9397405   0.9313555  0.72218379
+PC5 9.870802e-01 0.1357245 0.55304458 0.4402560   0.3371011  0.20514700
+PC6 9.994307e-01 0.6446713 0.35595387 0.5976319   0.5247353  0.64308606
+PC7 9.928907e-01 0.4713467 0.27360567 0.5320021   0.4561680  0.26751028</code></pre>
+<pre class="r"><code>PC_rsquareds</code></pre>
+<pre><code>         Species         Sex       Batch   PE_reads tags_per_BP
+PC1 9.937487e-01 0.001063486 0.002527747 0.36913936 0.082715030
+PC2 2.123294e-03 0.012104623 0.528109515 0.22934399 0.328843691
+PC3 3.961882e-03 0.079161470 0.054151272 0.18089261 0.267396647
+PC4 1.041708e-04 0.449366816 0.015845287 0.00103430 0.001342725
+PC5 4.748306e-05 0.330921761 0.061705395 0.10216537 0.153502492
+PC6 9.218845e-08 0.037770741 0.142837286 0.04917722 0.070605503
+PC7 1.437685e-05 0.089611103 0.194823498 0.06824714 0.095593912
+    inter_reads
+PC1 0.006877925
+PC2 0.477069591
+PC3 0.004204788
+PC4 0.022626868
+PC5 0.251794032
+PC6 0.038126629
+PC7 0.199300166</code></pre>
+<pre class="r"><code>#Once again, PC1 correlates strongly and significantly with species, and this time PC4 has non-significant moderate correlation with sex. PC2 has a stastically significant but fairly weak r squared wiht batch, and nothing else has a significant effect.
+
+###Heatmap clustering of data after conditioning upon discovery in 4 individuals (regardless of species). Would expect to see the same clustering, with perhaps higher correlation values due to conditioning upon discovery in 4 individuals.
+corheat4 &lt;- cor(data.4[,304:311], use=&quot;complete.obs&quot;, method=&quot;pearson&quot;) #Corheat for the full data set, and heatmap
+#colnames(corheat4) &lt;- c(&quot;A_HF&quot;, &quot;B_HM&quot;, &quot;C_CM&quot;, &quot;D_CF&quot;, &quot;E_HM&quot;, &quot;F_HF&quot;, &quot;G_CM&quot;, &quot;H_CF&quot;)
+colnames(corheat4) &lt;- c(&quot;HF1&quot;, &quot;HM1&quot;, &quot;CM1&quot;, &quot;CF1&quot;, &quot;HM2&quot;, &quot;HF2&quot;, &quot;CM2&quot;, &quot;CF2&quot;) #Better for presentation
+rownames(corheat4) &lt;- colnames(corheat4)
+
+#FIG1B
+heatmaply(corheat4, main=&quot;Pairwise Pearson Correlation Clustering @ 10kb | 4&quot;, k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))#, scale_fill_gradient_fun = ggplot2::scale_fill_gradient2(low = &quot;yellow&quot;, high = &quot;blue&quot;, midpoint = 0.5, limits = c(0, 1)))</code></pre>
+<div id="htmlwidget-0b512fae04c6da719799" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-0b512fae04c6da719799">{"x":{"data":[{"x":[4.625,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"y":[0.785701721253597,0.785701721253597,null,0.785701721253597,0.463357918963573,null,0.463357918963573,0.463357918963573,null,0.463357918963573,0.43605698231264,null,0.43605698231264,0.43605698231264,null,0.43605698231264,0.42863517329007,null,0.42863517329007,0.42863517329007,null,0.42863517329007,0,null,0.42863517329007,0.42863517329007,null,0.42863517329007,0,null,0.43605698231264,0.43605698231264,null,0.43605698231264,0,null,0.463357918963573,0.463357918963573,null,0.463357918963573,0],"text":["y: 0.7857017","y: 0.7857017",null,"y: 0.7857017","y: 0.7857017",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4633579","y: 0.4633579"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid,1)","legendgroup":"(#39BEB1,solid,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4.625,2.125,null,2.125,2.125,null,2.125,1,null,1,1,null,2.125,3.25,null,3.25,3.25,null,3.25,2.5,null,2.5,2.5,null,2.5,2,null,2,2,null,2.5,3,null,3,3,null,3.25,4,null,4,4],"y":[0.785701721253597,0.785701721253597,null,0.785701721253597,0.432195917034341,null,0.432195917034341,0.432195917034341,null,0.432195917034341,0,null,0.432195917034341,0.432195917034341,null,0.432195917034341,0.41317667692587,null,0.41317667692587,0.41317667692587,null,0.41317667692587,0.388881441090047,null,0.388881441090047,0.388881441090047,null,0.388881441090047,0,null,0.388881441090047,0.388881441090047,null,0.388881441090047,0,null,0.41317667692587,0.41317667692587,null,0.41317667692587,0],"text":["y: 0.7857017","y: 0.7857017",null,"y: 0.7857017","y: 0.7857017",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.4131767","y: 0.4131767"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid,1)","legendgroup":"(#E495A5,solid,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4.625,2.125,1,3.25,2.5,2,3,4,7.125,6.25,5.5,5,6,7,8],"y":[0.785701721253597,0.432195917034341,0,0.41317667692587,0.388881441090047,0,0,0,0.463357918963573,0.43605698231264,0.42863517329007,0,0,0,0],"text":["y: 0.7857017","y: 0.4321959","y: 0.0000000","y: 0.4131767","y: 0.3888814","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.4633579","y: 0.4360570","y: 0.4286352","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"type":"scatter","mode":"markers","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"xaxis":"x2","yaxis":"y","frame":null},{"x":[1,2,3,4,5,6,7,8],"y":[1,2,3,4,5,6,7,8],"z":[[1,0.379685516908789,0.391446336388182,0.361992873909541,0.0461251867498212,0.0155614272263319,0,0.00017012853667054],[0.379685516908789,1,0.425527364000444,0.389556408641003,0.0798689070508902,0.0292629274509691,0.0224690711017004,0.0179052496862342],[0.391446336388182,0.425527364000444,1,0.410996368446768,0.086321816358197,0.0379843472126727,0.0243148545167096,0.0247829525901117],[0.361992873909541,0.389556408641003,0.410996368446768,1,0.0710846787781944,0.033263880667018,0.0160220049006587,0.0208268898066415],[0.0461251867498212,0.0798689070508902,0.086321816358197,0.0710846787781944,1,0.369361180898482,0.362583753059596,0.345006834000355],[0.0155614272263319,0.0292629274509691,0.0379843472126727,0.033263880667018,0.369361180898482,1,0.355934297657991,0.335254462351322],[0,0.0224690711017004,0.0243148545167096,0.0160220049006587,0.362583753059596,0.355934297657991,1,0.31539523387547],[0.00017012853667054,0.0179052496862342,0.0247829525901117,0.0208268898066415,0.345006834000355,0.335254462351322,0.31539523387547,1]],"text":[["row: CF2<br>column: CF2<br>value: 1.0000","row: CF2<br>column: CM2<br>value: 0.7032","row: CF2<br>column: CM1<br>value: 0.7089","row: CF2<br>column: CF1<br>value: 0.6948","row: CF2<br>column: HM2<br>value: 0.5437","row: CF2<br>column: HM1<br>value: 0.5291","row: CF2<br>column: HF2<br>value: 0.5216","row: CF2<br>column: HF1<br>value: 0.5217"],["row: CM2<br>column: CF2<br>value: 0.7032","row: CM2<br>column: CM2<br>value: 1.0000","row: CM2<br>column: CM1<br>value: 0.7252","row: CM2<br>column: CF1<br>value: 0.7080","row: CM2<br>column: HM2<br>value: 0.5598","row: CM2<br>column: HM1<br>value: 0.5356","row: CM2<br>column: HF2<br>value: 0.5324","row: CM2<br>column: HF1<br>value: 0.5302"],["row: CM1<br>column: CF2<br>value: 0.7089","row: CM1<br>column: CM2<br>value: 0.7252","row: CM1<br>column: CM1<br>value: 1.0000","row: CM1<br>column: CF1<br>value: 0.7182","row: CM1<br>column: HM2<br>value: 0.5629","row: CM1<br>column: HM1<br>value: 0.5398","row: CM1<br>column: HF2<br>value: 0.5332","row: CM1<br>column: HF1<br>value: 0.5335"],["row: CF1<br>column: CF2<br>value: 0.6948","row: CF1<br>column: CM2<br>value: 0.7080","row: CF1<br>column: CM1<br>value: 0.7182","row: CF1<br>column: CF1<br>value: 1.0000","row: CF1<br>column: HM2<br>value: 0.5556","row: CF1<br>column: HM1<br>value: 0.5375","row: CF1<br>column: HF2<br>value: 0.5293","row: CF1<br>column: HF1<br>value: 0.5316"],["row: HM2<br>column: CF2<br>value: 0.5437","row: HM2<br>column: CM2<br>value: 0.5598","row: HM2<br>column: CM1<br>value: 0.5629","row: HM2<br>column: CF1<br>value: 0.5556","row: HM2<br>column: HM2<br>value: 1.0000","row: HM2<br>column: HM1<br>value: 0.6983","row: HM2<br>column: HF2<br>value: 0.6951","row: HM2<br>column: HF1<br>value: 0.6867"],["row: HM1<br>column: CF2<br>value: 0.5291","row: HM1<br>column: CM2<br>value: 0.5356","row: HM1<br>column: CM1<br>value: 0.5398","row: HM1<br>column: CF1<br>value: 0.5375","row: HM1<br>column: HM2<br>value: 0.6983","row: HM1<br>column: HM1<br>value: 1.0000","row: HM1<br>column: HF2<br>value: 0.6919","row: HM1<br>column: HF1<br>value: 0.6820"],["row: HF2<br>column: CF2<br>value: 0.5216","row: HF2<br>column: CM2<br>value: 0.5324","row: HF2<br>column: CM1<br>value: 0.5332","row: HF2<br>column: CF1<br>value: 0.5293","row: HF2<br>column: HM2<br>value: 0.6951","row: HF2<br>column: HM1<br>value: 0.6919","row: HF2<br>column: HF2<br>value: 1.0000","row: HF2<br>column: HF1<br>value: 0.6725"],["row: HF1<br>column: CF2<br>value: 0.5217","row: HF1<br>column: CM2<br>value: 0.5302","row: HF1<br>column: CM1<br>value: 0.5335","row: HF1<br>column: CF1<br>value: 0.5316","row: HF1<br>column: HM2<br>value: 0.6867","row: HF1<br>column: HM1<br>value: 0.6820","row: HF1<br>column: HF2<br>value: 0.6725","row: HF1<br>column: HF1<br>value: 1.0000"]],"colorscale":[[0,"#440154"],[0.00017012853667054,"#440154"],[0.0155614272263319,"#46075A"],[0.0160220049006587,"#46075A"],[0.0179052496862342,"#46085B"],[0.0208268898066415,"#46095C"],[0.0224690711017004,"#46095D"],[0.0243148545167096,"#460A5D"],[0.0247829525901117,"#460A5D"],[0.0292629274509691,"#460C5F"],[0.033263880667018,"#470D60"],[0.0379843472126727,"#470F62"],[0.0461251867498212,"#471365"],[0.0710846787781944,"#481B6D"],[0.0798689070508902,"#481E6F"],[0.086321816358197,"#482071"],[0.31539523387547,"#33638D"],[0.335254462351322,"#31688E"],[0.345006834000355,"#2F6B8E"],[0.355934297657991,"#2E6E8E"],[0.361992873909541,"#2E6F8E"],[0.362583753059596,"#2E6F8E"],[0.369361180898482,"#2D718E"],[0.379685516908789,"#2C738E"],[0.389556408641003,"#2B758E"],[0.391446336388182,"#2A768E"],[0.410996368446768,"#297B8E"],[0.425527364000444,"#277F8E"],[1,"#FDE725"]],"type":"heatmap","showscale":false,"autocolorscale":false,"showlegend":false,"xaxis":"x","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1],"y":[1],"name":"99_18c44904001a50b16317fbd71d23c317","type":"scatter","mode":"markers","opacity":0,"hoverinfo":"none","showlegend":false,"marker":{"color":[0,1],"colorscale":[[0,"#440154"],[0.0526315789473683,"#481567"],[0.105263157894737,"#482677"],[0.157894736842105,"#453781"],[0.210526315789474,"#3F4788"],[0.263157894736842,"#39558C"],[0.315789473684211,"#32648E"],[0.368421052631579,"#2D718E"],[0.421052631578947,"#287D8E"],[0.473684210526316,"#238A8D"],[0.526315789473684,"#1F968B"],[0.578947368421053,"#20A386"],[0.631578947368421,"#29AF7F"],[0.684210526315789,"#3CBB75"],[0.736842105263158,"#56C667"],[0.789473684210526,"#74D055"],[0.842105263157895,"#94D840"],[0.894736842105263,"#B8DE29"],[0.947368421052632,"#DCE318"],[1,"#FDE725"]],"colorbar":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"thickness":23.04,"title":null,"titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"tickmode":"array","ticktext":["0.6","0.7","0.8","0.9","1.0"],"tickvals":[0.163859784000586,0.372894838000439,0.581929892000293,0.790964946000147,1],"tickfont":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"ticklen":2,"len":0.5}},"xaxis":"x","yaxis":"y2","frame":null},{"x":[0.785701721253597,0.785701721253597,null,0.785701721253597,0.463357918963573,null,0.463357918963573,0.463357918963573,null,0.463357918963573,0.43605698231264,null,0.43605698231264,0.43605698231264,null,0.43605698231264,0.42863517329007,null,0.42863517329007,0.42863517329007,null,0.42863517329007,0,null,0.42863517329007,0.42863517329007,null,0.42863517329007,0,null,0.43605698231264,0.43605698231264,null,0.43605698231264,0,null,0.463357918963573,0.463357918963573,null,0.463357918963573,0],"y":[4.625,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"text":["y: 0.7857017","y: 0.7857017",null,"y: 0.7857017","y: 0.7857017",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4633579","y: 0.4633579"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid,1)","legendgroup":"(#39BEB1,solid,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[0.785701721253597,0.785701721253597,null,0.785701721253597,0.432195917034341,null,0.432195917034341,0.432195917034341,null,0.432195917034341,0,null,0.432195917034341,0.432195917034341,null,0.432195917034341,0.41317667692587,null,0.41317667692587,0.41317667692587,null,0.41317667692587,0.388881441090047,null,0.388881441090047,0.388881441090047,null,0.388881441090047,0,null,0.388881441090047,0.388881441090047,null,0.388881441090047,0,null,0.41317667692587,0.41317667692587,null,0.41317667692587,0],"y":[4.625,2.125,null,2.125,2.125,null,2.125,1,null,1,1,null,2.125,3.25,null,3.25,3.25,null,3.25,2.5,null,2.5,2.5,null,2.5,2,null,2,2,null,2.5,3,null,3,3,null,3.25,4,null,4,4],"text":["y: 0.7857017","y: 0.7857017",null,"y: 0.7857017","y: 0.7857017",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.4131767","y: 0.4131767"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid,1)","legendgroup":"(#E495A5,solid,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[0.785701721253597,0.432195917034341,0,0.41317667692587,0.388881441090047,0,0,0,0.463357918963573,0.43605698231264,0.42863517329007,0,0,0,0],"y":[4.625,2.125,1,3.25,2.5,2,3,4,7.125,6.25,5.5,5,6,7,8],"text":["y: 0.7857017","y: 0.4321959","y: 0.0000000","y: 0.4131767","y: 0.3888814","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.4633579","y: 0.4360570","y: 0.4286352","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null}],"layout":{"xaxis":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["CF2","CM2","CM1","CF1","HM2","HM1","HF2","HF1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["CF2","CM2","CM1","CF1","HM2","HM1","HF2","HF1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-45,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y2","title":"","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"xaxis2":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"y2","type":"linear","autorange":false,"range":[0,0.785701721253597],"tickmode":"array","ticktext":["0.0","0.2","0.4","0.6"],"tickvals":[0,0.2,0.4,0.6],"categoryorder":"array","categoryarray":["0.0","0.2","0.4","0.6"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":"","titlefont":{"color":null,"family":null,"size":0},"hoverformat":".2f"},"yaxis2":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["CF2","CM2","CM1","CF1","HM2","HM1","HF2","HF1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["CF2","CM2","CM1","CF1","HM2","HM1","HF2","HF1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":"","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"yaxis":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"x","type":"linear","autorange":false,"range":[0,0.785701721253597],"tickmode":"array","ticktext":["0.0","0.2","0.4","0.6"],"tickvals":[0,0.2,0.4,0.6],"categoryorder":"array","categoryarray":["0.0","0.2","0.4","0.6"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":"","titlefont":{"color":null,"family":null,"size":0},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0.8,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0,"y1":0.8},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.8,"x1":1,"y0":0,"y1":0.8}],"margin":{"t":30,"r":30,"b":50,"l":50},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":1,"yanchor":"top"},"hovermode":"closest","barmode":"relative","paper_bgcolor":"rgba(255,255,255,1)","title":"Pairwise Pearson Correlation Clustering @ 10kb | 4"},"attrs":{"126006f31a06b":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"12600231b09d5":{"colour":{},"shape":{},"size":{},"x":{},"y":{}},"12600395aa61e":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20]},"126005fec18cb":{"fill":{},"text":{},"x":{},"y":{},"type":"heatmap"},"126007f6b3d82":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"1260059936328":{"colour":{},"shape":{},"size":{},"x":{},"y":{}}},"source":"A","config":{"doubleClick":"reset","modeBarButtonsToAdd":[],"cloud":false,"displaylogo":false,"modeBarButtonsToRemove":["sendDataToCloud","select2d","lasso2d","autoScale2d","hoverClosestCartesian","hoverCompareCartesian","sendDataToCloud"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>#Indeed, we can again see that all the humans cluster together, as do all the chimps. This is very good, and given this new condition, we also see higher within-species correlations for the significant hits, in the 0.6-0.7 range (was much closer to 0.3 before).
+
+#Here I just make a fake PCA plot with some words on it so I can use them as labels on the heatmaply plot (for consistency)
+ggplot(data=as.data.frame(pca4$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title=&quot;Pairwise Pearson Correlation Clustering @ 10kb&quot;) + guides(color=guide_legend(order=1, title=&quot;Pearson Correlation&quot;), size=FALSE, shape=guide_legend(order=2, title=&quot;Species&quot;)) + xlab(paste(&quot;PC1 (&quot;, signif(100*summary(pca4)$importance[2,1],2), &quot;% of variance)&quot;)) + ylab((paste(&quot;PC2 (&quot;, signif(100*summary(pca4)$importance[2,2],2), &quot;% of variance)&quot;))) + labs(color=&quot;Batch&quot;, shape=&quot;Species&quot;) + scale_shape_manual(labels=c(&quot;Chimp&quot;, &quot;Human&quot;), values=c(16, 17))</code></pre>
+<p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Repeat all this for data conditioned upon a fixed significant Hi-C contact within a species:
+
+corheat4 &lt;- cor(data.4.species[,304:311], use=&quot;complete.obs&quot;, method=&quot;pearson&quot;) #Corheat for the full data set, and heatmap
+#colnames(corheat4) &lt;- c(&quot;A_HF&quot;, &quot;B_HM&quot;, &quot;C_CM&quot;, &quot;D_CF&quot;, &quot;E_HM&quot;, &quot;F_HF&quot;, &quot;G_CM&quot;, &quot;H_CF&quot;)
+colnames(corheat4) &lt;- c(&quot;HF1&quot;, &quot;HM1&quot;, &quot;CM1&quot;, &quot;CF1&quot;, &quot;HM2&quot;, &quot;HF2&quot;, &quot;CM2&quot;, &quot;CF2&quot;) #Better for presentation
+rownames(corheat4) &lt;- colnames(corheat4)
+
+heatmaply(corheat4, main=&quot;Pairwise Pearson Correlation Clustering @ 10kb | 4 Species&quot;, k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))#, scale_fill_gradient_fun = ggplot2::scale_fill_gradient2(low = &quot;yellow&quot;, high = &quot;blue&quot;, midpoint = 0.5, limits = c(0, 1)))</code></pre>
+<div id="htmlwidget-fe3bf943cf6926b1f3d8" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-fe3bf943cf6926b1f3d8">{"x":{"data":[{"x":[5,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"y":[1.02853938884334,1.02853938884334,null,1.02853938884334,0.224092745244301,null,0.224092745244301,0.224092745244301,null,0.224092745244301,0.212191752406041,null,0.212191752406041,0.212191752406041,null,0.212191752406041,0.209620450344977,null,0.209620450344977,0.209620450344977,null,0.209620450344977,0,null,0.209620450344977,0.209620450344977,null,0.209620450344977,0,null,0.212191752406041,0.212191752406041,null,0.212191752406041,0,null,0.224092745244301,0.224092745244301,null,0.224092745244301,0],"text":["y: 1.0285394","y: 1.0285394",null,"y: 1.0285394","y: 1.0285394",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2240927","y: 0.2240927"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid,1)","legendgroup":"(#39BEB1,solid,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[5,2.875,null,2.875,2.875,null,2.875,1.75,null,1.75,1.75,null,1.75,1,null,1,1,null,1.75,2.5,null,2.5,2.5,null,2.5,2,null,2,2,null,2.5,3,null,3,3,null,2.875,4,null,4,4],"y":[1.02853938884334,1.02853938884334,null,1.02853938884334,0.182277118611981,null,0.182277118611981,0.182277118611981,null,0.182277118611981,0.179121023424388,null,0.179121023424388,0.179121023424388,null,0.179121023424388,0,null,0.179121023424388,0.179121023424388,null,0.179121023424388,0.168562190365173,null,0.168562190365173,0.168562190365173,null,0.168562190365173,0,null,0.168562190365173,0.168562190365173,null,0.168562190365173,0,null,0.182277118611981,0.182277118611981,null,0.182277118611981,0],"text":["y: 1.0285394","y: 1.0285394",null,"y: 1.0285394","y: 1.0285394",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1822771","y: 0.1822771"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid,1)","legendgroup":"(#E495A5,solid,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[5,2.875,1.75,1,2.5,2,3,4,7.125,6.25,5.5,5,6,7,8],"y":[1.02853938884334,0.182277118611981,0.179121023424388,0,0.168562190365173,0,0,0,0.224092745244301,0.212191752406041,0.209620450344977,0,0,0,0],"text":["y: 1.0285394","y: 0.1822771","y: 0.1791210","y: 0.0000000","y: 0.1685622","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.2240927","y: 0.2121918","y: 0.2096205","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"type":"scatter","mode":"markers","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"xaxis":"x2","yaxis":"y","frame":null},{"x":[1,2,3,4,5,6,7,8],"y":[1,2,3,4,5,6,7,8],"z":[[1,0.729279252145501,0.738671732749689,0.724826558481183,0.0444141504821762,0.016420753626825,0,0.0195158196062238],[0.729279252145501,1,0.745349201890105,0.727201668376744,0.0521116054292708,0.0196270431744655,0.00494832513773684,0.022778287765868],[0.738671732749689,0.745349201890105,1,0.737341858688327,0.0579376533794282,0.0231681054670655,0.00729974451247697,0.0255542515811165],[0.724826558481183,0.727201668376744,0.737341858688327,1,0.0549034808584306,0.0289029453713994,0.00980415648313302,0.0314279470042828],[0.0444141504821762,0.0521116054292708,0.0579376533794282,0.0549034808584306,1,0.685985959176462,0.68630086516161,0.679253585469782],[0.016420753626825,0.0196270431744655,0.0231681054670655,0.0289029453713994,0.685985959176462,1,0.681385791211633,0.678434111481512],[0,0.00494832513773684,0.00729974451247697,0.00980415648313302,0.68630086516161,0.681385791211633,1,0.662282129066681],[0.0195158196062238,0.022778287765868,0.0255542515811165,0.0314279470042828,0.679253585469782,0.678434111481512,0.662282129066681,1]],"text":[["row: CF2<br>column: CF2<br>value: 1.0000","row: CF2<br>column: CM2<br>value: 0.8734","row: CF2<br>column: CM1<br>value: 0.8778","row: CF2<br>column: CF1<br>value: 0.8713","row: CF2<br>column: HM2<br>value: 0.5532","row: CF2<br>column: HM1<br>value: 0.5401","row: CF2<br>column: HF2<br>value: 0.5324","row: CF2<br>column: HF1<br>value: 0.5415"],["row: CM2<br>column: CF2<br>value: 0.8734","row: CM2<br>column: CM2<br>value: 1.0000","row: CM2<br>column: CM1<br>value: 0.8809","row: CM2<br>column: CF1<br>value: 0.8724","row: CM2<br>column: HM2<br>value: 0.5568","row: CM2<br>column: HM1<br>value: 0.5416","row: CM2<br>column: HF2<br>value: 0.5347","row: CM2<br>column: HF1<br>value: 0.5430"],["row: CM1<br>column: CF2<br>value: 0.8778","row: CM1<br>column: CM2<br>value: 0.8809","row: CM1<br>column: CM1<br>value: 1.0000","row: CM1<br>column: CF1<br>value: 0.8772","row: CM1<br>column: HM2<br>value: 0.5595","row: CM1<br>column: HM1<br>value: 0.5432","row: CM1<br>column: HF2<br>value: 0.5358","row: CM1<br>column: HF1<br>value: 0.5443"],["row: CF1<br>column: CF2<br>value: 0.8713","row: CF1<br>column: CM2<br>value: 0.8724","row: CF1<br>column: CM1<br>value: 0.8772","row: CF1<br>column: CF1<br>value: 1.0000","row: CF1<br>column: HM2<br>value: 0.5581","row: CF1<br>column: HM1<br>value: 0.5459","row: CF1<br>column: HF2<br>value: 0.5370","row: CF1<br>column: HF1<br>value: 0.5471"],["row: HM2<br>column: CF2<br>value: 0.5532","row: HM2<br>column: CM2<br>value: 0.5568","row: HM2<br>column: CM1<br>value: 0.5595","row: HM2<br>column: CF1<br>value: 0.5581","row: HM2<br>column: HM2<br>value: 1.0000","row: HM2<br>column: HM1<br>value: 0.8532","row: HM2<br>column: HF2<br>value: 0.8533","row: HM2<br>column: HF1<br>value: 0.8500"],["row: HM1<br>column: CF2<br>value: 0.5401","row: HM1<br>column: CM2<br>value: 0.5416","row: HM1<br>column: CM1<br>value: 0.5432","row: HM1<br>column: CF1<br>value: 0.5459","row: HM1<br>column: HM2<br>value: 0.8532","row: HM1<br>column: HM1<br>value: 1.0000","row: HM1<br>column: HF2<br>value: 0.8510","row: HM1<br>column: HF1<br>value: 0.8496"],["row: HF2<br>column: CF2<br>value: 0.5324","row: HF2<br>column: CM2<br>value: 0.5347","row: HF2<br>column: CM1<br>value: 0.5358","row: HF2<br>column: CF1<br>value: 0.5370","row: HF2<br>column: HM2<br>value: 0.8533","row: HF2<br>column: HM1<br>value: 0.8510","row: HF2<br>column: HF2<br>value: 1.0000","row: HF2<br>column: HF1<br>value: 0.8421"],["row: HF1<br>column: CF2<br>value: 0.5415","row: HF1<br>column: CM2<br>value: 0.5430","row: HF1<br>column: CM1<br>value: 0.5443","row: HF1<br>column: CF1<br>value: 0.5471","row: HF1<br>column: HM2<br>value: 0.8500","row: HF1<br>column: HM1<br>value: 0.8496","row: HF1<br>column: HF2<br>value: 0.8421","row: HF1<br>column: HF1<br>value: 1.0000"]],"colorscale":[[0,"#440154"],[0.00494832513773684,"#440356"],[0.00729974451247697,"#450457"],[0.00980415648313302,"#450458"],[0.016420753626825,"#46075A"],[0.0195158196062238,"#46085C"],[0.0196270431744655,"#46085C"],[0.022778287765868,"#460A5D"],[0.0231681054670655,"#460A5D"],[0.0255542515811165,"#460B5E"],[0.0289029453713994,"#460C5F"],[0.0314279470042828,"#470D60"],[0.0444141504821762,"#471264"],[0.0521116054292708,"#481567"],[0.0549034808584306,"#481668"],[0.0579376533794282,"#481769"],[0.662282129066681,"#34B679"],[0.678434111481512,"#3ABA76"],[0.679253585469782,"#3ABA76"],[0.681385791211633,"#3BBB75"],[0.685985959176462,"#3DBC74"],[0.68630086516161,"#3DBC74"],[0.724826558481183,"#50C46A"],[0.727201668376744,"#51C46A"],[0.729279252145501,"#52C569"],[0.737341858688327,"#56C667"],[0.738671732749689,"#57C666"],[0.745349201890105,"#5AC864"],[1,"#FDE725"]],"type":"heatmap","showscale":false,"autocolorscale":false,"showlegend":false,"xaxis":"x","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1],"y":[1],"name":"99_f5b287832b2aac27024542a2632693c6","type":"scatter","mode":"markers","opacity":0,"hoverinfo":"none","showlegend":false,"marker":{"color":[0,1],"colorscale":[[0,"#440154"],[0.0526315789473684,"#481567"],[0.105263157894737,"#482677"],[0.157894736842105,"#453781"],[0.210526315789474,"#3F4788"],[0.263157894736842,"#39558C"],[0.315789473684211,"#32648E"],[0.368421052631579,"#2D718E"],[0.421052631578947,"#287D8E"],[0.473684210526316,"#238A8D"],[0.526315789473684,"#1F968B"],[0.578947368421053,"#20A386"],[0.631578947368421,"#29AF7F"],[0.684210526315789,"#3CBB75"],[0.736842105263158,"#56C667"],[0.789473684210526,"#74D055"],[0.842105263157895,"#94D840"],[0.894736842105263,"#B8DE29"],[0.947368421052632,"#DCE318"],[1,"#FDE725"]],"colorbar":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"thickness":23.04,"title":null,"titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"tickmode":"array","ticktext":["0.6","0.7","0.8","0.9","1.0"],"tickvals":[0.144580184001479,0.358435138001109,0.57229009200074,0.78614504600037,1],"tickfont":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"ticklen":2,"len":0.5}},"xaxis":"x","yaxis":"y2","frame":null},{"x":[1.02853938884334,1.02853938884334,null,1.02853938884334,0.224092745244301,null,0.224092745244301,0.224092745244301,null,0.224092745244301,0.212191752406041,null,0.212191752406041,0.212191752406041,null,0.212191752406041,0.209620450344977,null,0.209620450344977,0.209620450344977,null,0.209620450344977,0,null,0.209620450344977,0.209620450344977,null,0.209620450344977,0,null,0.212191752406041,0.212191752406041,null,0.212191752406041,0,null,0.224092745244301,0.224092745244301,null,0.224092745244301,0],"y":[5,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"text":["y: 1.0285394","y: 1.0285394",null,"y: 1.0285394","y: 1.0285394",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2240927","y: 0.2240927"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid,1)","legendgroup":"(#39BEB1,solid,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1.02853938884334,1.02853938884334,null,1.02853938884334,0.182277118611981,null,0.182277118611981,0.182277118611981,null,0.182277118611981,0.179121023424388,null,0.179121023424388,0.179121023424388,null,0.179121023424388,0,null,0.179121023424388,0.179121023424388,null,0.179121023424388,0.168562190365173,null,0.168562190365173,0.168562190365173,null,0.168562190365173,0,null,0.168562190365173,0.168562190365173,null,0.168562190365173,0,null,0.182277118611981,0.182277118611981,null,0.182277118611981,0],"y":[5,2.875,null,2.875,2.875,null,2.875,1.75,null,1.75,1.75,null,1.75,1,null,1,1,null,1.75,2.5,null,2.5,2.5,null,2.5,2,null,2,2,null,2.5,3,null,3,3,null,2.875,4,null,4,4],"text":["y: 1.0285394","y: 1.0285394",null,"y: 1.0285394","y: 1.0285394",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1822771","y: 0.1822771"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid,1)","legendgroup":"(#E495A5,solid,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1.02853938884334,0.182277118611981,0.179121023424388,0,0.168562190365173,0,0,0,0.224092745244301,0.212191752406041,0.209620450344977,0,0,0,0],"y":[5,2.875,1.75,1,2.5,2,3,4,7.125,6.25,5.5,5,6,7,8],"text":["y: 1.0285394","y: 0.1822771","y: 0.1791210","y: 0.0000000","y: 0.1685622","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.2240927","y: 0.2121918","y: 0.2096205","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null}],"layout":{"xaxis":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["CF2","CM2","CM1","CF1","HM2","HM1","HF2","HF1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["CF2","CM2","CM1","CF1","HM2","HM1","HF2","HF1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-45,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y2","title":"","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"xaxis2":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"y2","type":"linear","autorange":false,"range":[0,1.02853938884334],"tickmode":"array","ticktext":["0.00","0.25","0.50","0.75","1.00"],"tickvals":[0,0.25,0.5,0.75,1],"categoryorder":"array","categoryarray":["0.00","0.25","0.50","0.75","1.00"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":"","titlefont":{"color":null,"family":null,"size":0},"hoverformat":".2f"},"yaxis2":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["CF2","CM2","CM1","CF1","HM2","HM1","HF2","HF1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["CF2","CM2","CM1","CF1","HM2","HM1","HF2","HF1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":"","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"yaxis":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"x","type":"linear","autorange":false,"range":[0,1.02853938884334],"tickmode":"array","ticktext":["0.00","0.25","0.50","0.75","1.00"],"tickvals":[0,0.25,0.5,0.75,1],"categoryorder":"array","categoryarray":["0.00","0.25","0.50","0.75","1.00"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":"","titlefont":{"color":null,"family":null,"size":0},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0.8,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0,"y1":0.8},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.8,"x1":1,"y0":0,"y1":0.8}],"margin":{"t":30,"r":30,"b":50,"l":50},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":1,"yanchor":"top"},"hovermode":"closest","barmode":"relative","paper_bgcolor":"rgba(255,255,255,1)","title":"Pairwise Pearson Correlation Clustering @ 10kb | 4 Species"},"attrs":{"126007dcfdae3":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"12600592bad9c":{"colour":{},"shape":{},"size":{},"x":{},"y":{}},"1260043967ba5":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20]},"126006b8d6807":{"fill":{},"text":{},"x":{},"y":{},"type":"heatmap"},"126001a5a9877":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"1260031cfba25":{"colour":{},"shape":{},"size":{},"x":{},"y":{}}},"source":"A","config":{"doubleClick":"reset","modeBarButtonsToAdd":[],"cloud":false,"displaylogo":false,"modeBarButtonsToRemove":["sendDataToCloud","select2d","lasso2d","autoScale2d","hoverClosestCartesian","hoverCompareCartesian","sendDataToCloud"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>#Indeed, we can again see that all the humans cluster together, as do all the chimps. This is very good, and given this new condition, we also see higher within-species correlations for the significant hits, in the 0.6-0.7 range (was much closer to 0.3 before).
+
+#Here I just make a fake PCA plot with some words on it so I can use them as labels on the heatmaply plot (for consistency)
+ggplot(data=as.data.frame(pca4$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title=&quot;Pairwise Pearson Correlation Clustering @ 10kb&quot;) + guides(color=guide_legend(order=1, title=&quot;Pearson Correlation&quot;), size=FALSE, shape=guide_legend(order=2, title=&quot;Species&quot;)) + xlab(paste(&quot;PC1 (&quot;, signif(100*summary(pca4)$importance[2,1],2), &quot;% of variance)&quot;)) + ylab((paste(&quot;PC2 (&quot;, signif(100*summary(pca4)$importance[2,2],2), &quot;% of variance)&quot;))) + labs(color=&quot;Batch&quot;, shape=&quot;Species&quot;) + scale_shape_manual(labels=c(&quot;Chimp&quot;, &quot;Human&quot;), values=c(16, 17))</code></pre>
+<p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>###This initial QC suggest quality of the data is high, and has given us some information on how to filter the data before further intrepretation. When working locally, can be helpful to write out both the full dataset and the one conditioned upon 4 individuals, in order to do sanity checks on both later on. Note that a call of identical on something fread in after fwriting it out will still return FALSE with this as floating point can&#39;t represent decimals exactly (see https://stackoverflow.com/questions/9508518/why-are-these-numbers-not-equal or https://cran.r-project.org/doc/FAQ/R-FAQ.html#Why-doesn_0027t-R-think-these-numbers-are-equal_003f):
+fwrite(full.data, &quot;~/Desktop/Hi-C/full.data.10.2018&quot;, quote = TRUE, sep = &quot;\t&quot;, row.names = FALSE, col.names = TRUE, na=&quot;NA&quot;, showProgress = FALSE)
+fwrite(data.4, &quot;~/Desktop/Hi-C/data.4.10.2018&quot;, quote=FALSE, sep=&quot;\t&quot;, row.names=FALSE, col.names=TRUE, na=&quot;NA&quot;, showProgress = FALSE)
+fwrite(data.4.species, &quot;~/Desktop/Hi-C/data.4.fixed.3.2019&quot;, quote=FALSE, sep=&quot;\t&quot;, row.names=FALSE, col.names=TRUE, na=&quot;NA&quot;, showProgress = FALSE)</code></pre>
+</div>
+<div id="here-i-briefly-check-on-some-specific-homer-qc-elements" class="section level1">
+<h1>Here, I briefly check on some specific homer QC elements:</h1>
+<pre class="r"><code>#Read in pre-prepped tables of this information.
+rand.frag &lt;- fread(&quot;~/Desktop/Hi-C/homer_QCs/petag.Local.ALL.distn&quot;, header=TRUE, stringsAsFactors = FALSE, data.table=FALSE)
+dist.distn &lt;- fread(&quot;~/Desktop/Hi-C/homer_QCs/petag.Freq.ALL.distn&quot;, header=TRUE, stringsAsFactors = FALSE, data.table=FALSE)
+
+#Create a huge long-form data frame of the same and opposite strand counts from each individual to place in a long-form dataframe for ggplot2 with the local distances and sample identities.
+myfrags &lt;- rbind(rand.frag[,2:3], rand.frag[,4:5], rand.frag[,6:7], rand.frag[,8:9], rand.frag[,10:11], rand.frag[,12:13], rand.frag[,14:15], rand.frag[,16:17])
+
+fragdf &lt;- data.frame(local_dist=rand.frag[,1], same=myfrags[,1], opposite=myfrags[,2], ID=c(rep(&quot;A_H&quot;, 20000), rep(&quot;B_H&quot;, 20000), rep(&quot;C_C&quot;, 20000), rep(&quot;D_C&quot;, 20000), rep(&quot;E_H&quot;, 20000), rep(&quot;F_H&quot;, 20000), rep(&quot;G_C&quot;, 20000), rep(&quot;H_C&quot;, 20000)))
+
+ggplot(data=fragdf, aes(x=local_dist, group=ID)) + geom_line(aes(y=same, color=ID)) + ggtitle(&quot;Relationship b/t 5&#39; ends of paired reads, same strand&quot;) + xlab(&quot;Local Distance from 5&#39; of 1st read&quot;) + ylab(&quot;Counts per bp&quot;)</code></pre>
+<p><img src="figure/initial_QC.Rmd/HOMER-specific%20QC%20Metrics-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=fragdf, aes(x=local_dist, group=ID)) + geom_line(aes(y=opposite, color=ID)) + ggtitle(&quot;Relationship b/t 5&#39; ends of paired reads, opposite strand&quot;) + xlab(&quot;Local Distance from 5&#39; of 1st read&quot;) + ylab(&quot;Counts per bp&quot;)</code></pre>
+<p><img src="figure/initial_QC.Rmd/HOMER-specific%20QC%20Metrics-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Critically, there appears to be no clear separation between species here. If there is any effect, it would appear to be that of batch, but even this effect appears minor, and would likely be more related to total sequencing reads (batch 1 had the additional pooled lane) than to actual library prep differences.
+
+#Rearrange data on fraction of reads from each library falling within a certain distance of one another so that it can be plotted for all individuals simultaneously in ggplot2.
+dist.distn$`Distance between PE tags`[300001] &lt;- 300000000
+dist.distn$binID &lt;- c(rep(seq(0, 299999000, 10000), each=10), 300000000)
+colnames(dist.distn) &lt;- c(&quot;distance&quot;, &quot;A_H&quot;, &quot;B_H&quot;, &quot;C_C&quot;, &quot;D_C&quot;, &quot;E_H&quot;, &quot;F_H&quot;, &quot;G_C&quot;, &quot;H_C&quot;, &quot;binID&quot;)
+
+#Group by to lump 10k together at a time.
+group_by(dist.distn, binID) %&gt;% summarise(A_H=sum(A_H), B_H=sum(B_H), C_C=sum(C_C), D_C=sum(D_C), E_H=sum(E_H), F_H=sum(F_H), G_C=sum(G_C), H_C=sum(H_C)) -&gt; mydist
+
+#Prepare long-form df of this information for plotting with ggplot.
+distdf &lt;- data.frame(dist=rep(mydist$binID, 8), fraction=c(mydist$A_H, mydist$B_H, mydist$C_C, mydist$D_C, mydist$E_H, mydist$F_H, mydist$G_C, mydist$H_C), ID=c(rep(&quot;A-21792&quot;, 30001), rep(&quot;B-28126&quot;, 30001), rep(&quot;C-3649&quot;, 30001), rep(&quot;D-40300&quot;, 30001), rep(&quot;E-28815&quot;, 30001), rep(&quot;F-28834&quot;, 30001), rep(&quot;G-3624&quot;, 30001), rep(&quot;H-3651&quot;, 30001)), species=c(rep(&quot;Human&quot;, 60002), rep(&quot;Chimpanzee&quot;, 60002), rep(&quot;Human&quot;, 60002), rep(&quot;Chimpanzee&quot;, 60002)))
+
+#Now, plot out on several different distance scales to see if there is any strong species effect.
+ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 50000)) + xlab(&quot;Distance Between Mates&quot;) + ylab(&quot;Fraction of Hi-C PE reads&quot;) + ggtitle(&quot;Hi-C Pair Distance Distributions&quot;) #FIGS8B</code></pre>
+<p><img src="figure/initial_QC.Rmd/HOMER-specific%20QC%20Metrics-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 100000)) + xlab(&quot;Distance between mates&quot;) + ylab(&quot;Fraction of Hi-C PE reads&quot;) + ggtitle(&quot;Hi-C Pair Distance Distributions&quot;)</code></pre>
+<p><img src="figure/initial_QC.Rmd/HOMER-specific%20QC%20Metrics-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 500000)) + xlab(&quot;Distance Between mates&quot;) + ylab(&quot;Fraction of Hi-C PE reads&quot;) + ggtitle(&quot;Hi-C Pair Distance Distributions&quot;) #FIGS8A</code></pre>
+<p><img src="figure/initial_QC.Rmd/HOMER-specific%20QC%20Metrics-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Once again, there appears to be no clear separation between species here. There doesn&#39;t even appear to be a batch effect!</code></pre>
+<br> <br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.4.0 (2017-04-21)
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+Running under: OS X El Capitan 10.11.6
+
+Matrix products: default
+BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] compiler  stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] forcats_0.4.0      purrr_0.3.1        readr_1.3.1       
+ [4] tibble_2.0.1       tidyverse_1.2.1    edgeR_3.20.9      
+ [7] RColorBrewer_1.1-2 heatmaply_0.15.2   viridis_0.5.1     
+[10] viridisLite_0.3.0  stringr_1.4.0      gplots_3.0.1.1    
+[13] Hmisc_4.2-0        Formula_1.2-3      survival_2.43-3   
+[16] lattice_0.20-38    dplyr_0.8.0.1      plotly_4.8.0      
+[19] cowplot_0.9.4      ggplot2_3.1.0      reshape2_1.4.3    
+[22] data.table_1.12.0  tidyr_0.8.3        plyr_1.8.4        
+[25] limma_3.34.9      
+
+loaded via a namespace (and not attached):
+ [1] colorspace_1.4-0    class_7.3-15        modeltools_0.2-22  
+ [4] mclust_5.4.2        rprojroot_1.3-2     htmlTable_1.13.1   
+ [7] base64enc_0.1-3     fs_1.2.6            rstudioapi_0.9.0   
+[10] flexmix_2.3-15      mvtnorm_1.0-8       lubridate_1.7.4    
+[13] xml2_1.2.0          codetools_0.2-16    splines_3.4.0      
+[16] robustbase_0.92-8   knitr_1.22          jsonlite_1.6       
+[19] workflowr_1.2.0     broom_0.5.1         cluster_2.0.7-1    
+[22] kernlab_0.9-27      shiny_1.2.0         httr_1.4.0         
+[25] backports_1.1.3     assertthat_0.2.0    Matrix_1.2-15      
+[28] lazyeval_0.2.1      cli_1.0.1           later_0.8.0        
+[31] acepack_1.4.1       htmltools_0.3.6     tools_3.4.0        
+[34] gtable_0.2.0        glue_1.3.0          Rcpp_1.0.0         
+[37] cellranger_1.1.0    trimcluster_0.1-2.1 gdata_2.18.0       
+[40] nlme_3.1-137        iterators_1.0.10    fpc_2.1-11.1       
+[43] crosstalk_1.0.0     xfun_0.5            rvest_0.3.2        
+[46] mime_0.6            gtools_3.8.1        dendextend_1.9.0   
+[49] DEoptimR_1.0-8      MASS_7.3-51.1       scales_1.0.0       
+[52] TSP_1.1-6           hms_0.4.2           promises_1.0.1     
+[55] yaml_2.2.0          gridExtra_2.3       rpart_4.1-13       
+[58] latticeExtra_0.6-28 stringi_1.3.1       gclus_1.3.2        
+[61] foreach_1.4.4       checkmate_1.9.1     seriation_1.2-3    
+[64] caTools_1.17.1.2    rlang_0.3.1         pkgconfig_2.0.2    
+[67] prabclus_2.2-7      bitops_1.0-6        evaluate_0.13      
+[70] htmlwidgets_1.3     labeling_0.3        tidyselect_0.2.5   
+[73] magrittr_1.5        R6_2.4.0            generics_0.0.2     
+[76] pillar_1.3.1        haven_2.1.0         whisker_0.3-2      
+[79] foreign_0.8-71      withr_2.1.2         nnet_7.3-12        
+[82] modelr_0.1.4        crayon_1.3.4        KernSmooth_2.23-15 
+[85] rmarkdown_1.11      locfit_1.5-9.1      grid_3.4.0         
+[88] readxl_1.3.0        git2r_0.24.0        digest_0.6.18      
+[91] diptest_0.75-7      webshot_0.5.1       xtable_1.8-3       
+[94] httpuv_1.4.5.1      stats4_3.4.0        munsell_0.5.0      
+[97] registry_0.5-1     </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
