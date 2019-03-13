@@ -1,0 +1,172 @@
+---
+title: "Linear Modeling to Assess Differential Contacts (DC) Across Species"
+author: "Ittai Eres"
+date: "2019-03-12"
+output: workflowr::wflow_html
+---
+First, load necessary libraries: limma, plyr, tidyr, data.table, reshape2, cowplot, plotly, dplyr, Hmisc, gplots, stringr, heatmaply, RColorBrewer, edgeR, tidyverse, and compiler
+```{r library loading, echo=FALSE, include=FALSE}
+#Load in necessary packages
+library(limma)
+library(plyr)
+library(tidyr)
+library(data.table)
+library(reshape2)
+#library(ggplot2)
+library(cowplot)
+library(plotly)
+library(dplyr)
+library(Hmisc)
+library(gplots)
+library(stringr)
+library(heatmaply)
+library(RColorBrewer)
+library(edgeR)
+library(tidyverse)
+library(compiler)
+#library(bedr)
+enableJIT(3)
+```
+
+#Linear Modeling
+Having performed some basic quality control and filtering on the data, I now move to quantify how well Hi-C interaction frequency values can be predicted from species identity. To accomplish this, I utilize limma to linearly model Hi-C interaction frequencies as a function of all the metadata about each sample's species, sex, and batch. I then add information from linear modeling to the full dataframe, including log-fold changes between species, p-values, betas, and variances. I then make a plot of the mean vs. the log-fold change as an MA plot proxy for quality control. I move on to look at distributions of all the p-values and betas for each of the terms, make some QQ plots to check for normality in the p-values for each term, and represent the log-fold change and p-values in a volcano plot of the data.
+```{r Linear Modeling}
+###Read in data, normalized in initial_QC document, both with all hits and conditioned upon a hit being discovered in 4 individuals. Also include the data frame conditioned upon significant contacts fixed in either species, as requested by reviewer 2.
+setwd("/Users/ittaieres/HiCiPSC")
+full.data <- fread("output/full.data.10.init.QC", header = TRUE, data.table=FALSE, stringsAsFactors = FALSE, showProgress = FALSE)
+data.4 <- fread("output/data.4.init.QC", header=TRUE, data.table=FALSE, stringsAsFactors = FALSE, showProgress = FALSE)
+data.4.fixed <- fread("output/data.4.fixed.init.QC", header=TRUE, data.table=FALSE, stringsAsFactors=FALSE, showProgress = FALSE)
+
+###Reassign metadata here, just for quick reference.
+meta.data <- data.frame("SP"=c("H", "H", "C", "C", "H", "H", "C", "C"), "SX"=c("F", "M", "M", "F", "M", "F", "M", "F"), "Batch"=c(1, 1, 1, 1, 2, 2, 2, 2))
+
+###Now to move on to linear modeling, doing it in both the full data set and the | 4 individuals condition. I utilize limma to make this quick, parllelizable, and simple. First make the model, then do the actual fitting, and finally do multiple testing adjustment with topTable.
+design <- model.matrix(~1+meta.data$SP+meta.data$SX+meta.data$Batch) #Parameterize the linear model, with an intercept, and fixed effect terms for species, sex, and library prep batch. If you prefer to think in contrasts, my contrast is humans minus chimps. I prefer to think of one species as the baseline in the linear model, and in this case that's chimps (so chimps get a 0 for species, and humans get a 1).
+lmFit(full.data[,304:311], design) %>% eBayes(.) -> model.full
+lmFit(data.4[,304:311], design) %>% eBayes(.) -> model.4
+lmFit(data.4.fixed[,304:311], design) %>% eBayes(.) -> model.4.fixed
+volc.full <- topTable(model.full, coef = 2, sort.by = "none", number = Inf)
+volc.4 <- topTable(model.4, coef = 2, sort.by = "none", number = Inf)
+volc.4.fixed <- topTable(model.4.fixed, coef=2, sort.by="none", number=Inf)
+
+###Now append the information extracted from linear modeling (p-values and betas for species, sex, and batch) to the 3 data frames:
+full.data$sp_beta <- volc.full$logFC #Beta already is logFC since values are log2(obs/exp) Hi-C reads.
+full.data$sp_pval <- volc.full$P.Value #Unadjusted P-val
+full.data$sp_BH_pval <- volc.full$adj.P.Val #Benjamini-Hochberg adjusted p-values
+full.data$avg_IF <- volc.full$AveExpr #Average Interaction Frequency value across all individuals. Useful later for a variety of plots.
+full.data$t_statistic <- volc.full$t #t-statistic from limma topTable
+full.data$B_statistic <- volc.full$B #B-statistic (LOD) from limma topTable
+full.data$sx_pval <- model.full$p.value[,3]
+full.data$btc_pval <- model.full$p.value[,4]
+full.data$sx_beta <- model.full$coefficients[,3]
+full.data$btc_beta <- model.full$coefficients[,4]
+full.data$SE <- sqrt(model.full$s2.post)*model.full$stdev.unscaled[,2]
+
+
+data.4$sp_beta <- volc.4$logFC
+data.4$sp_pval <- volc.4$P.Value #Unadjusted P-val, normal scale
+data.4$sp_BH_pval <- volc.4$adj.P.Val #Benajimini-Hochberg adjusted p-values
+data.4$avg_IF <- volc.4$AveExpr #Average interaction frequency
+data.4$t_statistic <- volc.4$t #t-statistic from limma topTable
+data.4$B_statistic <- volc.4$B #B-statistic (LOD) from limma topTable
+data.4$sx_pval <- model.4$p.value[,3]
+data.4$btc_pval <- model.4$p.value[,4]
+data.4$sx_beta <- model.4$coefficients[,3]
+data.4$btc_beta <- model.4$coefficients[,4]
+data.4$SE <- sqrt(model.4$s2.post) * model.4$stdev.unscaled[,2]
+
+data.4.fixed$sp_beta <- volc.4.fixed$logFC
+data.4.fixed$sp_pval <- volc.4.fixed$P.Value #Unadjusted P-val, normal scale
+data.4.fixed$sp_BH_pval <- volc.4.fixed$adj.P.Val #Benajimini-Hochberg adjusted p-values
+data.4.fixed$avg_IF <- volc.4.fixed$AveExpr #Average interaction frequency
+data.4.fixed$t_statistic <- volc.4.fixed$t #t-statistic from limma topTable
+data.4.fixed$B_statistic <- volc.4.fixed$B #B-statistic (LOD) from limma topTable
+data.4.fixed$sx_pval <- model.4.fixed$p.value[,3]
+data.4.fixed$btc_pval <- model.4.fixed$p.value[,4]
+data.4.fixed$sx_beta <- model.4.fixed$coefficients[,3]
+data.4.fixed$btc_beta <- model.4.fixed$coefficients[,4]
+data.4.fixed$SE <- sqrt(model.4.fixed$s2.post) * model.4.fixed$stdev.unscaled[,2]
+```
+
+#MA plots; P-value and Beta distributions for the Linear Model
+```{r Linear Modeling MA plots and P-val/beta distributions}
+###Before moving to any actual assessment of the linear modeling, do a QC check by producing MA plots for all 3 data frames. The MA plot here is the mean of Hi-C contact frequencies (avg_IF) on the x-axis, and the logFC (species beta, in this case) on the y-axis. What we are generally looking for is a fairly uniform cloud around 0 stretching across the x-axis.
+ggplot(data=full.data[,c('avg_IF','sp_beta')], aes(x=avg_IF, y=sp_beta)) + geom_point() + xlab("Means of Hi-C Contact Frequencies") + ylab("Species Beta (log ratio H/C)") + ggtitle("MA Plot, All Data")
+ggplot(data=data.4[,c('avg_IF', 'sp_beta')], aes(x=avg_IF, y=sp_beta)) + geom_point() + xlab("Means of Hi-C Contact Frequencies") + ylab("Species Beta (log ratio H/C)") + ggtitle("MA Plot | 4 Individuals")
+ggplot(data=data.4.fixed[,c('avg_IF', 'sp_beta')], aes(x=avg_IF, y=sp_beta)) + geom_point() + xlab("Means of Hi-C Contact Frequencies") + ylab("Species Beta (log ratio H/C)") + ggtitle("MA Plot | Species Fixed")
+#All these plots certainly have some outliers, and have a linear trend I have previously examined that is symmetric across betas--I believe these lines to primarily be created by an orthology-calling issue, as many of the hits along them have all contact frequencies in one species extremely close to 0 (and not near-zero in the other species). Aside from this, there is also a large cloud in the negative beta side that is somewhat disturbing; this is something I still need to check. At the very least, the linear trends seen are symmetric across betas, so this is hopefully an issue that is affecting the two species SOMEWHAT equally.
+
+###Check some of the more basic linear modeling issues: distributions of betas, p-vals, QQplot, volcano plot, etc.
+##Check p-vals and betas for all covariates in the full model, on all the data.
+ggplot(data=full.data[,322:332], aes(x=sp_pval)) + geom_histogram(binwidth=0.001) + ggtitle("P-vals for Species") + xlab("P-value")
+ggplot(data=full.data[,322:332], aes(x=sx_pval)) + geom_histogram(binwidth=0.001) + ggtitle("P-vals for Sex") + xlab("P-value")
+ggplot(data=full.data[,322:332], aes(x=btc_pval)) + geom_histogram(binwidth=0.001) + ggtitle("P-vals for Batch") + xlab("P-value")
+ggplot(data=full.data[,322:332], aes(x=sp_beta)) + geom_histogram(binwidth=0.001) + ggtitle("Betas for Species") + xlab("Beta") + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 3500))
+ggplot(data=full.data[,322:332], aes(x=sx_beta)) + geom_histogram(binwidth=0.001) + ggtitle("Betas for Sex") + xlab("Beta") + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 3500))
+ggplot(data=full.data[,322:332], aes(x=btc_beta)) + geom_histogram(binwidth=0.001) + ggtitle("Betas for Batch") + xlab("Beta") + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 3500))
+
+##Check p-vals and betas for all covariates in the full model, on data conditioned upon hit discovery in 4 individuals.
+ggplot(data=data.4[,322:332], aes(x=sp_pval)) + geom_histogram(binwidth=0.001) + ggtitle("P-vals for Species | 4") + xlab("P-value")
+ggplot(data=data.4[,322:332], aes(x=sx_pval)) + geom_histogram(binwidth=0.001) + ggtitle("P-vals for Sex | 4") + xlab("P-value")
+ggplot(data=data.4[,322:332], aes(x=btc_pval)) + geom_histogram(binwidth=0.001) + ggtitle("P-vals for Batch | 4") + xlab("P-value")
+ggplot(data=data.4[,322:332], aes(x=sp_beta)) + geom_histogram(binwidth=0.001) + ggtitle("Betas for Species | 4") + xlab("Beta") + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 850))
+ggplot(data=data.4[,322:332], aes(x=sx_beta)) + geom_histogram(binwidth=0.001) + ggtitle("Betas for Sex | 4") + xlab("Beta") + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 850))
+ggplot(data=data.4[,322:332], aes(x=btc_beta)) + geom_histogram(binwidth=0.001) + ggtitle("Betas for Batch | 4") + xlab("Beta") + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 850))
+
+##Check p-vals and betas for all covariates in the full model, on data conditioned upon hit discovery in all 4 individuals of at least one species.
+ggplot(data=data.4.fixed[,322:332], aes(x=sp_pval)) + geom_histogram(binwidth=0.001) + ggtitle("P-vals for Species | 4 Fixed") + xlab("P-value")
+ggplot(data=data.4.fixed[,322:332], aes(x=sx_pval)) + geom_histogram(binwidth=0.001) + ggtitle("P-vals for Sex | 4 Fixed") + xlab("P-value")
+ggplot(data=data.4.fixed[,322:332], aes(x=btc_pval)) + geom_histogram(binwidth=0.001) + ggtitle("P-vals for Batch | 4 Fixed") + xlab("P-value")
+ggplot(data=data.4.fixed[,322:332], aes(x=sp_beta)) + geom_histogram(binwidth=0.001) + ggtitle("Betas for Species | 4 Fixed") + xlab("Beta") + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 850))
+ggplot(data=data.4.fixed[,322:332], aes(x=sx_beta)) + geom_histogram(binwidth=0.001) + ggtitle("Betas for Sex | 4 Fixed") + xlab("Beta") + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 850))
+ggplot(data=data.4.fixed[,322:332], aes(x=btc_beta)) + geom_histogram(binwidth=0.001) + ggtitle("Betas for Batch | 4 Fixed") + xlab("Beta") + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 850))
+
+#These all look pretty good, with p-val distributions for sex and batch being fairly uniform, and betas all around being fairly normally distributed. We see distinct enrichment for significant p-values for the species term, which is what we were hoping for! Also of note is the fact that the beta distribution for species looks wider than those for batch and sex, reassuring us that species is a driving factor in differential Hi-C contacts.
+```
+
+#QQ plots for the Linear Model
+```{r QQ plots for the linear model}
+###Now, to double-check on the p-values with some QQplots. First, I define a function for creating a qqplot easily and coloring elements of the distribution in order to understand where most of the density on the plot is:
+newqqplot=function(pvals, quant, title){  
+  len = length(pvals)
+  res=qqplot(-log10((1:len)/(1+len)),pvals,plot.it=F)
+  plot(res$x,res$y, main=title, xlab="Theoretical", ylab="Actual", col=ifelse(res$y>as.numeric(quantile(res$y, quant[1])), ifelse(res$y>as.numeric(quantile(res$y, quant[2])), "red", "blue"), "black"))
+  abline(0, 1)
+}
+
+##Start QQplotting some of these actual values.
+newqqplot(-log10(full.data$sp_pval), c(0.5, 0.75), "QQ Plot, Species P-vals, Full Data")
+newqqplot(-log10(full.data$sx_pval), c(0.5, 0.75), "QQ Plot, Sex P-vals, Full Data")
+newqqplot(-log10(full.data$btc_pval), c(0.5, 0.75), "QQ Plot, Batch P-vals, Full Data")
+newqqplot(-log10(data.4$sp_pval), c(0.5, 0.75), "QQ Plot, Species P-vals, Data | 4")
+newqqplot(-log10(data.4$sx_pval), c(0.5, 0.75), "QQ Plot, Sex P-vals, Data | 4")
+newqqplot(-log10(data.4$btc_pval), c(0.5, 0.75), "QQ Plot, Batch P-vals, Data | 4")
+newqqplot(-log10(data.4.fixed$sp_pval), c(0.5, 0.75), "QQ Plot, Species P-vals, Data | 4 Fixed")
+newqqplot(-log10(data.4.fixed$sx_pval), c(0.5, 0.75), "QQ Plot, Sex P-vals, Data | 4 Fixed")
+newqqplot(-log10(data.4.fixed$btc_pval), c(0.5, 0.75), "QQ Plot, Batch P-vals, Data | 4 Fixed")
+
+#The batch and sex QQ plots look fairly decent, but the species QQplot has the distribution rising off the axis extremely quickly, before even reaching 50% of the data. I will examine this in a separate markdown document for quality control on the linear modeling. For now, I show volcano plots of the data before looking to rectify this issue.
+```
+
+#Volcano Plots of the Linear Modeling Results
+```{r Volcano Plots of the Linear Modeling Results}
+volcplot.full <- data.frame(pval=-log10(full.data$sp_pval), beta=full.data$sp_beta, species=full.data$disc_species)
+volcplot.4 <- data.frame(pval=-log10(data.4$sp_pval), beta=data.4$sp_beta, species=data.4$disc_species)
+volcplot.4.fixed <- data.frame(pval=-log10(data.4.fixed$sp_pval), beta=data.4.fixed$sp_beta, species=data.4.fixed$disc_species)
+ggplot(data=volcplot.full, aes(x=beta, y=pval, color=species)) + geom_point() + xlab("Log2 Fold Change in Contact Frequency") + ylab("P-values") + ggtitle("Contact Frequency Differences Colored by Species of Discovery")
+ggplot(data=volcplot.4, aes(x=beta, y=pval, color=species)) + geom_point() + xlab("Log2 Fold Change in Contact Frequency") + ylab("-log10 p-values") + ggtitle("Contact Frequency Differences Colored by Species of Discovery | 4") + scale_color_manual(name="Species", labels=c("Both", "Chimp", "Human"), values=c("#F8766D", "#00BA38", "#619CFF")) #Modify to add clearer labels
+ggplot(data=volcplot.4.fixed, aes(x=beta, y=pval, color=species)) + geom_point() + xlab("Log2 Fold Change in Contact Frequency") + ylab("-log10 p-values") + ggtitle("Contact Frequency Differences Colored by Species of Discovery | 4 Fixed") + scale_color_manual(name="Species", labels=c("Both", "Chimp", "Human"), values=c("#F8766D", "#00BA38", "#619CFF")) #Modify to add clearer labels
+
+#The same, but lacking the colors
+ggplot(data=volcplot.full, aes(x=beta, y=pval)) + geom_point() + xlab("Log2 Fold Change in Contact Frequency") + ylab("-log10 BH-corrected p-values") + ggtitle("Contact Frequency Differences")
+ggplot(data=volcplot.4, aes(x=beta, y=pval)) + geom_point() + xlab("Log2 Fold Change in Contact Frequency") + ylab("-log10 p-values") + ggtitle("Contact Frequency Differences | 4 Individuals")
+ggplot(data=volcplot.4.fixed, aes(x=beta, y=pval)) + geom_point() + xlab("Log2 Fold Change in Contact Frequency") + ylab("-log10 p-values") + ggtitle("Contact Frequency Differences | 4 Fixed")
+
+#Volcano plots show a distinct asymmetry, with  many more hits showing stronger contact on the chimpanzee side than on the human side. Since this makes little biological sense, in the next document I will look for a technical factor that could be driving this.
+
+#Write out the data with the new columns added on!
+fwrite(full.data, "output/full.data.10.init.LM", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE, na="NA", showProgress = FALSE)
+fwrite(data.4, "output/data.4.init.LM", quote=FALSE, sep="\t", row.names=FALSE, col.names=TRUE, na="NA", showProgress = FALSE)
+fwrite(data.4.fixed, "output/data.4.fixed.init.LM", quote=FALSE, sep="\t", row.names=FALSE, col.names=TRUE, na="NA", showProgress=FALSE)
+```
+From this analysis two concerns emerge for further exploration: the QQ plots for the species p-values seem inflated, and the volcano plot seems highly asymmetrical. I'll examine this further in the next analysis on linear modeling QC.

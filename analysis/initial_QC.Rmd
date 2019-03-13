@@ -29,11 +29,12 @@ library(compiler)
 enableJIT(3)
 ```
 
-###Initial Data read-in and quality control
+#Initial Data read-in and quality control; Fig S2
 First, I read in the data and normalize it with cyclic pairwise loess normalization. These data have come from compiling all of the significant contacts in any individual across species as called by Homer (p<0.01), and then extracting the interaction frequency values for each contact across all individuals. LiftOver was used to convert coordinates between species, with bins being rounded to the nearest 10kb. Here, I look at histograms of the distributions of the contact frequencies on an individual-by-individual basis, to see if they are comparable. I also look at a plot of the mean vs. the variance as an additional quality control metric; this is typically done on RNA-seq count data. In that case, it's done to check if the normalized data are distributed in a particular fashion (e.g. a poisson model would have a linear mean-variance relationship). In the limma/voom pipeline, count data are log-cpm transformed and a loess trend line of variance vs. mean is then fit to create weights for individual genes to be fed into linear modeling with limma. Since this is not a QC metric typically used for Hi-C data, the only thing I hope to see is no particularly strong relationship between variance and mean.
 ```{r Initial Hi-C Data Read-in and QC}
 ###Read in data, normalize it with cyclic loess (pairwise), clean it from any rows that have missing values.
-full.data <- fread("~/Desktop/Hi-C/final.10kb.homer.df", header=TRUE, stringsAsFactors = FALSE, data.table=FALSE, showProgress = FALSE)
+setwd("/Users/ittaieres/HiCiPSC")
+full.data <- fread("data/final.10kb.homer.df", header=TRUE, stringsAsFactors = FALSE, data.table=FALSE, showProgress = FALSE)
 full.contacts <- full.data[complete.cases(full.data[,304:311]), 304:311]
 full.contacts <- as.data.frame(normalizeCyclicLoess(full.contacts, span=1/4, iterations=3, method="pairs"))
 full.data <- full.data[complete.cases(full.data[,304:311]),]
@@ -69,7 +70,7 @@ summary(lm(full.data$ALLmean~full.data$ALLvar))$adj.r.squared
 ```
 On the whole, the distributions look fairly comparable across individuals and species, and the mean vs. variance plots show weak correlation at best between the two metrics. An actual check of the r squared also shows it to be low, at ~0.11. Now knowing the data are comparable in this sense, the next question would be whether they are different enough between the species to separate them from one another with unsupervised clustering and PCA methods.
 
-###Data clustering with Principal Components Analysis (PCA) and correlation heatmap clustering.
+#Data clustering with Principal Components Analysis (PCA) and correlation heatmap clustering.
 Now I use PCA, breaking down the interaction frequency values into principal components that best represent the variability within the data. This technique uses orthogonal transformation to convert the many dimensions in variability of this dataset into a lower-dimensional picture that can be used to separate out functional groups in the data. In this case, the expectation is that the strongest principal component, representing the plurality of the variance, will separate out humans and chimps along its axis, grouping the two species independently, as we expect their interaction frequency values to cluster together. I then also compute pairwise pearson correlations between each of the individuals across all Hi-C contacts, and use unsupervised hierarchical clustering to create a heatmap that once again will group individuals based on similarity in interaction frequency values. Again, I would expect this technique to separate out the species very distinctly from one another.
 ```{r Clustering w/ PCA and Heatmaps}
 ###Now do principal components analysis (PCA) on these data to see how they separate:
@@ -91,7 +92,7 @@ heatmaply(corheat, main="Pairwise Pearson Correlation @ 10kb", k_row=2, k_col=2,
 #We can see that all the humans cluster together, as do all the chimps. This is very good, despite the fact that the correlations are fairly low.
 ```
 
-###Variance exploration
+#Variance exploration; Fig S1
 Now I look at several metrics to assess variance in the data, checking which species hits were discovered as significant in and how many individuals a given hit was discovered in. I look at this to understand if there are some cutoffs that should be made to reduce the noisiness of the data and maximize the significance of further findings.
 ```{r Variance QC}
 ###Add columns to full.data to indicate species of discovery and number of individuals discovered in. These pieces of information are good to know about each of the hits generally, but can also be used to make decisions about filtering out certain classes of hits if variance is associated with any of these metrics.  
@@ -121,12 +122,12 @@ save_plot("~/Desktop/FIGS1A.png", FIGS1)
 ```
 From this, it would appear that variance drops off drastically after discovery in at least 4 individuals. I observed a similar pattern when looking at number of individuals a hit is discovered in vs. species-specific variances, as well as similar reductions when looking at variance in hits within species vs. number of individuals discovered in (not shown). Hence I now repeat all of the QC analyses done above, but this time conditioned upon discovery in 4 individuals. Moving forward I will ultimately filter out all the hits that were not found in at least 4 individuals, though I sometimes check the full dataset as well just for sanity's sake.
 
-###Initial Quality Control Analyses Conditioned Upon Discovery in at Least 4 Individuals
+#Initial Quality Control Analyses Conditioned Upon Discovery in at Least 4 Individuals; Fig 1
 Given the results just seen for variance, I now repeat all the analyses I carried out previously on the data conditioned upon homer discovering a hit as significant in at least 4 individuals. Based upon a reviewer concern, I also check these things for hits that were discovered as significant in all 4 individuals within a given species (i.e. significant contacts that are not "polymorphic")
 ```{r QC | 4 Individuals}
 #Repeating all QC with the condition of discovery in 4 individuals:
 data.4 <- filter(full.data, tot_indiv_IDd>=4) #Enforcing this condition brings us down from ~3 million hits to ~347k hits.
-data.4.species <- filter(full.data, found_in_H==4|found_in_C==4) #Enforcing this reviewer-suggested condition of only including contacts significant in all individuals from a species brings us down to ~164k hits.
+data.4.fixed <- filter(full.data, found_in_H==4|found_in_C==4) #Enforcing this reviewer-suggested condition of only including contacts significant in all individuals from a species brings us down to ~164k hits.
 
 ###See how distributions look with condition of 4 individuals.
 ggplot(data=melt(data.4[,c(304:305, 308:309)]), aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Homer-Significant Hi-C Contacts, Humans | 4") + xlab("Homer-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 450))#Human Dist'ns
@@ -134,8 +135,8 @@ ggplot(data=melt(data.4[,c(306:307, 310:311)]), aes(x=value)) + geom_histogram(b
 #Overall the distributions look fairly similar to before, with the bimodality seen before being much less stark here. Most of the negative interaction frequency significant hits have dropped out, and there is still a strong mass around 0 (especially in the chimp distributions). The majority of the mass of the hits now seems to hover around 1.8 or so.
 
 #Check the same thing but for contacts fixed within species:
-ggplot(data=melt(data.4.species[,c(304:305, 308:309)]), aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Homer-Significant Hi-C Contacts, Humans | 4 Fixed") + xlab("Homer-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 450))#Human Dist'ns
-ggplot(data=melt(data.4.species[,c(306:307, 310:311)]), aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Homer-Significant Hi-C Contacts, Chimps | 4 Fixed") + xlab("Homer-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 450)) #Chimp Dist'ns
+ggplot(data=melt(data.4.fixed[,c(304:305, 308:309)]), aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Homer-Significant Hi-C Contacts, Humans | 4 Fixed") + xlab("Homer-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 450))#Human Dist'ns
+ggplot(data=melt(data.4.fixed[,c(306:307, 310:311)]), aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Homer-Significant Hi-C Contacts, Chimps | 4 Fixed") + xlab("Homer-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 450)) #Chimp Dist'ns
 
 ###Mean vs. variance plot with condition of 4 individuals:
 {plot(data.4$ALLmean, data.4$ALLvar, main="Mean vs. Variance in Homer-corrected contact frequency | 4", xlab = "Mean Hi-C Contact Frequency", ylab="Variance in Hi-C Contact Frequency")
@@ -145,10 +146,10 @@ summary(lm(data.4$ALLmean~data.4$ALLvar))$adj.r.squared
 #Looks very similar to the same plot above for the whole dataset; with slightly fewer outliers in the top left of the plot and a different trend in the red line modeling the mean regressed upon the variance. Here, the line is fairly flat, perhaps trending slightly upwards, whereas the entire dataset sees it have a moderate negative slope. Overall, would really prefer there to be no relationship here, but, again, this is not an ideal metric for Hi-C data, so it's not a particularly worrisome result. the r squared also is quite low (0.028).
 
 #Same for fixed in each species:
-{plot(data.4.species$ALLmean, data.4.species$ALLvar, main="Mean vs. Variance in Homer-corrected contact frequency | 4 Fixed", xlab = "Mean Hi-C Contact Frequency", ylab="Variance in Hi-C Contact Frequency")
-  abline(lm(data.4.species$ALLmean~data.4.species$ALLvar), col="red")}
-summary(lm(data.4.species$ALLmean~data.4.species$ALLvar))$r.squared
-summary(lm(data.4.species$ALLmean~data.4.species$ALLvar))$adj.r.squared
+{plot(data.4.fixed$ALLmean, data.4.fixed$ALLvar, main="Mean vs. Variance in Homer-corrected contact frequency | 4 Fixed", xlab = "Mean Hi-C Contact Frequency", ylab="Variance in Hi-C Contact Frequency")
+  abline(lm(data.4.fixed$ALLmean~data.4.fixed$ALLvar), col="red")}
+summary(lm(data.4.fixed$ALLmean~data.4.fixed$ALLvar))$r.squared
+summary(lm(data.4.fixed$ALLmean~data.4.fixed$ALLvar))$adj.r.squared
 #Again, a slight upward trend is seen, but the relationship is quite weak--r squared of 0.008.
 
 ###Now to do PCA on the data conditioned upon discovery in 4 individuals--would expect many of the same patterns here, perhaps with even stronger separation due to only grabbing hits that are shared by 4 individuals:
@@ -218,7 +219,7 @@ PC_rsquareds
 #So PC1 correlates strongly and significantly with species, whereas PC4 has some moderate correlation with sex--but nothing else has a significant effect.
 
 ###Repeat the above, but conditioned upon discovery in 4 individuals within a species--would expect many of the same patterns here, this time with much stronger separation due to only grabbing hits that are fixed in a species:
-pca4 <- prcomp(t(data.4.species[,304:311]), scale=TRUE, center=TRUE)
+pca4 <- prcomp(t(data.4.fixed[,304:311]), scale=TRUE, center=TRUE)
 
 ggplot(data=as.data.frame(pca4$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title="PCA on Normalized Hi-C Contact Frequency") + guides(color=guide_legend(order=1, title="Batch"), size=FALSE, shape=guide_legend(order=2, title="Species")) + xlab(paste("PC1 (", signif(100*summary(pca4)$importance[2,1],2), "% of variance)")) + ylab((paste("PC2 (", signif(100*summary(pca4)$importance[2,2],2), "% of variance)"))) + labs(color="Batch", shape="Species") + scale_shape_manual(labels=c("Chimp", "Human"), values=c(16, 17)) #Metadata hasn't changed so use the same metadata from above. PCA shows a similar separation along species lines for PC1, with this time it representing 24.171% of the variance (up from 20.49% earlier). This is rather unsurprising, since we have subset down to hits that are more shared than the total set we had before.
 barplot(summary(pca4)$importance[2,], xlab="PCs", ylab="Proportion of Variance Explained", main="PCA on normalized Hi-C contact frequency") #Scree plot showing all the PCs and the proportion of the variance they explain. This is similar to above, with no PCs beyond a 7th one, and the first PC taking the vast majority of the variance while the others hover near 12%. No variables in experimentation, library prep, sequencing batch, or anything else seem to correlate with these PCs.
@@ -297,7 +298,7 @@ ggplot(data=as.data.frame(pca4$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$S
 
 #Repeat all this for data conditioned upon a fixed significant Hi-C contact within a species:
 
-corheat4 <- cor(data.4.species[,304:311], use="complete.obs", method="pearson") #Corheat for the full data set, and heatmap
+corheat4 <- cor(data.4.fixed[,304:311], use="complete.obs", method="pearson") #Corheat for the full data set, and heatmap
 #colnames(corheat4) <- c("A_HF", "B_HM", "C_CM", "D_CF", "E_HM", "F_HF", "G_CM", "H_CF")
 colnames(corheat4) <- c("HF1", "HM1", "CM1", "CF1", "HM2", "HF2", "CM2", "CF2") #Better for presentation
 rownames(corheat4) <- colnames(corheat4)
@@ -310,12 +311,12 @@ ggplot(data=as.data.frame(pca4$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$S
 
 
 ###This initial QC suggest quality of the data is high, and has given us some information on how to filter the data before further intrepretation. When working locally, can be helpful to write out both the full dataset and the one conditioned upon 4 individuals, in order to do sanity checks on both later on. Note that a call of identical on something fread in after fwriting it out will still return FALSE with this as floating point can't represent decimals exactly (see https://stackoverflow.com/questions/9508518/why-are-these-numbers-not-equal or https://cran.r-project.org/doc/FAQ/R-FAQ.html#Why-doesn_0027t-R-think-these-numbers-are-equal_003f):
-fwrite(full.data, "~/Desktop/Hi-C/full.data.10.2018", quote = TRUE, sep = "\t", row.names = FALSE, col.names = TRUE, na="NA", showProgress = FALSE)
-fwrite(data.4, "~/Desktop/Hi-C/data.4.10.2018", quote=FALSE, sep="\t", row.names=FALSE, col.names=TRUE, na="NA", showProgress = FALSE)
-fwrite(data.4.species, "~/Desktop/Hi-C/data.4.fixed.3.2019", quote=FALSE, sep="\t", row.names=FALSE, col.names=TRUE, na="NA", showProgress = FALSE)
+fwrite(full.data, "output/full.data.10.init.QC", quote = TRUE, sep = "\t", row.names = FALSE, col.names = TRUE, na="NA", showProgress = FALSE)
+fwrite(data.4, "output/data.4.init.QC", quote=FALSE, sep="\t", row.names=FALSE, col.names=TRUE, na="NA", showProgress = FALSE)
+fwrite(data.4.fixed, "output/data.4.fixed.init.QC", quote=FALSE, sep="\t", row.names=FALSE, col.names=TRUE, na="NA", showProgress = FALSE)
 ```
 
-#Here, I briefly check on some specific homer QC elements:
+#Homer-specific QC; Fig S8
 ```{r HOMER-specific QC Metrics}
 #Read in pre-prepped tables of this information.
 rand.frag <- fread("~/Desktop/Hi-C/homer_QCs/petag.Local.ALL.distn", header=TRUE, stringsAsFactors = FALSE, data.table=FALSE)
@@ -342,6 +343,7 @@ group_by(dist.distn, binID) %>% summarise(A_H=sum(A_H), B_H=sum(B_H), C_C=sum(C_
 distdf <- data.frame(dist=rep(mydist$binID, 8), fraction=c(mydist$A_H, mydist$B_H, mydist$C_C, mydist$D_C, mydist$E_H, mydist$F_H, mydist$G_C, mydist$H_C), ID=c(rep("A-21792", 30001), rep("B-28126", 30001), rep("C-3649", 30001), rep("D-40300", 30001), rep("E-28815", 30001), rep("F-28834", 30001), rep("G-3624", 30001), rep("H-3651", 30001)), species=c(rep("Human", 60002), rep("Chimpanzee", 60002), rep("Human", 60002), rep("Chimpanzee", 60002)))
 
 #Now, plot out on several different distance scales to see if there is any strong species effect.
+#FIGS8
 ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 50000)) + xlab("Distance Between Mates") + ylab("Fraction of Hi-C PE reads") + ggtitle("Hi-C Pair Distance Distributions") #FIGS8B
 ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 100000)) + xlab("Distance between mates") + ylab("Fraction of Hi-C PE reads") + ggtitle("Hi-C Pair Distance Distributions")
 ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 500000)) + xlab("Distance Between mates") + ylab("Fraction of Hi-C PE reads") + ggtitle("Hi-C Pair Distance Distributions") #FIGS8A
