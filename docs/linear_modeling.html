@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Ittai Eres" />
+
+<meta name="date" content="2019-03-12" />
+
+<title>Linear Modeling to Assess Differential Contacts (DC) Across Species</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">HiCiPSC</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/IttaiEres/HiCiPSC">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Linear Modeling to Assess Differential Contacts (DC) Across Species</h1>
+<h4 class="author"><em>Ittai Eres</em></h4>
+<h4 class="date"><em>2019-03-12</em></h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#report"> Report <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2019-03-13
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>HiCiPSC/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.2.0). The <em>Report</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="report" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20190311code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20190311)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20190311code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20190311)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree67d6f156eae75fac3f285b7fc384931f424b116atargetblank67d6f15a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/67d6f156eae75fac3f285b7fc384931f424b116a" target="_blank">67d6f15</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree67d6f156eae75fac3f285b7fc384931f424b116atargetblank67d6f15a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    data/.DS_Store
+    Ignored:    output/.DS_Store
+
+Untracked files:
+    Untracked:  Rplot.jpeg
+    Untracked:  S2A.jpeg
+    Untracked:  S2B.jpeg
+    Untracked:  analysis/linear_modeling_QC.Rmd
+    Untracked:  data/final.10kb.homer.df
+    Untracked:  data/final.juicer.10kb.KR
+    Untracked:  data/final.juicer.10kb.VC
+    Untracked:  output/data.4.fixed.init.LM
+    Untracked:  output/data.4.fixed.init.QC
+    Untracked:  output/data.4.init.LM
+    Untracked:  output/data.4.init.QC
+    Untracked:  output/full.data.10.init.LM
+    Untracked:  output/full.data.10.init.QC
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the R Markdown and HTML files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view them.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/67d6f156eae75fac3f285b7fc384931f424b116a/analysis/linear_modeling.Rmd" target="_blank">67d6f15</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-03-13
+</td>
+<td>
+Update directory storage of files; add in data frame of only contacts fixed within species.
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<p>First, load necessary libraries: limma, plyr, tidyr, data.table, reshape2, cowplot, plotly, dplyr, Hmisc, gplots, stringr, heatmaply, RColorBrewer, edgeR, tidyverse, and compiler</p>
+<div id="linear-modeling" class="section level1">
+<h1>Linear Modeling</h1>
+<p>Having performed some basic quality control and filtering on the data, I now move to quantify how well Hi-C interaction frequency values can be predicted from species identity. To accomplish this, I utilize limma to linearly model Hi-C interaction frequencies as a function of all the metadata about each sample’s species, sex, and batch. I then add information from linear modeling to the full dataframe, including log-fold changes between species, p-values, betas, and variances. I then make a plot of the mean vs. the log-fold change as an MA plot proxy for quality control. I move on to look at distributions of all the p-values and betas for each of the terms, make some QQ plots to check for normality in the p-values for each term, and represent the log-fold change and p-values in a volcano plot of the data.</p>
+<pre class="r"><code>###Read in data, normalized in initial_QC document, both with all hits and conditioned upon a hit being discovered in 4 individuals. Also include the data frame conditioned upon significant contacts fixed in either species, as requested by reviewer 2.
+setwd(&quot;/Users/ittaieres/HiCiPSC&quot;)
+full.data &lt;- fread(&quot;output/full.data.10.init.QC&quot;, header = TRUE, data.table=FALSE, stringsAsFactors = FALSE, showProgress = FALSE)
+data.4 &lt;- fread(&quot;output/data.4.init.QC&quot;, header=TRUE, data.table=FALSE, stringsAsFactors = FALSE, showProgress = FALSE)
+data.4.fixed &lt;- fread(&quot;output/data.4.fixed.init.QC&quot;, header=TRUE, data.table=FALSE, stringsAsFactors=FALSE, showProgress = FALSE)
+
+###Reassign metadata here, just for quick reference.
+meta.data &lt;- data.frame(&quot;SP&quot;=c(&quot;H&quot;, &quot;H&quot;, &quot;C&quot;, &quot;C&quot;, &quot;H&quot;, &quot;H&quot;, &quot;C&quot;, &quot;C&quot;), &quot;SX&quot;=c(&quot;F&quot;, &quot;M&quot;, &quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;F&quot;), &quot;Batch&quot;=c(1, 1, 1, 1, 2, 2, 2, 2))
+
+###Now to move on to linear modeling, doing it in both the full data set and the | 4 individuals condition. I utilize limma to make this quick, parllelizable, and simple. First make the model, then do the actual fitting, and finally do multiple testing adjustment with topTable.
+design &lt;- model.matrix(~1+meta.data$SP+meta.data$SX+meta.data$Batch) #Parameterize the linear model, with an intercept, and fixed effect terms for species, sex, and library prep batch. If you prefer to think in contrasts, my contrast is humans minus chimps. I prefer to think of one species as the baseline in the linear model, and in this case that&#39;s chimps (so chimps get a 0 for species, and humans get a 1).
+lmFit(full.data[,304:311], design) %&gt;% eBayes(.) -&gt; model.full
+lmFit(data.4[,304:311], design) %&gt;% eBayes(.) -&gt; model.4
+lmFit(data.4.fixed[,304:311], design) %&gt;% eBayes(.) -&gt; model.4.fixed
+volc.full &lt;- topTable(model.full, coef = 2, sort.by = &quot;none&quot;, number = Inf)
+volc.4 &lt;- topTable(model.4, coef = 2, sort.by = &quot;none&quot;, number = Inf)
+volc.4.fixed &lt;- topTable(model.4.fixed, coef=2, sort.by=&quot;none&quot;, number=Inf)
+
+###Now append the information extracted from linear modeling (p-values and betas for species, sex, and batch) to the 3 data frames:
+full.data$sp_beta &lt;- volc.full$logFC #Beta already is logFC since values are log2(obs/exp) Hi-C reads.
+full.data$sp_pval &lt;- volc.full$P.Value #Unadjusted P-val
+full.data$sp_BH_pval &lt;- volc.full$adj.P.Val #Benjamini-Hochberg adjusted p-values
+full.data$avg_IF &lt;- volc.full$AveExpr #Average Interaction Frequency value across all individuals. Useful later for a variety of plots.
+full.data$t_statistic &lt;- volc.full$t #t-statistic from limma topTable
+full.data$B_statistic &lt;- volc.full$B #B-statistic (LOD) from limma topTable
+full.data$sx_pval &lt;- model.full$p.value[,3]
+full.data$btc_pval &lt;- model.full$p.value[,4]
+full.data$sx_beta &lt;- model.full$coefficients[,3]
+full.data$btc_beta &lt;- model.full$coefficients[,4]
+full.data$SE &lt;- sqrt(model.full$s2.post)*model.full$stdev.unscaled[,2]
+
+
+data.4$sp_beta &lt;- volc.4$logFC
+data.4$sp_pval &lt;- volc.4$P.Value #Unadjusted P-val, normal scale
+data.4$sp_BH_pval &lt;- volc.4$adj.P.Val #Benajimini-Hochberg adjusted p-values
+data.4$avg_IF &lt;- volc.4$AveExpr #Average interaction frequency
+data.4$t_statistic &lt;- volc.4$t #t-statistic from limma topTable
+data.4$B_statistic &lt;- volc.4$B #B-statistic (LOD) from limma topTable
+data.4$sx_pval &lt;- model.4$p.value[,3]
+data.4$btc_pval &lt;- model.4$p.value[,4]
+data.4$sx_beta &lt;- model.4$coefficients[,3]
+data.4$btc_beta &lt;- model.4$coefficients[,4]
+data.4$SE &lt;- sqrt(model.4$s2.post) * model.4$stdev.unscaled[,2]
+
+data.4.fixed$sp_beta &lt;- volc.4.fixed$logFC
+data.4.fixed$sp_pval &lt;- volc.4.fixed$P.Value #Unadjusted P-val, normal scale
+data.4.fixed$sp_BH_pval &lt;- volc.4.fixed$adj.P.Val #Benajimini-Hochberg adjusted p-values
+data.4.fixed$avg_IF &lt;- volc.4.fixed$AveExpr #Average interaction frequency
+data.4.fixed$t_statistic &lt;- volc.4.fixed$t #t-statistic from limma topTable
+data.4.fixed$B_statistic &lt;- volc.4.fixed$B #B-statistic (LOD) from limma topTable
+data.4.fixed$sx_pval &lt;- model.4.fixed$p.value[,3]
+data.4.fixed$btc_pval &lt;- model.4.fixed$p.value[,4]
+data.4.fixed$sx_beta &lt;- model.4.fixed$coefficients[,3]
+data.4.fixed$btc_beta &lt;- model.4.fixed$coefficients[,4]
+data.4.fixed$SE &lt;- sqrt(model.4.fixed$s2.post) * model.4.fixed$stdev.unscaled[,2]</code></pre>
+</div>
+<div id="ma-plots-p-value-and-beta-distributions-for-the-linear-model" class="section level1">
+<h1>MA plots; P-value and Beta distributions for the Linear Model</h1>
+<pre class="r"><code>###Before moving to any actual assessment of the linear modeling, do a QC check by producing MA plots for all 3 data frames. The MA plot here is the mean of Hi-C contact frequencies (avg_IF) on the x-axis, and the logFC (species beta, in this case) on the y-axis. What we are generally looking for is a fairly uniform cloud around 0 stretching across the x-axis.
+ggplot(data=full.data[,c(&#39;avg_IF&#39;,&#39;sp_beta&#39;)], aes(x=avg_IF, y=sp_beta)) + geom_point() + xlab(&quot;Means of Hi-C Contact Frequencies&quot;) + ylab(&quot;Species Beta (log ratio H/C)&quot;) + ggtitle(&quot;MA Plot, All Data&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=data.4[,c(&#39;avg_IF&#39;, &#39;sp_beta&#39;)], aes(x=avg_IF, y=sp_beta)) + geom_point() + xlab(&quot;Means of Hi-C Contact Frequencies&quot;) + ylab(&quot;Species Beta (log ratio H/C)&quot;) + ggtitle(&quot;MA Plot | 4 Individuals&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=data.4.fixed[,c(&#39;avg_IF&#39;, &#39;sp_beta&#39;)], aes(x=avg_IF, y=sp_beta)) + geom_point() + xlab(&quot;Means of Hi-C Contact Frequencies&quot;) + ylab(&quot;Species Beta (log ratio H/C)&quot;) + ggtitle(&quot;MA Plot | Species Fixed&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#All these plots certainly have some outliers, and have a linear trend I have previously examined that is symmetric across betas--I believe these lines to primarily be created by an orthology-calling issue, as many of the hits along them have all contact frequencies in one species extremely close to 0 (and not near-zero in the other species). Aside from this, there is also a large cloud in the negative beta side that is somewhat disturbing; this is something I still need to check. At the very least, the linear trends seen are symmetric across betas, so this is hopefully an issue that is affecting the two species SOMEWHAT equally.
+
+###Check some of the more basic linear modeling issues: distributions of betas, p-vals, QQplot, volcano plot, etc.
+##Check p-vals and betas for all covariates in the full model, on all the data.
+ggplot(data=full.data[,322:332], aes(x=sp_pval)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;P-vals for Species&quot;) + xlab(&quot;P-value&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=full.data[,322:332], aes(x=sx_pval)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;P-vals for Sex&quot;) + xlab(&quot;P-value&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=full.data[,322:332], aes(x=btc_pval)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;P-vals for Batch&quot;) + xlab(&quot;P-value&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=full.data[,322:332], aes(x=sp_beta)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;Betas for Species&quot;) + xlab(&quot;Beta&quot;) + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 3500))</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=full.data[,322:332], aes(x=sx_beta)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;Betas for Sex&quot;) + xlab(&quot;Beta&quot;) + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 3500))</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=full.data[,322:332], aes(x=btc_beta)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;Betas for Batch&quot;) + xlab(&quot;Beta&quot;) + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 3500))</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>##Check p-vals and betas for all covariates in the full model, on data conditioned upon hit discovery in 4 individuals.
+ggplot(data=data.4[,322:332], aes(x=sp_pval)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;P-vals for Species | 4&quot;) + xlab(&quot;P-value&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=data.4[,322:332], aes(x=sx_pval)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;P-vals for Sex | 4&quot;) + xlab(&quot;P-value&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=data.4[,322:332], aes(x=btc_pval)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;P-vals for Batch | 4&quot;) + xlab(&quot;P-value&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=data.4[,322:332], aes(x=sp_beta)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;Betas for Species | 4&quot;) + xlab(&quot;Beta&quot;) + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 850))</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=data.4[,322:332], aes(x=sx_beta)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;Betas for Sex | 4&quot;) + xlab(&quot;Beta&quot;) + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 850))</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=data.4[,322:332], aes(x=btc_beta)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;Betas for Batch | 4&quot;) + xlab(&quot;Beta&quot;) + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 850))</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>##Check p-vals and betas for all covariates in the full model, on data conditioned upon hit discovery in all 4 individuals of at least one species.
+ggplot(data=data.4.fixed[,322:332], aes(x=sp_pval)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;P-vals for Species | 4 Fixed&quot;) + xlab(&quot;P-value&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=data.4.fixed[,322:332], aes(x=sx_pval)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;P-vals for Sex | 4 Fixed&quot;) + xlab(&quot;P-value&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=data.4.fixed[,322:332], aes(x=btc_pval)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;P-vals for Batch | 4 Fixed&quot;) + xlab(&quot;P-value&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-18.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=data.4.fixed[,322:332], aes(x=sp_beta)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;Betas for Species | 4 Fixed&quot;) + xlab(&quot;Beta&quot;) + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 850))</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-19.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=data.4.fixed[,322:332], aes(x=sx_beta)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;Betas for Sex | 4 Fixed&quot;) + xlab(&quot;Beta&quot;) + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 850))</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-20.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=data.4.fixed[,322:332], aes(x=btc_beta)) + geom_histogram(binwidth=0.001) + ggtitle(&quot;Betas for Batch | 4 Fixed&quot;) + xlab(&quot;Beta&quot;) + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 850))</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Linear%20Modeling%20MA%20plots%20and%20P-val/beta%20distributions-21.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#These all look pretty good, with p-val distributions for sex and batch being fairly uniform, and betas all around being fairly normally distributed. We see distinct enrichment for significant p-values for the species term, which is what we were hoping for! Also of note is the fact that the beta distribution for species looks wider than those for batch and sex, reassuring us that species is a driving factor in differential Hi-C contacts.</code></pre>
+</div>
+<div id="qq-plots-for-the-linear-model" class="section level1">
+<h1>QQ plots for the Linear Model</h1>
+<pre class="r"><code>###Now, to double-check on the p-values with some QQplots. First, I define a function for creating a qqplot easily and coloring elements of the distribution in order to understand where most of the density on the plot is:
+newqqplot=function(pvals, quant, title){  
+  len = length(pvals)
+  res=qqplot(-log10((1:len)/(1+len)),pvals,plot.it=F)
+  plot(res$x,res$y, main=title, xlab=&quot;Theoretical&quot;, ylab=&quot;Actual&quot;, col=ifelse(res$y&gt;as.numeric(quantile(res$y, quant[1])), ifelse(res$y&gt;as.numeric(quantile(res$y, quant[2])), &quot;red&quot;, &quot;blue&quot;), &quot;black&quot;))
+  abline(0, 1)
+}
+
+##Start QQplotting some of these actual values.
+newqqplot(-log10(full.data$sp_pval), c(0.5, 0.75), &quot;QQ Plot, Species P-vals, Full Data&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/QQ%20plots%20for%20the%20linear%20model-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>newqqplot(-log10(full.data$sx_pval), c(0.5, 0.75), &quot;QQ Plot, Sex P-vals, Full Data&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/QQ%20plots%20for%20the%20linear%20model-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>newqqplot(-log10(full.data$btc_pval), c(0.5, 0.75), &quot;QQ Plot, Batch P-vals, Full Data&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/QQ%20plots%20for%20the%20linear%20model-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>newqqplot(-log10(data.4$sp_pval), c(0.5, 0.75), &quot;QQ Plot, Species P-vals, Data | 4&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/QQ%20plots%20for%20the%20linear%20model-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>newqqplot(-log10(data.4$sx_pval), c(0.5, 0.75), &quot;QQ Plot, Sex P-vals, Data | 4&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/QQ%20plots%20for%20the%20linear%20model-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>newqqplot(-log10(data.4$btc_pval), c(0.5, 0.75), &quot;QQ Plot, Batch P-vals, Data | 4&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/QQ%20plots%20for%20the%20linear%20model-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>newqqplot(-log10(data.4.fixed$sp_pval), c(0.5, 0.75), &quot;QQ Plot, Species P-vals, Data | 4 Fixed&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/QQ%20plots%20for%20the%20linear%20model-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>newqqplot(-log10(data.4.fixed$sx_pval), c(0.5, 0.75), &quot;QQ Plot, Sex P-vals, Data | 4 Fixed&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/QQ%20plots%20for%20the%20linear%20model-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>newqqplot(-log10(data.4.fixed$btc_pval), c(0.5, 0.75), &quot;QQ Plot, Batch P-vals, Data | 4 Fixed&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/QQ%20plots%20for%20the%20linear%20model-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#The batch and sex QQ plots look fairly decent, but the species QQplot has the distribution rising off the axis extremely quickly, before even reaching 50% of the data. I will examine this in a separate markdown document for quality control on the linear modeling. For now, I show volcano plots of the data before looking to rectify this issue.</code></pre>
+</div>
+<div id="volcano-plots-of-the-linear-modeling-results" class="section level1">
+<h1>Volcano Plots of the Linear Modeling Results</h1>
+<pre class="r"><code>volcplot.full &lt;- data.frame(pval=-log10(full.data$sp_pval), beta=full.data$sp_beta, species=full.data$disc_species)
+volcplot.4 &lt;- data.frame(pval=-log10(data.4$sp_pval), beta=data.4$sp_beta, species=data.4$disc_species)
+volcplot.4.fixed &lt;- data.frame(pval=-log10(data.4.fixed$sp_pval), beta=data.4.fixed$sp_beta, species=data.4.fixed$disc_species)
+ggplot(data=volcplot.full, aes(x=beta, y=pval, color=species)) + geom_point() + xlab(&quot;Log2 Fold Change in Contact Frequency&quot;) + ylab(&quot;P-values&quot;) + ggtitle(&quot;Contact Frequency Differences Colored by Species of Discovery&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Volcano%20Plots%20of%20the%20Linear%20Modeling%20Results-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=volcplot.4, aes(x=beta, y=pval, color=species)) + geom_point() + xlab(&quot;Log2 Fold Change in Contact Frequency&quot;) + ylab(&quot;-log10 p-values&quot;) + ggtitle(&quot;Contact Frequency Differences Colored by Species of Discovery | 4&quot;) + scale_color_manual(name=&quot;Species&quot;, labels=c(&quot;Both&quot;, &quot;Chimp&quot;, &quot;Human&quot;), values=c(&quot;#F8766D&quot;, &quot;#00BA38&quot;, &quot;#619CFF&quot;)) #Modify to add clearer labels</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Volcano%20Plots%20of%20the%20Linear%20Modeling%20Results-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=volcplot.4.fixed, aes(x=beta, y=pval, color=species)) + geom_point() + xlab(&quot;Log2 Fold Change in Contact Frequency&quot;) + ylab(&quot;-log10 p-values&quot;) + ggtitle(&quot;Contact Frequency Differences Colored by Species of Discovery | 4 Fixed&quot;) + scale_color_manual(name=&quot;Species&quot;, labels=c(&quot;Both&quot;, &quot;Chimp&quot;, &quot;Human&quot;), values=c(&quot;#F8766D&quot;, &quot;#00BA38&quot;, &quot;#619CFF&quot;)) #Modify to add clearer labels</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Volcano%20Plots%20of%20the%20Linear%20Modeling%20Results-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#The same, but lacking the colors
+ggplot(data=volcplot.full, aes(x=beta, y=pval)) + geom_point() + xlab(&quot;Log2 Fold Change in Contact Frequency&quot;) + ylab(&quot;-log10 BH-corrected p-values&quot;) + ggtitle(&quot;Contact Frequency Differences&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Volcano%20Plots%20of%20the%20Linear%20Modeling%20Results-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=volcplot.4, aes(x=beta, y=pval)) + geom_point() + xlab(&quot;Log2 Fold Change in Contact Frequency&quot;) + ylab(&quot;-log10 p-values&quot;) + ggtitle(&quot;Contact Frequency Differences | 4 Individuals&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Volcano%20Plots%20of%20the%20Linear%20Modeling%20Results-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=volcplot.4.fixed, aes(x=beta, y=pval)) + geom_point() + xlab(&quot;Log2 Fold Change in Contact Frequency&quot;) + ylab(&quot;-log10 p-values&quot;) + ggtitle(&quot;Contact Frequency Differences | 4 Fixed&quot;)</code></pre>
+<p><img src="figure/linear_modeling.Rmd/Volcano%20Plots%20of%20the%20Linear%20Modeling%20Results-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Volcano plots show a distinct asymmetry, with  many more hits showing stronger contact on the chimpanzee side than on the human side. Since this makes little biological sense, in the next document I will look for a technical factor that could be driving this.
+
+#Write out the data with the new columns added on!
+fwrite(full.data, &quot;output/full.data.10.init.LM&quot;, quote = FALSE, sep = &quot;\t&quot;, row.names = FALSE, col.names = TRUE, na=&quot;NA&quot;, showProgress = FALSE)
+fwrite(data.4, &quot;output/data.4.init.LM&quot;, quote=FALSE, sep=&quot;\t&quot;, row.names=FALSE, col.names=TRUE, na=&quot;NA&quot;, showProgress = FALSE)
+fwrite(data.4.fixed, &quot;output/data.4.fixed.init.LM&quot;, quote=FALSE, sep=&quot;\t&quot;, row.names=FALSE, col.names=TRUE, na=&quot;NA&quot;, showProgress=FALSE)</code></pre>
+From this analysis two concerns emerge for further exploration: the QQ plots for the species p-values seem inflated, and the volcano plot seems highly asymmetrical. I’ll examine this further in the next analysis on linear modeling QC. <br> <br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.4.0 (2017-04-21)
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+Running under: OS X El Capitan 10.11.6
+
+Matrix products: default
+BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] compiler  stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] forcats_0.4.0      purrr_0.3.1        readr_1.3.1       
+ [4] tibble_2.0.1       tidyverse_1.2.1    edgeR_3.20.9      
+ [7] RColorBrewer_1.1-2 heatmaply_0.15.2   viridis_0.5.1     
+[10] viridisLite_0.3.0  stringr_1.4.0      gplots_3.0.1.1    
+[13] Hmisc_4.2-0        Formula_1.2-3      survival_2.43-3   
+[16] lattice_0.20-38    dplyr_0.8.0.1      plotly_4.8.0      
+[19] cowplot_0.9.4      ggplot2_3.1.0      reshape2_1.4.3    
+[22] data.table_1.12.0  tidyr_0.8.3        plyr_1.8.4        
+[25] limma_3.34.9      
+
+loaded via a namespace (and not attached):
+ [1] nlme_3.1-137        bitops_1.0-6        fs_1.2.6           
+ [4] lubridate_1.7.4     webshot_0.5.1       httr_1.4.0         
+ [7] rprojroot_1.3-2     prabclus_2.2-7      tools_3.4.0        
+[10] backports_1.1.3     R6_2.4.0            rpart_4.1-13       
+[13] KernSmooth_2.23-15  lazyeval_0.2.1      colorspace_1.4-0   
+[16] trimcluster_0.1-2.1 nnet_7.3-12         withr_2.1.2        
+[19] tidyselect_0.2.5    gridExtra_2.3       git2r_0.24.0       
+[22] cli_1.0.1           rvest_0.3.2         htmlTable_1.13.1   
+[25] TSP_1.1-6           xml2_1.2.0          labeling_0.3       
+[28] diptest_0.75-7      caTools_1.17.1.2    scales_1.0.0       
+[31] checkmate_1.9.1     DEoptimR_1.0-8      mvtnorm_1.0-8      
+[34] robustbase_0.92-8   digest_0.6.18       foreign_0.8-71     
+[37] rmarkdown_1.11      base64enc_0.1-3     pkgconfig_2.0.2    
+[40] htmltools_0.3.6     readxl_1.3.0        htmlwidgets_1.3    
+[43] rlang_0.3.1         rstudioapi_0.9.0    generics_0.0.2     
+[46] jsonlite_1.6        mclust_5.4.2        gtools_3.8.1       
+[49] acepack_1.4.1       dendextend_1.9.0    magrittr_1.5       
+[52] modeltools_0.2-22   Matrix_1.2-15       Rcpp_1.0.0         
+[55] munsell_0.5.0       stringi_1.3.1       whisker_0.3-2      
+[58] yaml_2.2.0          MASS_7.3-51.1       flexmix_2.3-15     
+[61] grid_3.4.0          gdata_2.18.0        crayon_1.3.4       
+[64] haven_2.1.0         splines_3.4.0       hms_0.4.2          
+[67] locfit_1.5-9.1      knitr_1.22          pillar_1.3.1       
+[70] fpc_2.1-11.1        codetools_0.2-16    stats4_3.4.0       
+[73] glue_1.3.0          gclus_1.3.2         evaluate_0.13      
+[76] latticeExtra_0.6-28 modelr_0.1.4        foreach_1.4.4      
+[79] cellranger_1.1.0    gtable_0.2.0        kernlab_0.9-27     
+[82] assertthat_0.2.0    xfun_0.5            broom_0.5.1        
+[85] class_7.3-15        seriation_1.2-3     iterators_1.0.10   
+[88] registry_0.5-1      workflowr_1.2.0     cluster_2.0.7-1    </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
