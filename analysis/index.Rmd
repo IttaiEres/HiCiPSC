@@ -12,8 +12,9 @@ This website details computational analyses done for the paper "Reorganization o
 *  [Reading in of the data, normalization, and initial quality control metrics--Figures 1, S1, S2, S8](initial_QC.html)
 *  [Linear modeling of the data to find quantitative contact differences between humans and chimpanzees--No figures here, but useful for understanding Figures 2 & S3 ](linear_modeling.html)
 *  [Quality control on the linear modeling, to account for p-value inflation and volcano plot asymmetry--Figures 2, S3](linear_modeling_QC.html)
+*  [Orthogonal analysis with gene expression data collected from the same cell lines--Figures 4, S4, 5, ](gene_expression.html)
+*  [TAD Analyses](TADs.html)
 *  [Enrichment analyses on the linear-modeling significant Hi-C hits](enrichment.html)
-*  [ALL TAD Analyses and Orthogonal analysis with gene expression data collected from the same cell lines](gene_expression.html)
 
 #### Analyses Utilizing Juicer
 *  [Reading in of the data, normalization, and initial quality control metrics](juicer_initial_QC.html)
