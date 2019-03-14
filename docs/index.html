@@ -370,10 +370,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtreeef02896c4023f26eafe95c2d0f7b44325030c726targetblankef02896a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/ef02896c4023f26eafe95c2d0f7b44325030c726" target="_blank">ef02896</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtreea6451a3fdf13ab22bcf8df8c0ed2e91778efa17atargetblanka6451a3a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/a6451a3fdf13ab22bcf8df8c0ed2e91778efa17a" target="_blank">a6451a3</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtreeef02896c4023f26eafe95c2d0f7b44325030c726targetblankef02896a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtreea6451a3fdf13ab22bcf8df8c0ed2e91778efa17atargetblanka6451a3a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -381,6 +381,8 @@ Great! You are using Git for version control. Tracking code development and conn
 <pre><code>
 Ignored files:
     Ignored:    .DS_Store
+    Ignored:    analysis/figure/
+    Ignored:    code/.DS_Store
     Ignored:    data/.DS_Store
     Ignored:    output/.DS_Store
 
@@ -388,15 +390,27 @@ Untracked files:
     Untracked:  Rplot.jpeg
     Untracked:  S2A.jpeg
     Untracked:  S2B.jpeg
+    Untracked:  data/Chimp_orthoexon_extended_info.txt
+    Untracked:  data/Human_orthoexon_extended_info.txt
+    Untracked:  data/Meta_data.txt
+    Untracked:  data/chimp_lengths.txt
+    Untracked:  data/counts_iPSC.txt
     Untracked:  data/final.10kb.homer.df
     Untracked:  data/final.juicer.10kb.KR
     Untracked:  data/final.juicer.10kb.VC
+    Untracked:  data/human_lengths.txt
+    Untracked:  output/DC_regions.txt
+    Untracked:  output/IEE.RPKM.RDS
+    Untracked:  output/IEE_voom_object.RDS
+    Untracked:  output/data.4.filtered.lm.QC
     Untracked:  output/data.4.fixed.init.LM
     Untracked:  output/data.4.fixed.init.QC
     Untracked:  output/data.4.init.LM
     Untracked:  output/data.4.init.QC
+    Untracked:  output/data.4.lm.QC
     Untracked:  output/full.data.10.init.LM
     Untracked:  output/full.data.10.init.QC
+    Untracked:  output/full.data.10.lm.QC
 
 </code></pre>
 <p>
@@ -435,6 +449,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/IttaiEres/HiCiPSC/972c85ae427a5270d402497bd260c0647a934f9a/docs/index.html" target="_blank">972c85a</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-03-14
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -551,8 +582,9 @@ Start workflowr project.
 <li><a href="initial_QC.html">Reading in of the data, normalization, and initial quality control metrics–Figures 1, S1, S2, S8</a></li>
 <li><a href="linear_modeling.html">Linear modeling of the data to find quantitative contact differences between humans and chimpanzees–No figures here, but useful for understanding Figures 2 &amp; S3</a></li>
 <li><a href="linear_modeling_QC.html">Quality control on the linear modeling, to account for p-value inflation and volcano plot asymmetry–Figures 2, S3</a></li>
+<li><a href="gene_expression.html">Orthogonal analysis with gene expression data collected from the same cell lines–Figures 4, S4, 5,</a></li>
+<li><a href="TADs.html">TAD Analyses</a></li>
 <li><a href="enrichment.html">Enrichment analyses on the linear-modeling significant Hi-C hits</a></li>
-<li><a href="gene_expression.html">ALL TAD Analyses and Orthogonal analysis with gene expression data collected from the same cell lines</a></li>
 </ul>
 </div>
 <div id="analyses-utilizing-juicer" class="section level4">
