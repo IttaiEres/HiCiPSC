@@ -189,6 +189,9 @@ ggplot(data=true3d) + geom_point(aes(x=bin_quant, y=dist_class, size=set_size, c
 #Based on the 3D QQ quality control plot, the hit classes with larger distance-between-mates differences should be filtered out due to inflation of # hits significant @ 5% FDR. This gets rid of ~55k hits, or about a seventh of them. Essentially I am removing any hits that showed a difference in distance of greater than 20kb when lifting Over acros the species, to eliminate technical genomic differences that may drive signal in the species term:
 highclass <- which(plot3d$dist_diff>20000)
 data.filtered <- data.4[-highclass,] #Just removed high class since it has the starkest effect on proportion of hits significant @ 5% FDR
+
+#Check on which of these hits that we have filtered out were discovered in one or both species; response to Reviewer 2 questions:
+table(data.4$disc_species[highclass]) #~1500 H-specific, ~4000 C-specific, ~50k found in both--not really "due to liftOver" 
 ```
 Now I have obliterated any remaining concerns about the QQ plot inflation, and filtered out another class of Hi-C significant hits where species differences may have been driven by issues with liftOver between genomes.
 

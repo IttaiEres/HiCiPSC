@@ -1,0 +1,1193 @@
+---
+title: "Functional Epigenetic Enrichments of Hi-C Bins"
+author: "Ittai Eres"
+date: "2019-04-22"
+output: workflowr::wflow_html
+---
+
+```{r library loading, include=FALSE, echo=FALSE}
+#Load in necessary packages.
+library(limma)
+library(plyr)
+library(tidyr)
+library(data.table)
+library(reshape2)
+#library(ggplot2)
+library(cowplot)
+library(ggsignif)
+library(plotly)
+library(dplyr)
+library(Hmisc)
+library(gplots)
+library(stringr)
+library(heatmaply)
+library(RColorBrewer)
+library(edgeR)
+library(tidyverse)
+library(compiler)
+library(bedr)
+enableJIT(3)
+```
+###Reading in the data, reformatting for enrichment analyses
+Here I merely read in the filtered data and create a function to reformat it for a variety of overlap analyses external to R.
+```{r}
+#Now, read in filtered data from linear_modeling_QC.Rmd.
+data.filtered <- fread("output/data.4.filtered.lm.QC", header=TRUE, data.table=FALSE, stringsAsFactors = FALSE, showProgress=FALSE)
+#meta.data <- data.frame("SP"=c("H", "H", "C", "C", "H", "H", "C", "C"), "SX"=c("F", "M", "M", "F", "M", "F", "M", "F"), "Batch"=c(1, 1, 1, 1, 2, 2, 2, 2))
+
+#Now, prepare a bedPE file from my filtered data! Here I construct a function to do this in case I ever want to do it again. The H1 and H2 columns are good to use for this.
+bedpe.prep <- function(homersigdf, res, species){ #Also is the BEDPE format!
+  if(species=="human"){
+  H1 <- homersigdf$H1
+  H2 <- homersigdf$H2
+  H1_coords <- as.numeric(gsub(".*-", "", H1))
+  H2_coords <- as.numeric(gsub(".*-", "", H2))
+  H1_chrs <- gsub("-.*", "", H1)
+  H2_chrs <- gsub("-.*", "", H2)
+  H1_first <- ifelse(H1_coords<H2_coords, H1_coords, H2_coords)
+  H2_second <- ifelse(H1_coords<H2_coords, H2_coords, H1_coords)
+  result <- data.frame(chr.1 = H1_chrs, start.1 = H1_first, end.1 = H1_first+res, chr.2 = H2_chrs, start.2 = H2_second, end.2 = H2_second+res)}
+  if(species=="chimp"){
+  H1 <- homersigdf$C1
+  H2 <- homersigdf$C2
+  H1_coords <- as.numeric(gsub(".*-", "", H1))
+  H2_coords <- as.numeric(gsub(".*-", "", H2))
+  H1_chrs <- gsub("-.*", "", H1)
+  H2_chrs <- gsub("-.*", "", H2)
+  H1_first <- ifelse(H1_coords<H2_coords, H1_coords, H2_coords)
+  H2_second <- ifelse(H1_coords<H2_coords, H2_coords, H1_coords)
+  result <- data.frame(chr.1 = H1_chrs, start.1 = H1_first, end.1 = H1_first+res, chr.2 = H2_chrs, start.2 = H2_second, end.2 = H2_second+res)}
+  return(result)
+}
+
+humpairs <- bedpe.prep(data.filtered, 10000 ,"human")
+humpairs <- format(humpairs, scientific=FALSE)
+chimpairs <- bedpe.prep(data.filtered, 10000, "chimp")
+chimpairs <- format(chimpairs, scientific=FALSE)
+fwrite(humpairs, "data/epigenetic_enrichments/filt.bins.humans.bedPE", quote = FALSE, sep = "\t", col.names = TRUE, row.names=FALSE)
+fwrite(chimpairs, "data/epigenetic_enrichments/filt.bins.chimps.bedPE", quote = FALSE, sep = "\t", col.names = TRUE, row.names=FALSE)
+```
+
+###Functional enrichments: read-in of files and creation of comprehensive dataframe.
+Looking at functional categories enriched in my specific bins. Here I pull out several histone mark peak files and chromHMM annotations, overlapping them with my significant Hi-C bins and adding in information from my linear modeling on the contacts as well as RNA-seq differential expression analyses.
+```{r Functional Bin Enrichments}
+#####First, obtain data frames from the gene_expression.Rmd file, so I can use the promoter information we have from our in-house metaorthoexon trios file.
+gene.hic <- readRDS("output/gene.hic.filt.RDS")
+
+###################ChromHMM Enrichments: I obtain the chromHMM bin annotations.
+HMM.info.1 <- read.csv("data/epigenetic_enrichments/new_updated/intersects/chromHMM_bin1.bed", sep="\t", header=FALSE)
+HMM.info.2 <- read.csv("data/epigenetic_enrichments/new_updated/intersects/chromHMM_bin2.bed", sep="\t", header=FALSE)
+
+#Fix things up, obtain single identifications for each bin based on highest abundance of annotations.
+HMM.info.1$HID <- paste(HMM.info.1$V1, HMM.info.1$V2, sep="-")
+HMM.info.2$HID <- paste(HMM.info.2$V1, HMM.info.2$V2, sep="-")
+group_by(HMM.info.1, HID, V7) %>% summarise(overlap=sum(V13)) %>% group_by(HID) %>% summarise(chromstate=V7[which.max(overlap)]) -> bin1.HMM.anno #Summarizes each bin as a single chromHMM annotation. This does it by which element covers majority of the bin, rather than just frequency of elements as this would work: group_by(HMM.info.1, HID) %>% summarise(chromstate=names(sort(-table(V7)))[1]).
+group_by(HMM.info.2, HID, V7) %>% summarise(overlap=sum(V13)) %>% group_by(HID) %>% summarise(chromstate=V7[which.max(overlap)]) -> bin2.HMM.anno
+colnames(bin1.HMM.anno) <- c("H1", "bin1.HMM")
+colnames(bin2.HMM.anno) <- c("H2", "bin2.HMM")
+
+group_by(HMM.info.1, HID, V7) %>% summarise(overlap=sum(V13)) -> bin1.HMM.overlaps #Gets me specific annotations' summed overlaps on each bin. Now to convert to wide-form df:
+bin1.HMMs <- spread(bin1.HMM.overlaps, V7, overlap) #2nd argument is new column names (annotations), 3rd argument is values (length of overlap)
+group_by(HMM.info.2, HID, V7) %>% summarise(overlap=sum(V13)) -> bin2.HMM.overlaps #Same situation for second set of bins.
+bin2.HMMs <- spread(bin2.HMM.overlaps, V7, overlap)
+colnames(bin1.HMMs) <- c("H1", "Nothing", "TssA", "TssBiv", "BivFlnk", "EnhBiv", "ReprPC", "ReprPCWk", "Quies", "TssAFlnk", "TxFlnk", "Tx", "TxWk", "EnhG", "Enh", "ZNF/Rpts", "Het")
+colnames(bin2.HMMs) <- c("H2", "Nothing", "TssA", "TssBiv", "BivFlnk", "EnhBiv", "ReprPC", "ReprPCWk", "Quies", "TssAFlnk", "TxFlnk", "Tx", "TxWk", "EnhG", "Enh", "ZNF/Rpts", "Het")
+
+
+#Add in linear modeling information from the data.filtered df of my homer hits. Combine data frames here for analysis of the overall proportions by assigning each bin to a given chromHMM annotation; as well as for quantitatively assessing differences in the overlaps of these elements at particular FDRs.
+chromenrich <- select(data.filtered, H1, H2, C1, C2, sp_BH_pval, sp_beta)
+chromrich <- left_join(chromenrich, bin1.HMM.anno, by="H1")
+chromrich <- left_join(chromrich, bin2.HMM.anno, by="H2")
+chromrich <- chromrich[order(chromrich$sp_BH_pval),] #Order by FDR. Provides a df of the Hi-C bin hits and their chromHMM annotations.
+HMM.quant <- left_join(chromenrich, bin1.HMMs, by="H1")
+HMM.quant <- left_join(HMM.quant, bin2.HMMs, by="H2", suffix=c(".1", ".2"))
+HMM.quant <- HMM.quant[,c(-5:-6)]
+chromrich$HpairID <- paste(chromrich$H1, chromrich$H2, sep="_")
+chromrich$CpairID <- paste(chromrich$C1, chromrich$C2, sep="_")
+HMM.quant$HpairID <- paste(HMM.quant$H1, HMM.quant$H2, sep="_")
+chromrich <- left_join(chromrich, HMM.quant[,c(-1:-4)], by="HpairID")
+
+####Now, add in other chromatin mark peak files and info about their overlap with Hi-C bins:
+#####################CTCF Enrichments. Also works for other quantitative enrichments that just look at overlapping bases. These were made with bedtools pairtobed -type notispan -a filt.bins.bedPE -b iPSC_CTCF.bed
+CTCF.humans <- read.csv("data/epigenetic_enrichments/new_updated/intersects/hg38.CTCF.notispan.bed", sep="\t", header=FALSE)
+CTCF.chimps <- read.csv("data/epigenetic_enrichments/new_updated/intersects/pt5.CTCF.notispan.bed", sep="\t", header=FALSE)
+CTCF.humans$HpairID <- paste(paste(CTCF.humans$V1, CTCF.humans$V2, sep="-"), paste(CTCF.humans$V4, CTCF.humans$V5, sep="-"), sep="_")
+CTCF.chimps$CpairID <- paste(paste(CTCF.chimps$V1, CTCF.chimps$V2, sep="-"), paste(CTCF.chimps$V4, CTCF.chimps$V5, sep="-"), sep="_")
+
+######Start of other quantitative enrichments. These were all called with bedtools intersect -wao using the nodup file of each set of bins individually.
+DHS.bin1 <- read.csv("data/epigenetic_enrichments/new_updated/intersects/DHS_bin1.bed", sep="\t", header=FALSE)
+DHS.bin2 <- read.csv("data/epigenetic_enrichments/new_updated/intersects/DHS_bin2.bed", sep="\t", header=FALSE)
+Hac.bin1 <- read.csv("data/epigenetic_enrichments/new_updated/intersects/H3K27ac_bin1.bed", sep="\t", header=FALSE)
+Hac.bin2 <- read.csv("data/epigenetic_enrichments/new_updated/intersects/H3K27ac_bin2.bed", sep="\t", header=FALSE)
+Hme1.bin1 <- read.csv("data/epigenetic_enrichments/new_updated/intersects/H3K4me1_bin1.bed", sep="\t", header=FALSE)
+Hme1.bin2 <- read.csv("data/epigenetic_enrichments/new_updated/intersects/H3K4me1_bin2.bed", sep="\t", header=FALSE)
+Hme3.bin1 <- read.csv("data/epigenetic_enrichments/new_updated/intersects/H3K4me3_bin1.bed", sep="\t", header=FALSE)
+Hme3.bin2 <- read.csv("data/epigenetic_enrichments/new_updated/intersects/H3K4me3_bin2.bed", sep="\t", header=FALSE)
+HK27.bin1 <- read.csv("data/epigenetic_enrichments/new_updated/intersects/H3K27me3_bin1.bed", sep="\t", header=FALSE)
+HK27.bin2 <- read.csv("data/epigenetic_enrichments/new_updated/intersects/H3K27me3_bin2.bed", sep="\t", header=FALSE)
+#HAR.bin1 <- read.csv("data/epigenetic_enrichments/new_updated/intersects/HAR_bin1.bed", sep="\t", header=FALSE)
+#HAR.bin2 <- read.csv("data/epigenetic_enrichments/new_updated/intersects/HAR_bin2.bed", sep="\t", header=FALSE)
+
+DHS.bin1$HID <- paste(DHS.bin1$V1, DHS.bin1$V2, sep="-")
+DHS.bin2$HID <- paste(DHS.bin2$V1, DHS.bin2$V2, sep="-")
+group_by(DHS.bin1, HID) %>% summarise(bin1.DHSval=sum(V14)) -> bin1.DHS
+group_by(DHS.bin2, HID) %>% summarise(bin2.DHSval=sum(V14)) -> bin2.DHS
+
+Hac.bin1$HID <- paste(Hac.bin1$V1, Hac.bin1$V2, sep="-")
+Hac.bin2$HID <- paste(Hac.bin2$V1, Hac.bin2$V2, sep="-")
+group_by(Hac.bin1, HID) %>% summarise(bin1.Hacval=sum(V14)) -> bin1.Hac
+group_by(Hac.bin2, HID) %>% summarise(bin2.Hacval=sum(V14)) -> bin2.Hac
+
+Hme1.bin1$HID <- paste(Hme1.bin1$V1, Hme1.bin1$V2, sep="-")
+Hme1.bin2$HID <- paste(Hme1.bin2$V1, Hme1.bin2$V2, sep="-")
+group_by(Hme1.bin1, HID) %>% summarise(bin1.Hme1val=sum(V14)) -> bin1.Hme1
+group_by(Hme1.bin2, HID) %>% summarise(bin2.Hme1val=sum(V14)) -> bin2.Hme1
+
+Hme3.bin1$HID <- paste(Hme3.bin1$V1, Hme3.bin1$V2, sep="-")
+Hme3.bin2$HID <- paste(Hme3.bin2$V1, Hme3.bin2$V2, sep="-")
+group_by(Hme3.bin1, HID) %>% summarise(bin1.Hme3val=sum(V14)) -> bin1.Hme3
+group_by(Hme3.bin2, HID) %>% summarise(bin2.Hme3val=sum(V14)) -> bin2.Hme3
+
+HK27.bin1$HID <- paste(HK27.bin1$V1, HK27.bin1$V2, sep="-")
+HK27.bin2$HID <- paste(HK27.bin2$V1, HK27.bin2$V2, sep="-")
+group_by(HK27.bin1, HID) %>% summarise(bin1.HK27val=sum(V14)) -> bin1.HK27
+group_by(HK27.bin2, HID) %>% summarise(bin2.HK27val=sum(V14)) -> bin2.HK27
+#HAR.bin1$HID <- paste(HAR.bin1$V1, HAR.bin1$V2, sep="-") #HAR analysis was ugly, consider this stupid and deprecated.
+#HAR.bin2$HID <- paste(HAR.bin2$V1, HAR.bin2$V2, sep="-")
+#group_by(HAR.bin1, HID) %>% summarise(bin1.HARval=sum(V7)) -> bin1.HAR
+#group_by(HAR.bin2, HID) %>% summarise(bin2.HARval=sum(V7)) -> bin2.HAR
+
+colnames(bin1.DHS)[1] <- colnames(bin1.Hac)[1] <- colnames(bin1.Hme1)[1] <- colnames(bin1.Hme3)[1] <- colnames(bin1.HK27)[1] <- "H1"
+colnames(bin2.DHS)[1] <- colnames(bin2.Hac)[1] <- colnames(bin2.Hme1)[1] <- colnames(bin2.Hme3)[1] <- colnames(bin2.HK27)[1] <- "H2"
+
+#Sequential left joins to make huge table on paired data!
+left_join(chromrich, bin1.DHS, by = "H1") %>% left_join(., bin2.DHS, by="H2") %>% left_join(., bin1.Hac, by="H1") %>% left_join(., bin2.Hac, by="H2") %>% left_join(., bin1.Hme1, by="H1") %>% left_join(., bin2.Hme1, by="H2") %>% left_join(., bin1.Hme3, by="H1") %>% left_join(., bin2.Hme3, by="H2") %>% left_join(., bin1.HK27, by="H1") %>% left_join(., bin2.HK27, by="H2") -> full.annotations
+
+full.annotations$H.CTCF.interrupt <- ifelse(full.annotations$HpairID %in% CTCF.humans$HpairID, "no", "yes") #Since I did notispan, if it's in that file, it did NOT have a CTCF interruption--if it isn't, it did.
+full.annotations$C.CTCF.interrupt <- ifelse(full.annotations$CpairID %in% CTCF.chimps$CpairID, "no", "yes")
+
+#Add a column to the df indicating which interactions include a promoter and which don't. Here I am defining a promoter based off the meta ortho exon trios file (true.promoter). I used to secondarily look at chromHMM promoters (promoter) but there's not much to be gleaned there.
+promoter.IDs <- gene.hic$HID
+full.annotations$true.promoter <- ifelse((full.annotations$H1 %in% promoter.IDs)|(full.annotations$H2 %in% promoter.IDs), "yes", "no")
+full.annotations$promoter.bin1 <- ifelse(full.annotations$H1 %in% promoter.IDs, "yes", "no")
+full.annotations$promoter.bin2 <- ifelse(full.annotations$H2 %in% promoter.IDs, "yes", "no")
+#full.annotations$HMM.promoter <- ifelse(chromrich$bin1.HMM=="1_TssA"|chromrich$bin1.HMM=="2_TssAFlnk"|chromrich$bin1.HMM=="3_TxFlnk"|chromrich$bin2.HMM=="1_TssA"|chromrich$bin2.HMM=="2_TssAFlnk"|chromrich$bin2.HMM=="3_TxFlnk", "yes", "no")
+
+#Just out of interest, see how many of the genes that are/not DE had promoters picked up by our Hi-C:
+nonprom.IDs <- filter(gene.hic, adj.P.Val>0.05) %>% select(., HID)
+prom.IDs <- filter(gene.hic, adj.P.Val<=0.05) %>% select(., HID)
+
+nrow(prom.IDs)
+sum((prom.IDs$HID %in% full.annotations$H1)|(prom.IDs$HID %in% full.annotations$H2))/nrow(prom.IDs)
+nrow(nonprom.IDs)
+sum((nonprom.IDs$HID %in% full.annotations$H1)|(nonprom.IDs$HID %in% full.annotations$H2))/nrow(nonprom.IDs)
+#Not interesting.
+
+#Grab info from gene.hic to add some information to this table about DE and DC status:
+DEbins <- gene.hic$HID[which(gene.hic$adj.P.Val<=0.05)]
+full.annotations$DE <- ifelse((full.annotations$H1 %in% DEbins)|(full.annotations$H2 %in% DEbins), "yes", "no")
+full.annotations$DC <- ifelse(full.annotations$sp_BH_pval<=0.05, "yes", "no")
+full.annotations$differential <- ifelse(full.annotations$DC=="no"&full.annotations$DE=="no", "no", ifelse(full.annotations$DC=="yes"&full.annotations$DE=="yes", "both", ifelse(full.annotations$DC=="yes", "contact", "expression")))
+#I'll use this downstream in this file to look at enrichments of specific sets of histone marks in my data. This is now ordered by FDR for DC as well.
+
+#A function to deduplicate the hits, removing bins that are repeated at higher FDR, which can be used on full.annotations after a variety of filters are applied.
+deduplicator <- function(df){
+  duplicators <- data.frame(matrix(ncol=2, nrow=nrow(df)*2))
+  duplicators[seq(1, nrow(df)*2, 2), 1] <- df$H1
+  duplicators[seq(2, nrow(df)*2, 2), 1] <- df$H2
+  duplicators$X2 <- rep(1:nrow(df), 1, each=2)
+  repeats <- which(duplicated(duplicators$X1))
+  bin1.dups <- repeats[which(repeats%%2==1)] #Pull out bin 1 duplicates, based on odd row identity.
+  bin2.dups <- repeats[which(repeats%%2==0)] #Pull out bin 2 duplicates, based on even row identity.
+  dup1.indices <- duplicators[bin1.dups, 2] #Pull out the original row indices for bin1 dups.
+  dup2.indices <- duplicators[bin2.dups, 2] #Pull out the original row indices for bin2 dups.
+  df[dup1.indices, c(7, 11:26, 43, 45, 47, 49, 51)] <- NA #Set duplicated bin1 values to NA (aside from bin identity, already checked this function works as desired).
+  df[dup2.indices, c(8, 27:42, 44, 46, 48, 50, 52)] <- NA #Set duplicated bin2 values to NA (aside from bin identity).
+  return(df) #Return the cleaned df!
+}
+
+###Now, prepare files of annotations, first filtering for given questions about promoters, and then filtering out duplicates in those data frames. Save those out afterwards as a variety of different files to calculate chromHMM annotations proportions on them on midway2.
+#Promoter annotations, DE/DC or not.
+full.proms <- filter(full.annotations, true.promoter=="yes") %>% deduplicator(.)
+proms.DE <- filter(full.annotations, true.promoter=="yes", DE=="yes") %>% deduplicator(.)
+proms.not.DE <- filter(full.annotations, true.promoter=="yes", DE=="no") %>% deduplicator(.)
+proms.DC <- filter(full.annotations, true.promoter=="yes", DC=="yes") %>% deduplicator(.)
+proms.not.DC <- filter(full.annotations, true.promoter=="yes", DC=="no") %>% deduplicator(.)
+
+#Also do exclusive sets for differential status on the promoter bins:
+proms.DE.only <- filter(full.annotations, true.promoter=="yes", differential=="expression") %>% deduplicator(.)
+proms.DC.only <- filter(full.annotations, true.promoter=="yes", differential=="contact") %>% deduplicator(.)
+proms.both.only <- filter(full.annotations, true.promoter=="yes", differential=="both") %>% deduplicator(.)
+proms.neither <- filter(full.annotations, true.promoter=="yes", differential=="no") %>% deduplicator(.)
+
+#Non promoter annotations, DE/DC or not. Note that there are no DE non-promoters, DUH, meaning there are none that fall into the "both" differential category. Also means full set of non-promoters qualifies as not DE.
+full.no.proms <- filter(full.annotations, true.promoter=="no") %>% deduplicator(.)
+no.proms.DC <- filter(full.annotations, true.promoter=="no", DC=="yes") %>% deduplicator(.)
+no.proms.not.DC <- filter(full.annotations, true.promoter=="no", DC=="no") %>% deduplicator
+
+#Now, write these files out.
+saveRDS(full.proms, file="data/epigenetic_enrichments/enrich_perms/full.promoters.RDS")
+saveRDS(proms.DE, file="data/epigenetic_enrichments/enrich_perms/promoters.DE.RDS")
+saveRDS(proms.not.DE, file="data/epigenetic_enrichments/enrich_perms/promoters.not.DE.RDS")
+saveRDS(proms.DC, file="data/epigenetic_enrichments/enrich_perms/promoters.DC.RDS")
+saveRDS(proms.not.DC, file="data/epigenetic_enrichments/enrich_perms/promoters.not.DC.RDS")
+saveRDS(proms.neither, file="data/epigenetic_enrichments/enrich_perms/promoters.neither.RDS")
+
+saveRDS(full.no.proms, file="data/epigenetic_enrichments/enrich_perms/full.no.promoters.RDS")
+saveRDS(no.proms.DC, file="data/epigenetic_enrichments/enrich_perms/no.promoters.DC.RDS")
+saveRDS(no.proms.not.DC, file="data/epigenetic_enrichments/enrich_perms/no.promoters.not.DC.RDS")
+
+saveRDS(proms.DE.only, file="data/epigenetic_enrichments/enrich_perms/proms.DE.only.RDS")
+saveRDS(proms.DC.only, file="data/epigenetic_enrichments/enrich_perms/proms.DC.only.RDS")
+saveRDS(proms.both.only, file="data/epigenetic_enrichments/enrich_perms/proms.both.only.RDS")
+saveRDS(proms.neither, file="data/epigenetic_enrichments/enrich_perms/proms.neither.only.RDS")
+
+#Last thing I am interested in also writing out and working with is a df that only takes the bins making contact with promoter bins (not the promoters themselves). Construct that here:
+prom.1s <- filter(full.annotations, promoter.bin1=="yes") %>% select(., H2, sp_BH_pval, sp_beta, bin2.HMM, HpairID, Nothing.2, TssA.2, TssBiv.2, BivFlnk.2, EnhBiv.2, ReprPC.2, ReprPCWk.2, Quies.2, TssAFlnk.2, TxFlnk.2, Tx.2, TxWk.2, EnhG.2, Enh.2, "ZNF/Rpts.2", Het.2, bin2.DHSval, bin2.Hacval, bin2.Hme1val, bin2.Hme3val, bin2.HK27val, H.CTCF.interrupt, C.CTCF.interrupt, DE, DC, differential)
+prom.2s <- filter(full.annotations, promoter.bin2=="yes") %>% select(., H1, sp_BH_pval, sp_beta, bin1.HMM, HpairID, Nothing.1, TssA.1, TssBiv.1, BivFlnk.1, EnhBiv.1, ReprPC.1, ReprPCWk.1, Quies.1, TssAFlnk.1, TxFlnk.1, Tx.1, TxWk.1, EnhG.1, Enh.1, "ZNF/Rpts.1", Het.1, bin1.DHSval, bin1.Hacval, bin1.Hme1val, bin1.Hme3val, bin1.HK27val, H.CTCF.interrupt, C.CTCF.interrupt, DE, DC, differential)
+
+#Combine them into one df for running analyses on!
+colnames(prom.2s) <- colnames(prom.1s)
+promoter.contacts <- rbind(prom.1s, prom.2s)
+
+#Prepare separate dfs of the different classes for running tabulations on. This initial df (promoter.contacts) is also the one I should use for running a number of downstream histone mark analyses and asking targeted questions about the bins making contacts with promoters...
+promoter.contacts <- promoter.contacts[order(promoter.contacts$sp_BH_pval),] #Order by FDR here, then wait to remove duplicates until differential filtering is done.
+
+mates.proms.full <- promoter.contacts[!duplicated(promoter.contacts$H2),] #Prep full promoter file, minus duplicate bins.
+mates.proms.DE <- filter(promoter.contacts, DE=="yes")
+mates.proms.DE <- mates.proms.DE[!duplicated(mates.proms.DE$H2),] #DE file, minus duplicates
+mates.proms.not.DE <- filter(promoter.contacts, DE=="no")
+mates.proms.not.DE <- mates.proms.not.DE[!duplicated(mates.proms.not.DE$H2),] #notDE file, minus duplicates
+mates.proms.DC <- filter(promoter.contacts, DC=="yes")
+mates.proms.DC <- mates.proms.DC[!duplicated(mates.proms.DC$H2),] #DC file minus dups
+mates.proms.not.DC <- filter(promoter.contacts, DC=="no")
+mates.proms.not.DC <- mates.proms.not.DC[!duplicated(mates.proms.not.DC$H2),] #notDC file, minus dups
+
+#Classes with exclusive differential identifications.
+mates.proms.DE.only <- filter(promoter.contacts, differential=="expression")
+mates.proms.DE.only <- mates.proms.DE.only[!duplicated(mates.proms.DE.only$H2),]
+mates.proms.DC.only <- filter(promoter.contacts, differential=="contact")
+mates.proms.DC.only <- mates.proms.DC.only[!duplicated(mates.proms.DC.only$H2),]
+mates.proms.DCDE.only <- filter(promoter.contacts, differential=="both")
+mates.proms.DCDE.only <- mates.proms.DCDE.only[!duplicated(mates.proms.DCDE.only$H2),]
+mates.proms.neither.only <- filter(promoter.contacts, differential=="no")
+mates.proms.neither.only <- mates.proms.neither.only[!duplicated(mates.proms.neither.only$H2),]
+
+#Now, write these files out! Note that chromHMM tabulator function will have to be adjusted for these.
+saveRDS(mates.proms.full, file="data/epigenetic_enrichments/enrich_perms/mates.proms.full.RDS")
+saveRDS(mates.proms.DE, file="data/epigenetic_enrichments/enrich_perms/mates.proms.DE.RDS")
+saveRDS(mates.proms.not.DE, file="data/epigenetic_enrichments/enrich_perms/mates.proms.not.DE.RDS")
+saveRDS(mates.proms.DC, file="data/epigenetic_enrichments/enrich_perms/mates.proms.DC.RDS")
+saveRDS(mates.proms.not.DC, file="data/epigenetic_enrichments/enrich_perms/mates.proms.not.DC.RDS")
+saveRDS(mates.proms.DE.only, file="data/epigenetic_enrichments/enrich_perms/mates.proms.DE.only.RDS")
+saveRDS(mates.proms.DC.only, file="data/epigenetic_enrichments/enrich_perms/mates.proms.DC.only.RDS")
+saveRDS(mates.proms.DCDE.only, file="data/epigenetic_enrichments/enrich_perms/mates.proms.DCDE.only.RDS")
+saveRDS(mates.proms.neither.only, file="data/epigenetic_enrichments/enrich_perms/mates.proms.neither.only.RDS")
+```
+
+###WIDE VARIETY OF DISTANCE ANALYSES!!!!
+```{r}
+#After adding in promoters could also be interested in what distances look like for promoter vs non-promoter contacts:
+H2s <- as.numeric(gsub(".*-", "", full.annotations$H2))
+H1s <- as.numeric(gsub(".*-", "", full.annotations$H1))
+Hdiffs <- H2s-H1s
+C2s <- as.numeric(gsub(".*-", "", full.annotations$C2))
+C1s <- as.numeric(gsub(".*-", "", full.annotations$C1))
+Cdiffs <- C2s-C1s
+proms.dist <- data.frame(hdist=Hdiffs, cdist=Cdiffs, promoter=full.annotations$true.promoter, DE=full.annotations$DE, DC=full.annotations$DC)
+
+#Now t-test a variety of these distributions before visualizing.
+t.test(filter(proms.dist, promoter=="no")$hdist, filter(proms.dist, promoter=="yes")$hdist) #Prom/not in humans
+t.test(filter(proms.dist, promoter=="no")$cdist, filter(proms.dist, promoter=="yes")$cdist) #Prom/not in chimps
+t.test(filter(proms.dist, promoter=="yes")$cdist, filter(proms.dist, promoter=="yes")$hdist) #Promoter contacts in both species
+t.test(filter(proms.dist, promoter=="no")$cdist, filter(proms.dist, promoter=="no")$hdist) #Non promoter contacts in both species
+t.test(filter(proms.dist, promoter=="yes", DE=="yes")$hdist, filter(proms.dist, promoter=="yes", DE=="no")$hdist) #DE/not DE contact distance amongst promoters, humans. Significant!
+t.test(filter(proms.dist, promoter=="yes", DE=="yes")$cdist, filter(proms.dist, promoter=="yes", DE=="no")$cdist) #DE/not DE contact distance amongst promoters, chimps. Significant!
+t.test(filter(proms.dist, promoter=="yes", DE=="yes")$hdist, filter(proms.dist, promoter=="yes", DE=="yes")$cdist) #No difference in DE genes' distances b/t species! Insignificant.
+t.test(filter(proms.dist, promoter=="yes", DE=="no")$hdist, filter(proms.dist, promoter=="yes", DE=="no")$cdist) #Same for non-DE promoter contacts. Insignificant.
+t.test(filter(proms.dist, promoter=="yes", DC=="yes")$hdist, filter(proms.dist, promoter=="yes", DC=="no")$hdist) #DC/not DC contact distance amongst promoters, humans. Insignificant.
+t.test(filter(proms.dist, promoter=="yes", DC=="yes")$cdist, filter(proms.dist, promoter=="yes", DC=="no")$cdist) #DC/not DC contact distance amongst promoters, chimps. Insignificant.
+t.test(filter(proms.dist, promoter=="yes", DC=="yes")$hdist, filter(proms.dist, promoter=="yes", DC=="yes")$cdist) #No difference in DC loci's distances b/t species! Insignificant.
+t.test(filter(proms.dist, promoter=="yes", DC=="no")$hdist, filter(proms.dist, promoter=="yes", DC=="no")$cdist) #Same for non-DC promoter contacts. Insignificant.
+
+#If you're willing to look at all hits, and not just promoter-involved contacts, DC/non difference becomes significant:
+t.test(filter(proms.dist,  DC=="yes")$hdist, filter(proms.dist,  DC=="no")$hdist) #DC/not DC contact distance amongst all hits, humans. Significant!
+t.test(filter(proms.dist,  DC=="yes")$cdist, filter(proms.dist,  DC=="no")$cdist) #DC/not DC contact distance amongst all hits, chimps. Significant!
+t.test(filter(proms.dist,  DC=="yes")$hdist, filter(proms.dist,  DC=="yes")$cdist) #No difference in DC loci's distances b/t species!
+t.test(filter(proms.dist,  DC=="no")$hdist, filter(proms.dist,  DC=="no")$cdist) #Significant difference in distances of non-DC contacts agnostic of promoter status.
+
+#Now need to do this by expression quantiles, and then will be done with this (After visualizing)
+
+####Now visualize!
+#Promoter/non
+ggplot(data=proms.dist) + geom_violin(aes(x=promoter, group=promoter, color=promoter, y=hdist), draw_quantiles = c(0.25, 0.5, 0.75)) + ggtitle("Distance Between Mates of a Pair | Promoter-Contact Status") + xlab("Does Contact Involve a Promoter?") + ylab("Distance b/t Mates") + guides(color=guide_legend(title="Promoter-Contact?")) + annotate("text", x=1.5, y=3000000, label="< 2.2 e -16") #Could repeat this for chimp but it looks literally identical (I've done it before). Dope result though, very big difference, clear that promoter-involving contacts are a little more physically constrained.
+
+#DE/non
+ggplot(data=filter(proms.dist, promoter=="yes")) + geom_violin(aes(x=DE, group=DE, color=DE, y=hdist), draw_quantiles=c(0.25, 0.5, 0.75)) + ggtitle("Distance Between Mates of a Pair | DE Status") + xlab("Does Promoter-Overlapping Contact Show Species DE?") + ylab("Distance b/t Mates") + guides(color=guide_legend(title="DE?")) + annotate("text", x=1.5, y=2000000, label="0.02") #Note that once again, I have done this for chimp distances and it looks nearly identical. Since this p-val was 0.015 and chimps was 0.017, just round to 0.02.
+
+#DC/non, ONLY PROMOTER-INVOLVING hits
+ggplot(data=filter(proms.dist, promoter=="yes")) + geom_violin(aes(x=DC, group=DC, color=DC, y=hdist), draw_quantiles = c(0.25, 0.5, 0.75)) + ggtitle("Distance Between Mates of a Pair | DC Status") + xlab("Does Promoter-Overlapping Contact Show Species DC?") + ylab("Distance b/t Mates") + guides(color=guide_legend(title="DC?")) + annotate("text", x=1.5, y=2000000, label="0.1") #Once again, extremely similar to chimp case, no need to re-visualize.
+
+#DC/non, ALL hits!
+ggplot(data=proms.dist) + geom_violin(aes(x=DC, group=DC, color=DC, y=cdist), draw_quantiles = c(0.25, 0.5, 0.75)) + ggtitle("Distance Between Mates of a Pair | DC Status") + xlab("Does Contact Show Species DC?") + ylab("Distance b/t Mates") + guides(color=guide_legend(title="DC?")) + annotate("text", x=1.5, y=2000000, label="< 2.2 e -16") #As before, chimp version is nearly identical
+
+#Non-DCs between species--the only interspecies comparison that showed up as significant. Have to make a separate DF for this :|
+inter.dc <- data.frame(distance=c(filter(proms.dist, DC=="no")$hdist, filter(proms.dist, DC=="no")$cdist), type=c(rep("Human", 282409), rep("Chimpanzee", 282409)))
+ggplot(data=inter.dc) + geom_violin(aes(x=type, group=type, y=distance), draw_quantiles = c(0.25, 0.5, 0.75)) + ggtitle("Distance Between non-DC Mates of a Pair by Species") + xlab("Species") + ylab("Distance") + annotate("text", x=1.5, y=2000000, label="5 e -3")# + guides(color=guide_legend(title="Species"))  #Is this information overload? Do we really even need the color?
+
+
+####DISTANCE BY DC STATUS AND BETA!!!!
+ggplot(data=data.filtered) + geom_line(aes(x=sp_BH_pval, y=Hdist, color=sp_beta))
+dis <- ifelse(data.filtered$sp_beta<0, "Chimp", "Human")
+ggplot(data=data.filtered) + geom_line(aes(x=sp_BH_pval, y=Hdist, color=dis)) + coord_cartesian(xlim=c(0, 0.05))# + scale_color_manual(values=c("red", "blue"), labels=c("human", "chimp"))
+#Humans have lost several VERY STRONG long-range contacts relative to chimps?!?!?!
+nrow(filter(data.filtered, sp_BH_pval<=0.05, sp_beta>0, Hdist>2000000)) #There are only 9 contacts stronger in humans than chimps at greater than 2 MB distance. Goes down to 0 at 3 MB.
+nrow(filter(data.filtered, sp_BH_pval<=0.05, sp_beta<0, Hdist>2000000)) #There are 67 contacts stronger in chimps than humans at greater than 2 MB distance. Only goes down to 57 at 3 MB...
+
+#Even if you don't filter by DC status, many more strong long-distance contacts in chimps!
+nrow(filter(data.filtered, sp_beta<0, Hdist>2000000)) #713 stronger in chimps @ 2 MB. At 3 MB, it's 72.
+nrow(filter(data.filtered, sp_beta>0, Hdist>2000000)) #384 stronger in humans @ 2 MB. At 3 MB, it's 17.
+
+#Are the magnitudes of these particular differences significantly different?
+t.test(abs(filter(data.filtered, sp_beta<0, Hdist>2000000)$sp_beta), abs(filter(data.filtered, sp_beta>0, Hdist>2000000)$sp_beta))
+t.test(abs(filter(data.filtered, sp_beta<0, sp_BH_pval<=0.05, Hdist>2000000)$sp_beta), abs(filter(data.filtered, sp_beta>0, sp_BH_pval<=0.05, Hdist>2000000)$sp_beta))
+
+#Significance testing for Hdistance based on species of greater contact strength, both w/ and w/out FDR filtering.
+t.test(filter(data.filtered, sp_BH_pval<=0.05, sp_beta>0)$Hdist, filter(data.filtered, sp_BH_pval<=0.05, sp_beta<0)$Hdist)
+t.test(filter(data.filtered, sp_beta>0)$Hdist, filter(data.filtered, sp_beta<0)$Hdist) #Both significant in both species.
+
+#Prepare a DF for visualization.
+ggdist <- data.frame(distance=c(data.filtered$Hdist, data.filtered$Cdist), FDR=rep(data.filtered$sp_BH_pval, 2), beta=rep(data.filtered$sp_beta, 2), type=c(rep("Human", 292070), rep("Chimp", 292070)))
+ggdist$sp.contact <- ifelse(ggdist$beta<0, "Chimp", "Human")
+
+#Distances visualization based on binary of contact strength across species.
+ggplot(data=filter(ggdist, type=="Human")) + geom_violin(aes(y=distance, x=sp.contact, group=sp.contact), draw_quantiles=c(0.25, 0.5, 0.75)) + ggtitle("Contact Distances | Species of Greater Contact Strength") + xlab("Species with stronger contact") + ylab("Distance between mates of a pair") + annotate("text", x=1.5, y=2000000, label="< 2.2 e -16")
+ggplot(data=filter(ggdist, type=="Human", FDR<=0.05)) + geom_violin(aes(y=distance, x=sp.contact, group=sp.contact), draw_quantiles=c(0.25, 0.5, 0.75)) + ggtitle("DC Contact Distances | Species of Greater Contact Strength") + xlab("Species with stronger contact") + ylab("Distance between mates of a DC pair") + annotate("text", x=1.5, y=2000000, label="1 e -3")
+
+#Magnitude differences visualization. First across all, then only in DC!
+ggplot(data=filter(ggdist, type=="Human", distance>2000000)) + geom_violin(aes(y=abs(beta), x=sp.contact, group=sp.contact, color=sp.contact), draw_quantiles = c(0.25, 0.5, 0.75)) + xlab("Species with stronger contact") + ylab("|Species Effect Size|") + ggtitle("Species Betas for Long-Range (>2MB) Contacts") + annotate("text", x=1.5, y=3, label="< 2.2 e -16")#This is a comparison of 713 in chimps to 384 in humans.
+ggplot(data=filter(ggdist, type=="Human", distance>2000000, FDR<=0.05)) + geom_violin(aes(y=abs(beta), x=sp.contact, group=sp.contact, color=sp.contact), draw_quantiles = c(0.25, 0.5, 0.75)) + xlab("Species with stronger contact") + ylab("|Species Effect Size|") + ggtitle("Species Betas for DC Long-Range (>2MB) Contacts") + annotate("text", x=1.5, y=3, label="4.1 e -5") #This is a comparison of 67 in chimps to 9 in humans.
+
+#Time to actually evaluate what these strange chimp hits actually are...would be very exciting if any of them are gene contacts!
+interesting.hits <- which(data.filtered$Hdist>2000000&data.filtered$sp_BH_pval<=0.05)
+unique(data.filtered$Cchr[interesting.hits])
+
+DE.interest <- which(gene.hic$HID %in% data.filtered$H1[interesting.hits] | gene.hic$HID %in% data.filtered$H2[interesting.hits]) #Not clear whether hmin or gene.hic would be better, although both only give 4 with this method...
+unique(gene.hic$Hchr.C[DE.interest])
+DE.interest <- which(data.filtered$H1[interesting.hits] %in% gene.hic$HID | data.filtered$H2[interesting.hits] %in% gene.hic$HID)
+unique(data.filtered$Hchr[DE.interest])
+```
+
+###ChromHMM Mark Length Analysis and Normalization
+```{r}
+###WEIGHTS SECTION
+#Below this I have the analysis I originally did; here I have one where I am weighting chromHMM annotations by the inverse of their mean overlap with the bins. Seb has also suggested looking at it in terms of # of peaks which I can try if this doesn't look good.
+colnames(bin1.HMMs) <- c("HID", ".", "1_TssA", "10_TssBiv", "11_BivFlnk", "12_EnhBiv", "13_ReprPC", "14_ReprPCWk", "15_Quies", "2_TssAFlnk", "3_TxFlnk", "4_Tx", "5_TxWk", "6_EnhG", "7_Enh", "8_ZNF/Rpts", "9_Het")
+colnames(bin2.HMMs) <- c("HID", ".", "1_TssA", "10_TssBiv", "11_BivFlnk", "12_EnhBiv", "13_ReprPC", "14_ReprPCWk", "15_Quies", "2_TssAFlnk", "3_TxFlnk", "4_Tx", "5_TxWk", "6_EnhG", "7_Enh", "8_ZNF/Rpts", "9_Het")
+weighter <- rbind(bin1.HMMs, bin2.HMMs)
+colnames(bin1.HMMs)[1] <- "H1"
+colnames(bin2.HMMs)[1] <- "H2"
+weighter <- weighter[!duplicated(weighter),]
+weighter <- as.data.frame(weighter)
+for(col in 2:ncol(weighter)){
+  weighter[,col] <- weighter[,col]*(1/mean(weighter[,col], na.rm=TRUE))
+}
+#Now that I have the weighted values input, assign individual bins to particular annotations!
+weighter$chromstate <- NA
+weighter$.[which(weighter$.=="NaN")] <- 1
+for(row in 1:nrow(weighter)){
+  weighter$chromstate[row] <- colnames(weighter)[which.max(weighter[row,])]
+}
+weighter$chromstate <- as.factor(weighter$chromstate)
+levels(weighter$chromstate)
+#Just look to see if these new annotations are even a different distribution than the original. Note that I have to run some code below this to have access to chromrich:
+#Getting rid of bin assignment duplicates in chromrich:
+myrich <- select(chromrich, H1, H2, bin1.HMM, bin2.HMM)
+colnames(myrich) <- c("H1", "H1", "chromstate", "chromstate")
+myrich <- rbind(myrich[, c(1, 3)], myrich[,c(2, 4)])
+myrich <- myrich[!duplicated(myrich),]
+#myrich <- filter(myrich, chromstate!=".")
+ggplot(data=myrich) + geom_histogram(aes(x=chromstate, group=chromstate, fill=chromstate), stat="count") + coord_cartesian(ylim=c(0, 80000)) + ggtitle("Basal chromHMM State Assignments Distribution") + xlab("chromHMM State Assignment") + ylab("# Bins") + theme(axis.text.x=element_blank())
+ggplot(data=weighter) + geom_histogram(aes(x=chromstate, group=chromstate, fill=chromstate), stat="count") + coord_cartesian(ylim=c(0, 80000)) + scale_x_discrete(drop=FALSE) + ggtitle("Weighted chromHMM State Assignments Distribution") + xlab("chromHMM State Assignment") + ylab("# Bins") + theme(axis.text.x=element_blank())
+#Looks much better, try running enrichment analyses on this now? Can match H1s and H2s from chromrich with this, add in the sp_BH_pval to keep the Hi-C FDR up in there, and run on midway.
+weightrich <- select(chromrich, H1, H2, sp_BH_pval)
+colnames(weightrich) <- c("HID", "HID", "sp_BH_pval")
+weightrich <- rbind(weightrich[,-2], weightrich[,-1])
+left_join(weightrich, weighter[,c(1, 18)], by="HID") -> weightrich
+weightrich <- data.frame(H1=weightrich$HID[1:292070], H2=weightrich$HID[292071:584140], sp_BH_pval=weightrich$sp_BH_pval[1:292070], bin1.HMM=weightrich$chromstate[1:292070], bin2.HMM=weightrich$chromstate[292071:584140])
+chromwtrich <- full.annotations
+chromwtrich$bin1.HMM <- weightrich$bin1.HMM
+chromwtrich$bin2.HMM <- weightrich$bin2.HMM
+###WEIGHTS SECTION
+
+###Filtering and saving RDS objects for running out on midway.
+#Promoter annotations, DE/DC or not.
+wt.full.proms <- filter(chromwtrich, true.promoter=="yes") %>% deduplicator(.)
+wt.proms.DE <- filter(chromwtrich, true.promoter=="yes", DE=="yes") %>% deduplicator(.)
+wt.proms.not.DE <- filter(chromwtrich, true.promoter=="yes", DE=="no") %>% deduplicator(.)
+
+#Also do exclusive sets for differential status on the promoter bins:
+wt.proms.DE.only <- filter(chromwtrich, true.promoter=="yes", differential=="expression") %>% deduplicator(.)
+wt.proms.DC.only <- filter(chromwtrich, true.promoter=="yes", differential=="contact") %>% deduplicator(.)
+wt.proms.both.only <- filter(chromwtrich, true.promoter=="yes", differential=="both") %>% deduplicator(.)
+wt.proms.neither <- filter(chromwtrich, true.promoter=="yes", differential=="no") %>% deduplicator(.)
+
+#Non promoter annotations, DE/DC or not. Note that there are no DE non-promoters, DUH, meaning there are none that fall into the "both" differential category. Also means full set of non-promoters qualifies as not DE.
+wt.full.no.proms <- filter(chromwtrich, true.promoter=="no") %>% deduplicator(.)
+
+#Now, write these files out.
+saveRDS(chromwtrich, file="data/epigenetic_enrichments/enrich_perms/weights/full.RDS")
+saveRDS(wt.full.proms, file="data/epigenetic_enrichments/enrich_perms/weights/full.promoters.RDS")
+saveRDS(wt.proms.DE, file="data/epigenetic_enrichments/enrich_perms/weights/promoters.DE.RDS")
+saveRDS(wt.proms.not.DE, file="data/epigenetic_enrichments/enrich_perms/weights/promoters.not.DE.RDS")
+
+saveRDS(wt.full.no.proms, file="data/epigenetic_enrichments/enrich_perms/weights/full.no.promoters.RDS")
+
+saveRDS(wt.proms.DE.only, file="data/epigenetic_enrichments/enrich_perms/weights/proms.DE.only.RDS")
+saveRDS(wt.proms.DC.only, file="data/epigenetic_enrichments/enrich_perms/weights/proms.DC.only.RDS")
+saveRDS(wt.proms.both.only, file="data/epigenetic_enrichments/enrich_perms/weights/proms.both.only.RDS")
+saveRDS(wt.proms.neither, file="data/epigenetic_enrichments/enrich_perms/weights/proms.neither.only.RDS")
+
+#Last thing I am interested in also writing out and working with is a df that only takes the bins making contact with promoter bins (not the promoters themselves). Construct that here:
+wt.prom.1s <- filter(chromwtrich, promoter.bin1=="yes") %>% select(., H2, sp_BH_pval, sp_beta, bin2.HMM, HpairID, Nothing.2, TssA.2, TssBiv.2, BivFlnk.2, EnhBiv.2, ReprPC.2, ReprPCWk.2, Quies.2, TssAFlnk.2, TxFlnk.2, Tx.2, TxWk.2, EnhG.2, Enh.2, "ZNF/Rpts.2", Het.2, bin2.DHSval, bin2.Hacval, bin2.Hme1val, bin2.Hme3val, bin2.HK27val, H.CTCF.interrupt, C.CTCF.interrupt, DE, DC, differential)
+wt.prom.2s <- filter(chromwtrich, promoter.bin2=="yes") %>% select(., H1, sp_BH_pval, sp_beta, bin1.HMM, HpairID, Nothing.1, TssA.1, TssBiv.1, BivFlnk.1, EnhBiv.1, ReprPC.1, ReprPCWk.1, Quies.1, TssAFlnk.1, TxFlnk.1, Tx.1, TxWk.1, EnhG.1, Enh.1, "ZNF/Rpts.1", Het.1, bin1.DHSval, bin1.Hacval, bin1.Hme1val, bin1.Hme3val, bin1.HK27val, H.CTCF.interrupt, C.CTCF.interrupt, DE, DC, differential)
+
+#Combine them into one df for running analyses on!
+colnames(wt.prom.2s) <- colnames(wt.prom.1s)
+wt.promoter.contacts <- rbind(wt.prom.1s, wt.prom.2s)
+
+#Prepare separate dfs of the different classes for running tabulations on. This initial df (promoter.contacts) is also the one I should use for running a number of downstream histone mark analyses and asking targeted questions about the bins making contacts with promoters...
+wt.promoter.contacts <- wt.promoter.contacts[order(wt.promoter.contacts$sp_BH_pval),] #Order by FDR here, then wait to remove duplicates until differential filtering is done.
+
+wt.mates.proms.full <- wt.promoter.contacts[!duplicated(wt.promoter.contacts$H2),] #Prep full promoter file, minus duplicate bins.
+wt.mates.proms.DE <- filter(wt.promoter.contacts, DE=="yes")
+wt.mates.proms.DE <- wt.mates.proms.DE[!duplicated(mates.proms.DE$H2),] #DE file, minus duplicates
+wt.mates.proms.not.DE <- filter(wt.promoter.contacts, DE=="no")
+wt.mates.proms.not.DE <- wt.mates.proms.not.DE[!duplicated(mates.proms.not.DE$H2),] #notDE file, minus duplicates
+wt.mates.proms.DC <- filter(wt.promoter.contacts, DC=="yes")
+wt.mates.proms.DC <- wt.mates.proms.DC[!duplicated(mates.proms.DC$H2),] #DC file minus dups
+wt.mates.proms.not.DC <- filter(wt.promoter.contacts, DC=="no")
+wt.mates.proms.not.DC <- wt.mates.proms.not.DC[!duplicated(mates.proms.not.DC$H2),] #notDC file, minus dups
+
+#Classes with exclusive differential identifications.
+wt.mates.proms.DE.only <- filter(wt.promoter.contacts, differential=="expression")
+wt.mates.proms.DE.only <- wt.mates.proms.DE.only[!duplicated(mates.proms.DE.only$H2),]
+wt.mates.proms.DC.only <- filter(wt.promoter.contacts, differential=="contact")
+wt.mates.proms.DC.only <- wt.mates.proms.DC.only[!duplicated(mates.proms.DC.only$H2),]
+wt.mates.proms.DCDE.only <- filter(wt.promoter.contacts, differential=="both")
+wt.mates.proms.DCDE.only <- wt.mates.proms.DCDE.only[!duplicated(mates.proms.DCDE.only$H2),]
+wt.mates.proms.neither.only <- filter(wt.promoter.contacts, differential=="no")
+wt.mates.proms.neither.only <- wt.mates.proms.neither.only[!duplicated(mates.proms.neither.only$H2),]
+
+#Now, write these files out! Note that chromHMM tabulator function will have to be adjusted for these.
+saveRDS(wt.mates.proms.full, file="data/epigenetic_enrichments/enrich_perms/weights/mates.proms.full.RDS")
+saveRDS(wt.mates.proms.DE, file="data/epigenetic_enrichments/enrich_perms/weights/mates.proms.DE.RDS")
+saveRDS(wt.mates.proms.not.DE, file="data/epigenetic_enrichments/enrich_perms/weights/mates.proms.not.DE.RDS")
+saveRDS(wt.mates.proms.DC, file="data/epigenetic_enrichments/enrich_perms/weights/mates.proms.DC.RDS")
+saveRDS(wt.mates.proms.not.DC, file="data/epigenetic_enrichments/enrich_perms/weights/mates.proms.not.DC.RDS")
+saveRDS(wt.mates.proms.DE.only, file="data/epigenetic_enrichments/enrich_perms/weights/mates.proms.DE.only.RDS")
+saveRDS(wt.mates.proms.DC.only, file="data/epigenetic_enrichments/enrich_perms/weights/mates.proms.DC.only.RDS")
+saveRDS(wt.mates.proms.DCDE.only, file="data/epigenetic_enrichments/enrich_perms/weights/mates.proms.DCDE.only.RDS")
+saveRDS(wt.mates.proms.neither.only, file="data/epigenetic_enrichments/enrich_perms/weights/mates.proms.neither.only.RDS")
+
+###Initial silly exploration.
+chromHMM <- fread("data/epigenetic_enrichments/new_updated/iPSC_chromHMM.15state.bed", sep="\t")
+chromHMM <- select(chromHMM, V4, V2, V3)
+chromHMM$size <- chromHMM$V3-chromHMM$V2
+chromHMM <- select(chromHMM, V4, size)
+colnames(chromHMM) <- c("State", "Size")
+chromHMM$State <- as.factor(chromHMM$State)
+levels(chromHMM$State) <- c("TssA", "TssBiv", "BivFlnk", "EnhBiv","ReprPC", "ReprPCWk", "Quies", "TssAFlnk", "TxFlnk", "Tx", "TxWk", "EnhG", "Enh", "ZNF/Rpts", "Het")
+ggplot(data=chromHMM) + geom_violin(aes(group=State, y=Size, color=State, x=State)) + coord_cartesian(ylim=c(190, 10000)) + theme(axis.text.x=element_blank()) + ggtitle("ChromHMM Peak Sizes, Genome-Wide")
+
+#This was genome-wide, now look amongst just my bins
+colnames(bin2.HMMs) <- colnames(bin1.HMMs)
+colnames(bin1.HMMs)[1] <- colnames(bin2.HMMs)[1] <- "HID"
+myHMMs <- rbind(bin1.HMMs, bin2.HMMs)
+myHMMs <- myHMMs[,-2]
+myHMMs <- melt(myHMMs, by="HID")
+ggplot(data=myHMMs) + geom_violin(aes(group=variable, y=value, color=variable, x=variable)) + coord_cartesian(ylim=c(190, 10000)) + theme(axis.text.x=element_blank()) + ggtitle("ChromHMM Peak Sizes, Significant Hi-C Bins") + xlab("State") + ylab("Size") + guides(color=guide_legend(title="State"))
+```
+
+#####ChromHMM Chi-Squared Tests
+```{r}
+####Basic chi-squared tests to check if particular classes of hits are enriched for specific chromHMM marks (i.e. enhancer-associated marks). 
+#First, compare regions making contact with a promoter (not the promoter itself) to those regions that do not do so. I already created DFs of each of these above with duplicates removed: wt.mates.proms.full, and wt.full.no.proms
+proms.assigns <- wt.mates.proms.full$bin2.HMM
+nonproms.assigns <- c(as.character(wt.full.no.proms$bin1.HMM), as.character(wt.full.no.proms$bin2.HMM))
+proms.assigns <- proms.assigns[!is.na(proms.assigns)]
+nonproms.assigns <- nonproms.assigns[!is.na(nonproms.assigns)] #Get rid of NA values
+
+#Now, make a table of whether they have any of the enhancer-associated annotations (Enh, EnhG, MAYBE EnhBiv if it looks good and can include BivFlnk if I want to...)
+proms.assigns.enh <- ifelse(proms.assigns=="6_EnhG", "yes", "no")
+nonproms.assigns.enh <- ifelse(nonproms.assigns=="6_EnhG", "yes", "no")
+
+table2test <- data.frame(no=c(sum(nonproms.assigns.enh=="no"), sum(proms.assigns.enh=="no")), yes=c(sum(nonproms.assigns.enh=="yes"), sum(proms.assigns.enh=="yes")))
+
+colnames(table2test) <- c("No Enh", "Enh")
+rownames(table2test) <- c("No Prom", "Promoter Contact")
+
+chisq.test(table2test) #For Enh+EnhG, don't get a good p-value and get a relationship a bit the opposite of what I might've expected. For EnhG alone, get a solid p-value and the relationship we're looking for! Adding in other enhancer annotations only makes things worse!
+
+###Now see if I can replicate that result on DC vs. non-DC regions...
+#First need to create the appropriate DFs because don't have de-dupped ones for this binary division from the weighted info.
+wt.DC <- filter(chromwtrich, DC=="yes") %>% deduplicator()
+wt.nonDC <- filter(chromwtrich, DC=="no") %>% deduplicator()
+
+DC.assigns <- c(as.character(wt.DC$bin1.HMM), as.character(wt.DC$bin2.HMM))
+nonDC.assigns <- c(as.character(wt.nonDC$bin1.HMM), as.character(wt.nonDC$bin2.HMM))
+DC.assigns <- DC.assigns[!is.na(DC.assigns)]
+nonDC.assigns <- nonDC.assigns[!is.na(nonDC.assigns)]
+
+DC.assigns.enh <- ifelse(DC.assigns=="6_EnhG", "yes", "no")
+nonDC.assigns.enh <- ifelse(nonDC.assigns=="6_EnhG", "yes", "no")
+
+table2test <- data.frame(no=c(sum(nonDC.assigns.enh=="no"), sum(DC.assigns.enh=="no")), yes=c(sum(nonDC.assigns.enh=="yes"), sum(DC.assigns.enh=="yes")))
+
+colnames(table2test) <- c("No Enh", "Enh")
+rownames(table2test) <- c("No DC", "DC")
+
+chisq.test(table2test) #Gets a good p-value, and has the right direction of effect here! Perfect, only do EnhG
+
+#Great! Can get what I want for both hit classes for 6_EnhG, although direction of the relationship is the opposite of expectation if including Enh and if adding in the other Enh-related annotations too.
+
+#need to see why total DC here is 9629 hits...do about 7k get filtered out after we exclude the RBHLO issues?
+```
+
+###ChromHMM Visualization
+Now, I load in the chromHMM proportion tables from midway2, and visualize them to examine differences in dynamics of regulatory regions for promoter and non-promoter contacts.
+```{r chromHMM Visualization}
+#Just a function for calculating proportions of chromHMM annotations in bin sets of the significant hits. Primarily used on midway2, created and tested here. No particular function at this point right now--loading of proportion tables begins shortly after.
+anno.prop.calc <- function(df, col1, col2, startbin, pval.col){
+  categories <- unique(c(levels(as.factor(df[,col1])), levels(as.factor(df[,col2]))))
+  result <- as.data.frame(matrix(ncol=length(categories), nrow=length((startbin+1):(nrow(df)+1))))
+  colnames(result) <- categories
+  result$pval <- NA
+  firstbit <- table(c(as.character(df[1:startbin, col1]), as.character(df[1:startbin, col2])))
+  result[1, which(colnames(result) %in% names(firstbit))] <- firstbit
+  result[1, "pval"] <- df[startbin, pval.col]
+  for(row in (startbin+1):nrow(df)){
+    tmp.table <- table(c(as.character(df[1:row, col1]), as.character(df[1:row, col2])))
+    result[row-(startbin-1), which(colnames(result) %in% names(tmp.table))] <- tmp.table
+    result[row-(startbin-1), "pval"] <- df[row, pval.col]
+  }
+  return(result)
+}
+
+###Create vectors for the names of the chromHMM marks and their standardized colors, for passing to scale_fill_manual in ggplot2 calls below.
+HMM.marks <- c("Nothing", "TssA", "TssBiv", "BivFlnk", "EnhBiv","ReprPC", "ReprPCWk", "Quies", "TssAFlnk", "TxFlnk", "Tx", "TxWk", "EnhG", "Enh", "ZNF/Rpts", "Het")
+HMM.colors <- c(rgb(0, 0, 0, maxColorValue = 255), rgb(255, 0, 0, maxColorValue = 255), rgb(205, 92, 92, maxColorValue = 255),   rgb(233, 150, 122, maxColorValue = 255), rgb(189, 183, 107, maxColorValue = 255), rgb(128, 128, 128, maxColorValue = 255), rgb(192, 192, 192, maxColorValue = 255), rgb(255, 255, 255, maxColorValue = 255), rgb(255, 69, 0, maxColorValue = 255), rgb(50, 205, 50, maxColorValue = 255), rgb(0, 128, 0, maxColorValue = 255), rgb(0, 100, 0, maxColorValue = 255), rgb(194, 225, 5, maxColorValue = 255), rgb(255, 255, 0, maxColorValue = 255), rgb(102, 205, 170, maxColorValue = 255), rgb(138, 145, 208, maxColorValue = 255))
+
+#######Read in proportion tables from running on midway2! First I'll do this on the full set of pairs that contain a promoter bin, and then on just the set of bins that are themselves contacting a promoter (and not the promoters themselves). Note that I have now changed this to the weighted version of these chromHMM annotation calls; if we wanted the unweighted we could CTRL+F and replace the directory structure of files being read-in here to go back to just /newresults (before /weights/newresults)
+prom.props <- readRDS("data/epigenetic_enrichments/enrich_perms/weights/results/full.promoters.RDS.result.RDS")
+nonprom.props <- readRDS("data/epigenetic_enrichments/enrich_perms/weights/results/full.no.promoters.RDS.result.RDS")
+
+colnames(nonprom.props) <- colnames(prom.props) <- c("Nothing", "TssA", "TssBiv", "BivFlnk", "EnhBiv", "ReprPC", "ReprPCWk", "Quies", "TssAFlnk", "TxFlnk", "Tx", "TxWk", "EnhG", "Enh", "ZNF/Rpts", "Het", "pval")
+
+max(which(prom.props$pval<=0.3))
+max(which(nonprom.props$pval<=0.3))
+
+prom.props$bin <- 1:nrow(prom.props)
+nonprom.props$bin <- 1:nrow(nonprom.props)
+prom.props <- prom.props[,-17]
+nonprom.props <- nonprom.props[,-17]
+
+ggprom <- melt(prom.props[1:10000,], id="bin")
+ggnoprom <- melt(nonprom.props[1:10000,], id="bin") #Only take the first ~50k rows of this because it takes FOREVER otherwise and there are only ~36k promoters anyway.
+
+#Visualize chromHMM annotation dynamics across FDR for promoter bins and non-promoter bins.
+ggplot(data=ggprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM, Promoter Bins") + xlab("Decreasing Significance from Hi-C LM") + ylab("Proportion of bins assigned to annotation") + guides(fill=guide_legend(title="Annotations")) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE)
+ggplot(data=ggnoprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM, non-Promoter Bins") + xlab("Decreasing Significance from Hi-C LM") + ylab("Proportion of bins assigned to annotation") + guides(fill=guide_legend(title="Annotations")) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE)
+
+#Maybe only the first 1000 are actually interesting...
+ggprom <- melt(prom.props[1:1000,], id="bin")
+ggnoprom <- melt(nonprom.props[1:1000,], id="bin") #Only take the first ~50k rows of this because it takes FOREVER otherwise and there are only ~36k promoters anyway.
+
+#Visualize chromHMM annotation dynamics across FDR for promoter bins and non-promoter bins.
+ggplot(data=ggprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM, Promoter Bins") + xlab("Decreasing Significance from Hi-C LM") + ylab("Proportion of bins assigned to annotation") + guides(fill=guide_legend(title="Annotations")) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE)
+ggplot(data=ggnoprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM, non-Promoter Bins") + xlab("Decreasing Significance from Hi-C LM") + ylab("Proportion of bins assigned to annotation") + guides(fill=guide_legend(title="Annotations")) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE)
+
+##Mabe it's even less than 1000 actually. Do it entirely by FDR instead? Reload and reformat the dfs to see pvals again.
+prom.props <- readRDS("data/epigenetic_enrichments/enrich_perms/weights/results/full.promoters.RDS.result.RDS")
+nonprom.props <- readRDS("data/epigenetic_enrichments/enrich_perms/weights/results/full.no.promoters.RDS.result.RDS")
+colnames(nonprom.props) <- colnames(prom.props) <- c("Nothing", "TssA", "TssBiv", "BivFlnk", "EnhBiv", "ReprPC", "ReprPCWk", "Quies", "TssAFlnk", "TxFlnk", "Tx", "TxWk", "EnhG", "Enh", "ZNF/Rpts", "Het", "pval")
+prom.props$pval[100]
+nonprom.props$pval[100]
+#The p-values are drastically different at these ranks unfortunately. But do one more visualization, even closer, 250 total. First reformat the dfs to work with ggplot:
+prom.props$bin <- 1:nrow(prom.props)
+nonprom.props$bin <- 1:nrow(nonprom.props)
+prom.props <- prom.props[,-17]
+nonprom.props <- nonprom.props[,-17]
+ggprom <- melt(prom.props[1:4000,], id="bin")
+ggnoprom <- melt(nonprom.props[1:4000,], id="bin")
+
+#Visualize chromHMM annotation dynamics across FDR for promoter bins and non-promoter bins.
+ggplot(data=ggprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM, Promoter Bins") + xlab("Decreasing Significance from Hi-C LM") + ylab("Proportion of bins assigned to annotation") + guides(fill=guide_legend(title="Annotations")) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE)
+ggplot(data=ggnoprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM Annotation Assignment, non-Promoter Bins") + xlab("Ranked Species Term Significance from Hi-C Linear Model") + ylab("Proportion of Bins Assigned to Annotation") + guides(fill=guide_legend(title="Annotations")) +  scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) #FIG6A
+FIG6A <- ggplot(data=ggnoprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM Annotation Assignment, non-Promoter Bins") + xlab("Ranked Species Term Significance from Hi-C Linear Model") + ylab("Proportion of Bins Assigned to Annotation") + guides(fill=FALSE) +  scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) 
+#These aren't great right now because the colors don't even match for the annotations between the two...highly annoying, useless.
+
+#Read in, format properly, and visualize these same dynamics for promoter bins, split between those that were or were not DE/DC.
+prom.DE.props <- readRDS("data/epigenetic_enrichments/enrich_perms/weights/results/promoters.DE.RDS.result.RDS")
+prom.noDE <- readRDS("data/epigenetic_enrichments/enrich_perms/weights/results/promoters.not.DE.RDS.result.RDS")
+
+prom.DE.props$bin <- 1:nrow(prom.DE.props)
+prom.noDE$bin <- 1:nrow(prom.noDE)
+prom.DE.props <- prom.DE.props[,-17]
+prom.noDE <- prom.noDE[,-17]
+
+ggpromDE <- melt(prom.DE.props[1:4000,], id="bin")
+ggprom.noDE <- melt(prom.noDE[1:4000,], id="bin")
+
+ggplot(data=ggpromDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM Annotations, DE Promoter Bins") + xlab("Decreasing Significance from Hi-C LM") + ylab("Proportion of bins assigned to annotation") + guides(fill=guide_legend(title="Annotations")) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE)
+ggplot(data=ggprom.noDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM Annotations, non-DE Promoter Bins") + xlab("Decreasing Significance from Hi-C LM") + ylab("Proportion of bins assigned to annotation") + guides(fill=guide_legend(title="Annotations")) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE)
+
+#Again unfortunately p-values line up terribly, for instance max at the DC promoters is 5% and nonDC promoters 15% at the same rank (1200). At the smaller ranges (~250), it's even worse (.1% to 7%). In the DE case, at 4000 rank it's 65% and 29% DE to no DE, and around areas of extreme change (~250) it's 4.6% to .17%, and at 100 rank it's .47% to .06%...
+#Because nothing is conclusive here, just do 10%, 5%, and 1% FDR below.
+
+#####Repeat of what I just did, but now on only promoter-contacting bins (and not the promoters themselves).
+#First, make plot of the full range of dynamics, then separated out by differential status, and then by DC and DE statuses.
+prom.props <- readRDS("data/epigenetic_enrichments/enrich_perms/weights/results/mates.proms.full.RDS.result.RDS")
+both.props <- readRDS("data/epigenetic_enrichments/enrich_perms/weights/results/mates.proms.DCDE.only.RDS.result.RDS")
+neither.props <-  readRDS("data/epigenetic_enrichments/enrich_perms/weights/results/mates.proms.neither.only.RDS.result.RDS")
+expression.props <-  readRDS("data/epigenetic_enrichments/enrich_perms/weights/results/mates.proms.DE.only.RDS.result.RDS")
+contact.props <-  readRDS("data/epigenetic_enrichments/enrich_perms/weights/results/mates.proms.DC.only.RDS.result.RDS")
+
+colnames(prom.props) <- colnames(both.props) <- colnames(neither.props) <- colnames(expression.props) <- colnames(contact.props) <- c("Nothing", "TssA", "TssBiv", "BivFlnk", "EnhBiv", "ReprPC", "ReprPCWk", "Quies", "TssAFlnk", "TxFlnk", "Tx", "TxWk", "EnhG", "Enh", "ZNF/Rpts", "Het", "pval")
+
+prom.props$bin <- 1:nrow(prom.props)
+both.props$bin <- 1:nrow(both.props)
+neither.props$bin <- 1:nrow(neither.props)
+expression.props$bin <- 1:nrow(expression.props)
+contact.props$bin <- 1:nrow(contact.props)
+
+prom.props <- prom.props[,-17]
+both.props <- both.props[,-17]
+neither.props <- neither.props[,-17]
+expression.props <- expression.props[,-17]
+contact.props <- contact.props[,-17]
+
+ggprom <- melt(prom.props[1:4000,], id="bin")
+ggneither <- melt(neither.props[1:4000,], id="bin")
+ggboth <- melt(both.props, id="bin")
+ggexpression <- melt(expression.props[1:4000,], id="bin")
+ggcontact <- melt(contact.props, id="bin")
+
+#Visualize chromHMM annotation dynamics across FDR for promoter bins, and then by differential status.
+ggplot(data=ggprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM Annotation Assignment, Promoter-Contacting Bins") + xlab("Decreasing Significance from Hi-C LM") + ylab("Proportion of Bins Assigned to Annotation") + guides(fill=guide_legend(title="Annotations")) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) #FIG6B
+FIG6B <- ggplot(data=ggprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM Annotation Assignment, Promoter-Contacting Bins") + xlab("Ranked Species Term Significance from Hi-C Linear Model") + ylab("Proportion of Bins Assigned to Annotation") + guides(fill=FALSE) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) 
+ggplot(data=ggboth, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM, DC+DE Promoter-Contacting Bins") + xlab("Decreasing Significance from Hi-C LM") + ylab("Proportion of bins assigned to annotation") + guides(fill=guide_legend(title="Annotations")) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE)
+ggplot(data=ggexpression, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM, DE Promoter-Contacting Bins") + xlab("Decreasing Significance from Hi-C LM") + ylab("Proportion of bins assigned to annotation") + guides(fill=guide_legend(title="Annotations")) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE)
+ggplot(data=ggcontact, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM, DC Promoter-Contacting Bins") + xlab("Decreasing Significance from Hi-C LM") + ylab("Proportion of bins assigned to annotation") + guides(fill=guide_legend(title="Annotations")) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE)
+ggplot(data=ggneither, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM, non-DC/DE Promoter-Contacting Bins") + xlab("Decreasing Significance from Hi-C LM") + ylab("Proportion of bins assigned to annotation") + guides(fill=guide_legend(title="Annotations")) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE)
+
+###Now, read in, format properly, and visualize these same dynamics for promoter bins, split between those that were or were not DE/DC.
+prom.DC.props <- readRDS("data/epigenetic_enrichments/enrich_perms/weights/results/mates.proms.DC.RDS.result.RDS")
+prom.DE.props <- readRDS("data/epigenetic_enrichments/enrich_perms/weights/results/mates.proms.DE.RDS.result.RDS")
+prom.noDE <- readRDS("data/epigenetic_enrichments/enrich_perms/weights/results/mates.proms.not.DE.RDS.result.RDS")
+prom.noDC <- readRDS("data/epigenetic_enrichments/enrich_perms/weights/results/mates.proms.not.DC.RDS.result.RDS")
+
+prom.DC.props$bin <- 1:nrow(prom.DC.props)
+prom.DE.props$bin <- 1:nrow(prom.DE.props)
+prom.noDE$bin <- 1:nrow(prom.noDE)
+prom.noDC$bin <- 1:nrow(prom.noDC)
+prom.DC.props <- prom.DC.props[,-17]
+prom.DE.props <- prom.DE.props[,-17]
+prom.noDE <- prom.noDE[,-17]
+prom.noDC <- prom.noDC[,-17]
+
+ggpromDC <- melt(prom.DC.props, id="bin")
+ggpromDE <- melt(prom.DE.props[1:4000,], id="bin")
+ggprom.noDE <- melt(prom.noDE[1:4000,], id="bin")
+ggprom.noDC <- melt(prom.noDC[1:1250,], id="bin")
+
+ggplot(data=ggpromDC, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM, DC Promoter-Contacting Bins") + xlab("Decreasing Significance from Hi-C LM") + ylab("Proportion of bins assigned to annotation") + guides(fill=guide_legend(title="Annotations")) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE)
+ggplot(data=ggprom.noDC, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM, non-DC Promoter-Contacting Bins") + xlab("Decreasing Significance from Hi-C LM") + ylab("Proportion of bins assigned to annotation") + guides(fill=guide_legend(title="Annotations")) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE)
+
+ggplot(data=ggpromDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM Annotation Assignment, DE Promoter-Contacting Bins") + xlab("Ranked Species Term Significance from Hi-C Linear Model") + ylab("Proportion of Bins Assigned to Annotation") + guides(fill=FALSE) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) #FIG6C
+FIG6C <- ggplot(data=ggpromDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM Annotation Assignment, DE Promoter-Contacting Bins") + xlab("Ranked Species Term Significance from Hi-C Linear Model") + ylab("Proportion of Bins Assigned to Annotation") + guides(fill=FALSE) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE)
+ggplot(data=ggprom.noDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM Annotation Assignment, non-DE Promoter-Contacting Bins") + xlab("Ranked Species Term Significance from Hi-C Linear Model") + ylab("Proportion of Bins Assigned to Annotation") + guides(fill=FALSE) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) #FIG6D
+FIG6D <- ggplot(data=ggprom.noDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position="fill") + ggtitle("chromHMM Annotation Assignment, non-DE Promoter-Contacting Bins") + xlab("Ranked Species Term Significance from Hi-C Linear Model") + ylab("Proportion of Bins Assigned to Annotation") + guides(fill=FALSE) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE)
+
+###FIG 6###
+FIG6 <- plot_grid(FIG6A, FIG6B, FIG6C, FIG6D, labels=c("A", "B", "C", "D"), rel_widths = c(1, 1.2))
+save_plot("~/Desktop/FIG6.png", FIG6, nrow=2, ncol=2)
+#Too ugly, just print one by one and manually arrange. In this case, print with annotations once to put that legend on the side, and get all figures without legend:
+print(FIG6A)
+print(FIG6B)
+print(FIG6C) #C and D here end up being switched around in the actual paper.
+print(FIG6D) #Non-DE, actually C
+######
+
+###Now, also look at specific FDR levels for enrichments of a particular overlap! Prepare a df that has both the promoter and nonpromoter values for these, with duplicates within classes being filtered out (set to NA via deduplicator).
+head(mates.proms.full) #Created before, full set of promoter-contacting bins minus duplicates.
+nonprom.annos <- filter(full.annotations, true.promoter=="no") %>% deduplicator(.)
+dubs.nonprom <- data.frame(H1=rep(nonprom.annos$H1, 2), H2=rep(nonprom.annos$H2, 2), sp_BH_pval=rep(nonprom.annos$sp_BH_pval, 2), sp_beta=rep(nonprom.annos$sp_beta, 2), bin1.HMM=rep(nonprom.annos$bin1.HMM, 2), bin2.HMM=rep(nonprom.annos$bin2.HMM, 2), pairID=rep(nonprom.annos$HpairID, 2), Nothing=c(nonprom.annos$Nothing.1, nonprom.annos$Nothing.2), TssA=c(nonprom.annos$TssA.1, nonprom.annos$TssA.2), TssBiv=c(nonprom.annos$TssBiv.1, nonprom.annos$TssBiv.2), BivFlnk=c(nonprom.annos$TssBiv.1, nonprom.annos$TssBiv.2), EnhBiv=c(nonprom.annos$EnhBiv.1, nonprom.annos$EnhBiv.2), ReprPc=c(nonprom.annos$ReprPC.1, nonprom.annos$ReprPC.2), ReprPCWk=c(nonprom.annos$ReprPCWk.1, nonprom.annos$ReprPCWk.2), Quies=c(nonprom.annos$Quies.1, nonprom.annos$Quies.2), TssAFlnk=c(nonprom.annos$TssAFlnk.1, nonprom.annos$TssAFlnk.2), TxFlnk=c(nonprom.annos$TxFlnk.1, nonprom.annos$TxFlnk.2), Tx=c(nonprom.annos$Tx.1, nonprom.annos$Tx.2), TxWk=c(nonprom.annos$TxWk.1, nonprom.annos$TxWk.2), EnhG=c(nonprom.annos$EnhG.1, nonprom.annos$EnhG.2), Enh=c(nonprom.annos$Enh.1, nonprom.annos$Enh.2), ZNF_Rpts=c(nonprom.annos$`ZNF/Rpts.1`, nonprom.annos$`ZNF/Rpts.2`), Het=c(nonprom.annos$Het.1, nonprom.annos$Het.2), DHSval=c(nonprom.annos$bin1.DHSval, nonprom.annos$bin2.DHSval), Hacval=c(nonprom.annos$bin1.Hacval, nonprom.annos$bin2.Hacval), Hme1val=c(nonprom.annos$bin1.Hme1val, nonprom.annos$bin2.Hme1val), Hme3val=c(nonprom.annos$bin1.Hme3val, nonprom.annos$bin2.Hme3val), HK27val=c(nonprom.annos$bin1.HK27val, nonprom.annos$bin2.HK27val), H.CTCF.interrupt=rep(nonprom.annos$H.CTCF.interrupt, 2), C.CTCF.interrupt=rep(nonprom.annos$C.CTCF.interrupt, 2), DE=rep(nonprom.annos$DE, 2), DC=rep(nonprom.annos$DC, 2), differential=rep(nonprom.annos$differential, 2))#, CTCF.interrupt=rep(nonprom.annos$CTCF.interrupt, 2), true.promoter=rep(nonprom.annos$true.promoter, 2), promoter.bin1=rep(nonprom.annos$promoter.bin1, 2), promoter.bin2=rep(nonprom.annos$promoter.bin2, 2))
+dubs.nonprom <- dubs.nonprom[,c(-1, -5)]
+colnames(mates.proms.full) <- colnames(dubs.nonprom)
+mates.proms.full$true.promoter <-  "yes" #Create a variable to separate them before combining
+dubs.nonprom$true.promoter <- "no"
+
+#Now, for examining specific chromHMM marks, will want to combine these two--true.promoter is the variable that separates them out!
+chrom.annos <- rbind(dubs.nonprom, mates.proms.full)
+chrom.annos <- chrom.annos[order(chrom.annos$sp_BH_pval),] #Order by FDR. Duplicates have already been removed from each set. Set sizes are:
+sum(chrom.annos$true.promoter=="yes")
+sum(chrom.annos$true.promoter=="no")
+
+#Do the same thing for creating the other necessary DFs in comparison to the promoter-contacting set of bins. First DC/not and DE/not, then differential statuses.
+#Also do exclusive sets for differential status on the promoter bins:
+nonprom.DC <- filter(full.annotations, true.promoter=="no", DC=="yes") %>% deduplicator(.)
+nonprom.notDC <- filter(full.annotations, true.promoter=="no", DC=="no") %>% deduplicator(.)
+dubs.nonprom.DC <- data.frame(H1=rep(nonprom.DC$H1, 2), H2=rep(nonprom.DC$H2, 2), sp_BH_pval=rep(nonprom.DC$sp_BH_pval, 2), sp_beta=rep(nonprom.DC$sp_beta, 2), bin1.HMM=rep(nonprom.DC$bin1.HMM, 2), bin2.HMM=rep(nonprom.DC$bin2.HMM, 2), pairID=rep(nonprom.DC$HpairID, 2), Nothing=c(nonprom.DC$Nothing.1, nonprom.DC$Nothing.2), TssA=c(nonprom.DC$TssA.1, nonprom.DC$TssA.2), TssBiv=c(nonprom.DC$TssBiv.1, nonprom.DC$TssBiv.2), BivFlnk=c(nonprom.DC$TssBiv.1, nonprom.DC$TssBiv.2), EnhBiv=c(nonprom.DC$EnhBiv.1, nonprom.DC$EnhBiv.2), ReprPc=c(nonprom.DC$ReprPC.1, nonprom.DC$ReprPC.2), ReprPCWk=c(nonprom.DC$ReprPCWk.1, nonprom.DC$ReprPCWk.2), Quies=c(nonprom.DC$Quies.1, nonprom.DC$Quies.2), TssAFlnk=c(nonprom.DC$TssAFlnk.1, nonprom.DC$TssAFlnk.2), TxFlnk=c(nonprom.DC$TxFlnk.1, nonprom.DC$TxFlnk.2), Tx=c(nonprom.DC$Tx.1, nonprom.DC$Tx.2), TxWk=c(nonprom.DC$TxWk.1, nonprom.DC$TxWk.2), EnhG=c(nonprom.DC$EnhG.1, nonprom.DC$EnhG.2), Enh=c(nonprom.DC$Enh.1, nonprom.DC$Enh.2), ZNF_Rpts=c(nonprom.DC$`ZNF/Rpts.1`, nonprom.DC$`ZNF/Rpts.2`), Het=c(nonprom.DC$Het.1, nonprom.DC$Het.2), DHSval=c(nonprom.DC$bin1.DHSval, nonprom.DC$bin2.DHSval), Hacval=c(nonprom.DC$bin1.Hacval, nonprom.DC$bin2.Hacval), Hme1val=c(nonprom.DC$bin1.Hme1val, nonprom.DC$bin2.Hme1val), Hme3val=c(nonprom.DC$bin1.Hme3val, nonprom.DC$bin2.Hme3val), HK27val=c(nonprom.DC$bin1.HK27val, nonprom.DC$bin2.HK27val), H.CTCF.interrupt=rep(nonprom.DC$H.CTCF.interrupt, 2), C.CTCF.interrupt=rep(nonprom.DC$C.CTCF.interrupt, 2), DE=rep(nonprom.DC$DE, 2), DC=rep(nonprom.DC$DC, 2), differential=rep(nonprom.DC$differential, 2))
+dubs.nonprom.notDC <- data.frame(H1=rep(nonprom.notDC$H1, 2), H2=rep(nonprom.notDC$H2, 2), sp_BH_pval=rep(nonprom.notDC$sp_BH_pval, 2), sp_beta=rep(nonprom.notDC$sp_beta, 2), bin1.HMM=rep(nonprom.notDC$bin1.HMM, 2), bin2.HMM=rep(nonprom.notDC$bin2.HMM, 2), pairID=rep(nonprom.notDC$HpairID, 2), Nothing=c(nonprom.notDC$Nothing.1, nonprom.notDC$Nothing.2), TssA=c(nonprom.notDC$TssA.1, nonprom.notDC$TssA.2), TssBiv=c(nonprom.notDC$TssBiv.1, nonprom.notDC$TssBiv.2), BivFlnk=c(nonprom.notDC$TssBiv.1, nonprom.notDC$TssBiv.2), EnhBiv=c(nonprom.notDC$EnhBiv.1, nonprom.notDC$EnhBiv.2), ReprPc=c(nonprom.notDC$ReprPC.1, nonprom.notDC$ReprPC.2), ReprPCWk=c(nonprom.notDC$ReprPCWk.1, nonprom.notDC$ReprPCWk.2), Quies=c(nonprom.notDC$Quies.1, nonprom.notDC$Quies.2), TssAFlnk=c(nonprom.notDC$TssAFlnk.1, nonprom.notDC$TssAFlnk.2), TxFlnk=c(nonprom.notDC$TxFlnk.1, nonprom.notDC$TxFlnk.2), Tx=c(nonprom.notDC$Tx.1, nonprom.notDC$Tx.2), TxWk=c(nonprom.notDC$TxWk.1, nonprom.notDC$TxWk.2), EnhG=c(nonprom.notDC$EnhG.1, nonprom.notDC$EnhG.2), Enh=c(nonprom.notDC$Enh.1, nonprom.notDC$Enh.2), ZNF_Rpts=c(nonprom.notDC$`ZNF/Rpts.1`, nonprom.notDC$`ZNF/Rpts.2`), Het=c(nonprom.notDC$Het.1, nonprom.notDC$Het.2), DHSval=c(nonprom.notDC$bin1.DHSval, nonprom.notDC$bin2.DHSval), Hacval=c(nonprom.notDC$bin1.Hacval, nonprom.notDC$bin2.Hacval), Hme1val=c(nonprom.notDC$bin1.Hme1val, nonprom.notDC$bin2.Hme1val), Hme3val=c(nonprom.notDC$bin1.Hme3val, nonprom.notDC$bin2.Hme3val), HK27val=c(nonprom.notDC$bin1.HK27val, nonprom.notDC$bin2.HK27val), H.CTCF.interrupt=rep(nonprom.notDC$H.CTCF.interrupt, 2), C.CTCF.interrupt=rep(nonprom.notDC$C.CTCF.interrupt, 2), DE=rep(nonprom.notDC$DE, 2), DC=rep(nonprom.notDC$DC, 2), differential=rep(nonprom.notDC$differential, 2))
+nonproms.DC.df <- rbind(dubs.nonprom.DC, dubs.nonprom.notDC)
+
+#Prep promoters DC df, DE df, and differential DF. This is definitely redundant code throughout all three chunks here, so eventually fix that!!!
+DC.proms <- filter(promoter.contacts, DC=="yes")
+DC.proms <- DC.proms[!duplicated(DC.proms$H2),]
+nonDC.proms <- filter(promoter.contacts, DC=="no")
+nonDC.proms <- nonDC.proms[!duplicated(nonDC.proms$H2),]
+proms.DC <- rbind(DC.proms, nonDC.proms)
+proms.DC <- proms.DC[order(proms.DC$sp_BH_pval),] #Should be complete!
+
+DE.proms <- filter(promoter.contacts, DE=="yes")
+DE.proms <- DE.proms[!duplicated(DE.proms$H2),]
+nonDE.proms <- filter(promoter.contacts, DE=="no")
+nonDE.proms <- nonDE.proms[!duplicated(nonDE.proms$H2),]
+proms.DE <- rbind(DE.proms, nonDE.proms)
+proms.DE <- proms.DE[order(proms.DE$sp_BH_pval),]
+
+DE.only.proms <- filter(promoter.contacts, differential=="expression")
+DC.only.proms <- filter(promoter.contacts, differential=="contact")
+DEDC.proms <- filter(promoter.contacts, differential=="both")
+neither.proms <- filter(promoter.contacts, differential=="no")
+DE.only.proms <- DE.only.proms[!duplicated(DE.only.proms$H2),]
+DC.only.proms <- DC.only.proms[!duplicated(DC.only.proms$H2),]
+DEDC.proms <- DEDC.proms[!duplicated(DEDC.proms$H2),]
+neither.proms <- neither.proms[!duplicated(neither.proms$H2),]
+proms.differential <- rbind(DE.only.proms, DC.only.proms, DEDC.proms, neither.proms)
+proms.differential <- proms.differential[order(proms.differential$sp_BH_pval),]
+colnames(proms.differential) <- colnames(proms.DE) <- colnames(proms.DC) <- colnames(chrom.annos)[1:31]
+
+
+##########Now, try to actually plot out overlaps of different chromHMM marks with these two different classes of bins.
+#First, create a function to do the plotting, and to do it with different FDRs. At first was trying to make this work for the individual histone marks as well but those already exist so just format to work with these. Will have to pass in properly formatted dataframes, however.
+chromHMMplot <- function(df, nonprom.df, DC.df, DE.df, differential.df, differential.Ymax, differential.Ystart, diff.lineint, diff.textint, markcol, vpdims=c(0.3, 0.3, 0.5, 0.7), vpdims2=vpdims, vpdims3=vpdims, vpdims4=vpdims, vpdims5=vpdims, FDR=NULL, ypval=3000){
+    DEPROMS=FALSE
+    DCPROMS=FALSE
+    NONPROMS=FALSE
+    DIFFERENTIAL=FALSE
+  if(is.numeric(FDR)){
+  density.proms <- ggplot(data=filter(df, sp_BH_pval<=FDR)) + geom_density(aes(x=get(markcol), group=true.promoter, color=true.promoter, y=..scaled..)) + ylab("Density") + xlab(paste("Length of overlap b/t bin and", markcol, "Annotation", sep=" ")) + ggtitle(paste("Overlap between Hi-C Bins <=", FDR*100, "% FDR and", markcol, sep=" ")) + scale_colour_manual(name="Promoter Contact?", labels=c("No", "Yes"), values=c("Red", "Blue"))
+  mypval <- t.test(filter(df, true.promoter=="yes", sp_BH_pval<=FDR)[,markcol], filter(df, true.promoter=="no", sp_BH_pval<=FDR)[,markcol])$p.value
+  mypval <- signif(mypval, 1)
+  violin.proms <- ggplot(data=filter(df, sp_BH_pval<=FDR)) + geom_violin(aes(y=get(markcol), group=true.promoter, color=true.promoter, x=true.promoter), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(values=c("Red", "Blue"), labels=c("No", "Yes"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("text", x=1.5, y=ypval, label=mypval, size=3)
+  
+  if(nrow(filter(nonprom.df, sp_BH_pval<=FDR, DC=="no"))>0){NONPROMS=TRUE
+  density.nonproms <- ggplot(data=filter(nonprom.df, sp_BH_pval<=FDR)) + geom_density(aes(x=get(markcol), group=DC, color=DC, y=..scaled..)) + ylab("Density") + xlab(paste("Length of overlap b/t bin and", markcol, "Annotation", sep=" ")) + ggtitle(paste("Overlap between Hi-C Bins <=", FDR*100, "% FDR and", markcol, sep=" ")) + scale_colour_manual(name="Differential Contact?", labels=c("No", "Yes"), values=c("Red", "Blue"))
+  mypval <- t.test(filter(nonprom.df, sp_BH_pval<=FDR, DC=="yes")[,markcol], filter(nonprom.df, sp_BH_pval<=FDR, DC=="no")[,markcol])$p.value
+  mypval <- signif(mypval, 1)
+  violin.nonproms <- ggplot(data=filter(nonprom.df, sp_BH_pval<=FDR)) + geom_violin(aes(y=get(markcol), group=DC, color=DC, x=DC), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(name="Differential Contact?", values=c("Red", "Blue"), labels=c("No", "Yes"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("text", x=1.5, y=ypval, label=mypval, size=3)}
+  
+  if(nrow(filter(DC.df, sp_BH_pval<=FDR, DC=="no"))>0){DCPROMS=TRUE
+  DC.density <- ggplot(data=filter(DC.df, sp_BH_pval<=FDR)) + geom_density(aes(x=get(markcol), group=DC, color=DC, y=..scaled..)) + ggtitle(paste("Overlap between Promoter Hi-C Bins<=", FDR*100, "% FDR and", markcol, sep=" ")) + xlab(paste("Length of overlap b/t bin and", markcol, "peak", sep=" ")) + ylab("Density") + scale_color_manual(name="DC?", labels = c("No", "Yes"), values=c("Red", "Blue"))
+  mypval <- t.test(filter(DC.df, sp_BH_pval<=FDR, DC=="yes")[,markcol], filter(DC.df, sp_BH_pval<=FDR, DC=="no")[,markcol])$p.value
+  mypval <- signif(mypval, 1)
+  DC.violin <- ggplot(data=filter(DC.df, sp_BH_pval<=FDR)) + geom_violin(aes(x=DC, y=get(markcol), group=DC, color=DC), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(labels=c("No", "Yes"), values=c("Red", "Blue"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("text", x=1.5, y=ypval, label=mypval, size=3)}
+  
+  if(nrow(filter(DE.df, sp_BH_pval<=FDR, DE=="no"))>0){DEPROMS=TRUE
+  DE.density <- ggplot(data=filter(DE.df, sp_BH_pval<=FDR)) + geom_density(aes(x=get(markcol), group=DE, color=DE, y=..scaled..)) + ggtitle(paste("Overlap between Promoter Hi-C Bins<=", FDR*100, "% FDR and", markcol, sep=" ")) + xlab(paste("Length of overlap b/t bin and", markcol, "peak", sep=" ")) + ylab("Density") + scale_color_manual(name="DE?", labels = c("No", "Yes"), values=c("Red", "Blue"))
+  mypval <- t.test(filter(DE.df, sp_BH_pval<=FDR, DE=="yes")[,markcol], filter(DE.df, sp_BH_pval<=FDR, DE=="no")[,markcol])$p.value
+  mypval <- signif(mypval, 1)
+  DE.violin <- ggplot(data=filter(DE.df, sp_BH_pval<=FDR)) + geom_violin(aes(x=DE, y=get(markcol), group=DE, color=DE), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(labels=c("No", "Yes"), values=c("Red", "Blue"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("text", x=1.5, y=ypval, label=mypval, size=3)}
+  
+  if((nrow(filter(differential.df, sp_BH_pval<=FDR, differential=="both"))>0)&(nrow(filter(differential.df, sp_BH_pval<=FDR, differential=="expression"))>0)&(nrow(filter(differential.df, sp_BH_pval<=FDR, differential=="contact"))>0)&(nrow(filter(differential.df, sp_BH_pval<=FDR, differential=="no"))>0&(nrow(filter(differential.df, sp_BH_pval<=FDR, differential=="expression"))-sum(is.na(filter(differential.df, sp_BH_pval<=FDR, differential=="expression")[,markcol]))>1))){DIFFERENTIAL=TRUE
+  differential.density <- ggplot(data=filter(differential.df, sp_BH_pval<=FDR)) + geom_density(aes(x=get(markcol), group=differential, color=differential, y=..scaled..)) + ggtitle(paste("Overlap between Promoter Hi-C Bins<=", FDR*100, "% FDR and", markcol, sep=" ")) + xlab(paste("Length of overlap b/t bin and", markcol, "peak", sep=" ")) + ylab("Density") + scale_color_manual(name="Species Differential:", labels = c("Both", "Contact", "Expression", "Neither"), values=c("Red", "Blue", "Green", "Purple"))
+  NEpval <- signif(t.test(filter(differential.df, sp_BH_pval<=FDR, differential=="no")[,markcol], filter(differential.df, sp_BH_pval<=FDR, differential=="expression")[,markcol])$p.value, 1)
+  NCpval <- signif(t.test(filter(differential.df, sp_BH_pval<=FDR, differential=="no")[,markcol], filter(differential.df, sp_BH_pval<=FDR, differential=="contact")[,markcol])$p.value, 1)
+  NBpval <- signif(t.test(filter(differential.df, sp_BH_pval<=FDR, differential=="no")[,markcol], filter(differential.df, sp_BH_pval<=FDR, differential=="both")[,markcol])$p.value, 1)
+  ECpval <- signif(t.test(filter(differential.df, sp_BH_pval<=FDR, differential=="expression")[,markcol], filter(differential.df, sp_BH_pval<=FDR, differential=="contact")[,markcol])$p.value, 1)
+  EBpval <- signif(t.test(filter(differential.df, sp_BH_pval<=FDR, differential=="expression")[,markcol], filter(differential.df, sp_BH_pval<=FDR, differential=="both")[,markcol])$p.value, 1)
+  CBpval <- signif(t.test(filter(differential.df, sp_BH_pval<=FDR, differential=="both")[,markcol], filter(differential.df, sp_BH_pval<=FDR, differential=="contact")[,markcol])$p.value, 1)
+  differential.violin <- ggplot(data=filter(proms.differential, sp_BH_pval<=FDR)) + geom_violin(aes(x=differential, y=get(markcol), group=differential, color=differential), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(name="Species Differential:", labels = c("Both", "Contact", "Expression", "Neither"), values=c("Red", "Blue", "Green", "Purple"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, differential.Ymax)) + annotate("segment", x=1.1, y=differential.Ystart, xend=1.9, yend=differential.Ystart) + annotate("segment", x=2.1, y=differential.Ystart, xend=2.9, yend=differential.Ystart) + annotate("segment", x=3.1, y=differential.Ystart, xend=3.9, yend=differential.Ystart) + annotate("segment", x=2.1, y=differential.Ystart+diff.lineint, xend=3.9, yend=differential.Ystart+diff.lineint)  + annotate("segment", x=1.1, y=differential.Ystart+(2*diff.lineint), xend=2.9, yend=differential.Ystart+(2*diff.lineint)) + annotate("segment", x=1.1, y=differential.Ystart+(3*diff.lineint), xend=3.9, yend=differential.Ystart+(3*diff.lineint)) + annotate("text", x=3.5, y=differential.Ystart+diff.textint, label=NEpval, size=3) + annotate("text", x=2.5, y=differential.Ystart+diff.textint, label=ECpval, size=3) + annotate("text", x=1.5, y=differential.Ystart+diff.textint, label=CBpval, size=3) + annotate("text", x=3, y=differential.Ystart+diff.lineint+diff.textint, label=NCpval, size=3) + annotate("text", x=2, y=differential.Ystart+(2*diff.lineint)+diff.textint, label=EBpval, size=3) + annotate("text", x=2.5, y=differential.Ystart+(3*diff.lineint)+diff.textint, label=NBpval, size=3)
+  }}
+  else{#The case where we're not doing any FDR filtering.
+    density.proms <- ggplot(data=filter(df)) + geom_density(aes(x=get(markcol), group=true.promoter, color=true.promoter, y=..scaled..)) + ylab("Density") + xlab(paste("Length of overlap b/t bin and", markcol, "Annotation", sep=" ")) + ggtitle(paste("Overlap between Hi-C Bins and", markcol, sep=" ")) + scale_colour_manual(name="Promoter Contact?", labels=c("No", "Yes"), values=c("Red", "Blue"))
+  mypval <- t.test(filter(df, true.promoter=="yes")[,markcol], filter(df, true.promoter=="no")[,markcol])$p.value
+  mypval <- signif(mypval, 1)
+  violin.proms <- ggplot(data=filter(df)) + geom_violin(aes(y=get(markcol), group=true.promoter, color=true.promoter, x=true.promoter), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(values=c("Red", "Blue"), labels=c("No", "Yes"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("text", x=1.5, y=ypval, label=mypval, size=3)
+  
+  density.nonproms <- ggplot(data=filter(nonprom.df)) + geom_density(aes(x=get(markcol), group=DC, color=DC, y=..scaled..)) + ylab("Density") + xlab(paste("Length of overlap b/t bin and", markcol, "Annotation", sep=" ")) + ggtitle(paste("Overlap between Hi-C Bins and", markcol, sep=" ")) + scale_colour_manual(name="Differential Contact?", labels=c("No", "Yes"), values=c("Red", "Blue"))
+  mypval <- t.test(filter(nonprom.df, DC=="yes")[,markcol], filter(nonprom.df, DC=="no")[,markcol])$p.value
+  mypval <- signif(mypval, 1)
+  violin.nonproms <- ggplot(data=filter(nonprom.df)) + geom_violin(aes(y=get(markcol), group=DC, color=DC, x=DC), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(name="Differential Contact?", values=c("Red", "Blue"), labels=c("No", "Yes"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("text", x=1.5, y=ypval, label=mypval, size=3)
+  
+  DC.density <- ggplot(data=filter(DC.df)) + geom_density(aes(x=get(markcol), group=DC, color=DC, y=..scaled..)) + ggtitle(paste("Overlap between Promoter Hi-C Bins and", markcol, sep=" ")) + xlab(paste("Length of overlap b/t bin and", markcol, "peak", sep=" ")) + ylab("Density") + scale_color_manual(name="DC?", labels = c("No", "Yes"), values=c("Red", "Blue"))
+  mypval <- t.test(filter(DC.df, DC=="yes")[,markcol], filter(DC.df, DC=="no")[,markcol])$p.value
+  mypval <- signif(mypval, 1)
+  DC.violin <- ggplot(data=filter(DC.df)) + geom_violin(aes(x=DC, y=get(markcol), group=DC, color=DC), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(labels=c("No", "Yes"), values=c("Red", "Blue"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("text", x=1.5, y=ypval, label=mypval, size=3)
+  
+  DE.density <- ggplot(data=filter(DE.df)) + geom_density(aes(x=get(markcol), group=DE, color=DE, y=..scaled..)) + ggtitle(paste("Overlap between Promoter Hi-C Bins and", markcol, sep=" ")) + xlab(paste("Length of overlap b/t bin and", markcol, "peak", sep=" ")) + ylab("Density") + scale_color_manual(name="DE?", labels = c("No", "Yes"), values=c("Red", "Blue"))
+  mypval <- t.test(filter(DE.df, DE=="yes")[,markcol], filter(DE.df, DE=="no")[,markcol])$p.value
+  mypval <- signif(mypval, 1)
+  DE.violin <- ggplot(data=filter(DE.df)) + geom_violin(aes(x=DE, y=get(markcol), group=DE, color=DE), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(labels=c("No", "Yes"), values=c("Red", "Blue"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("text", x=1.5, y=ypval, label=mypval, size=3)
+  
+  differential.density <- ggplot(data=filter(differential.df)) + geom_density(aes(x=get(markcol), group=differential, color=differential, y=..scaled..)) + ggtitle(paste("Overlap between Promoter Hi-C Bins and", markcol, sep=" ")) + xlab(paste("Length of overlap b/t bin and", markcol, "peak", sep=" ")) + ylab("Density") + scale_color_manual(name="Species Differential:", labels = c("Both", "Contact", "Expression", "Neither"), values=c("Red", "Blue", "Green", "Purple"))
+  NEpval <- signif(t.test(filter(differential.df, differential=="no")[,markcol], filter(differential.df, differential=="expression")[,markcol])$p.value, 1)
+  NCpval <- signif(t.test(filter(differential.df, differential=="no")[,markcol], filter(differential.df, differential=="contact")[,markcol])$p.value, 1)
+  NBpval <- signif(t.test(filter(differential.df, differential=="no")[,markcol], filter(differential.df, differential=="both")[,markcol])$p.value, 1)
+  ECpval <- signif(t.test(filter(differential.df, differential=="expression")[,markcol], filter(differential.df, differential=="contact")[,markcol])$p.value, 1)
+  EBpval <- signif(t.test(filter(differential.df, differential=="expression")[,markcol], filter(differential.df, differential=="both")[,markcol])$p.value, 1)
+  CBpval <- signif(t.test(filter(differential.df, differential=="both")[,markcol], filter(differential.df, differential=="contact")[,markcol])$p.value, 1)
+  differential.violin <- ggplot(data=filter(proms.differential)) + geom_violin(aes(x=differential, y=get(markcol), group=differential, color=differential), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(name="Species Differential:", labels = c("Both", "Contact", "Expression", "Neither"), values=c("Red", "Blue", "Green", "Purple"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, differential.Ymax)) + annotate("segment", x=1.1, y=differential.Ystart, xend=1.9, yend=differential.Ystart) + annotate("segment", x=2.1, y=differential.Ystart, xend=2.9, yend=differential.Ystart) + annotate("segment", x=3.1, y=differential.Ystart, xend=3.9, yend=differential.Ystart) + annotate("segment", x=2.1, y=differential.Ystart+diff.lineint, xend=3.9, yend=differential.Ystart+diff.lineint)  + annotate("segment", x=1.1, y=differential.Ystart+(2*diff.lineint), xend=2.9, yend=differential.Ystart+(2*diff.lineint)) + annotate("segment", x=1.1, y=differential.Ystart+(3*diff.lineint), xend=3.9, yend=differential.Ystart+(3*diff.lineint)) + annotate("text", x=3.5, y=differential.Ystart+diff.textint, label=NEpval, size=3) + annotate("text", x=2.5, y=differential.Ystart+diff.textint, label=ECpval, size=3) + annotate("text", x=1.5, y=differential.Ystart+diff.textint, label=CBpval, size=3) + annotate("text", x=3, y=differential.Ystart+diff.lineint+diff.textint, label=NCpval, size=3) + annotate("text", x=2, y=differential.Ystart+(2*diff.lineint)+diff.textint, label=EBpval, size=3) + annotate("text", x=2.5, y=differential.Ystart+(3*diff.lineint)+diff.textint, label=NBpval, size=3)
+  }
+  print(density.proms)
+  vp <- grid::viewport(width=vpdims[1], height=vpdims[2], x=vpdims[3], y=vpdims[4])
+  print(violin.proms, vp=vp)
+  if(is.null(FDR)|NONPROMS){
+  print(density.nonproms)
+  vp <- grid::viewport(width=vpdims2[1], height=vpdims2[2], x=vpdims2[3], y=vpdims2[4])
+  print(violin.nonproms, vp=vp)}
+  if(is.null(FDR)|DCPROMS){
+  print(DC.density)
+  vp <- grid::viewport(width=vpdims3[1], height=vpdims3[2], x=vpdims3[3], y=vpdims3[4])
+  print(DC.violin, vp=vp)}
+  if(is.null(FDR)|DEPROMS){
+  print(DE.density)
+  vp <- grid::viewport(width=vpdims4[1], height=vpdims4[2], x=vpdims4[3], y=vpdims4[4])
+  print(DE.violin, vp=vp)}
+  if(is.null(FDR)|DIFFERENTIAL){
+  print(differential.density)
+  vp <- grid::viewport(width=vpdims5[1], height=vpdims5[2], x=vpdims5[3], y=vpdims5[4])
+  print(differential.violin, vp=vp)}
+}
+
+#First call down there is chrom.annos, second can be nonproms.DC.df, third can be proms.DC, fourth can be proms.DE, fifth should be proms.differential, and the others will need fine tuning!
+####TSSA!
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "TssA", vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.52, 0.7))
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "TssA", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.1) #At 10% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "TssA", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.05) #At 5% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "TssA", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.01) #At 1% FDR
+
+###TssBiv!!
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "TssBiv", vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7))
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "TssBiv", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.1) #At 10% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "TssBiv", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.05) #At 5% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "TssBiv", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.01) #At 1% FDR
+
+###BivFlnk!
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "BivFlnk", vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7))
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "BivFlnk", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.1) #At 10% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "BivFlnk", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.05) #At 5% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "BivFlnk", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.01) #At 1% FDR
+
+###EnhBiv!
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "EnhBiv", vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7))
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "EnhBiv", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.1) #At 10% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "EnhBiv", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.05) #At 5% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "EnhBiv", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.01) #At 1% FDR
+
+###ReprPc!
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "ReprPc", vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), ypval=5000)
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "ReprPc", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.1, ypval=5000) #At 10% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "ReprPc", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.05, ypval=5000) #At 5% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "ReprPc", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.01, ypval=5000) #At 1% FDR
+
+###ReprPCWk!
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2500, 1500, 600, "ReprPCWk", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), ypval=5000)
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2500, 1500, 600, "ReprPCWk", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.1, ypval=5000) #At 10% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2500, 1500, 600, "ReprPCWk", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.05, ypval=5000) #At 5% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2500, 1500, 600, "ReprPCWk", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.01, ypval=5000) #At 1% FDR
+
+###Quies!
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 1000, 1500, 600, "Quies", vpdims=c(0.4, 0.4, 0.4, 0.7), vpdims2=c(0.4, 0.4, 0.4, 0.7), vpdims3=c(0.3, 0.3, 0.4, 0.7), vpdims4=c(0.3, 0.3, 0.4, 0.7), vpdims5=c(0.3, 0.3, 0.4, 0.7), ypval=5000)
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 1000, 1500, 600, "Quies", vpdims=c(0.4, 0.4, 0.4, 0.7), vpdims2=c(0.4, 0.4, 0.4, 0.7), vpdims3=c(0.3, 0.3, 0.4, 0.7), vpdims4=c(0.3, 0.3, 0.4, 0.7), vpdims5=c(0.3, 0.3, 0.4, 0.7), FDR = 0.1, ypval=5000) #At 10% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 1000, 1500, 600, "Quies", vpdims=c(0.4, 0.4, 0.4, 0.7), vpdims2=c(0.4, 0.4, 0.4, 0.7), vpdims3=c(0.3, 0.3, 0.4, 0.7), vpdims4=c(0.3, 0.3, 0.4, 0.7), vpdims5=c(0.3, 0.3, 0.4, 0.7), FDR = 0.05, ypval=5000) #At 5% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 1000, 1500, 600, "Quies", vpdims=c(0.4, 0.4, 0.4, 0.7), vpdims2=c(0.4, 0.4, 0.4, 0.7), vpdims3=c(0.3, 0.3, 0.4, 0.7), vpdims4=c(0.3, 0.3, 0.4, 0.7), vpdims5=c(0.3, 0.3, 0.4, 0.7), FDR = 0.01, ypval=5000) #At 1% FDR
+
+###TssAFlnk!
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "TssAFlnk", vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7))
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "TssAFlnk", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.1) #At 10% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "TssAFlnk", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.05) #At 5% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "TssAFlnk", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.01) #At 1% FDR
+
+###TxFlnk!
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "TxFlnk", vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7))
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "TxFlnk", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.1) #At 10% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "TxFlnk", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.05) #At 5% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "TxFlnk", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.01) #At 1% FDR
+
+###Tx!
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2000, 2000, 600, "Tx", vpdims=c(0.3, 0.3, 0.3, 0.3), vpdims2=c(0.3, 0.3, 0.3, 0.3), vpdims3=c(0.3, 0.3, 0.3, 0.3), vpdims4=c(0.3, 0.3, 0.3, 0.3), vpdims5=c(0.3, 0.3, 0.3, 0.3), ypval=5000)
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2000, 2000, 600, "Tx", vpdims=c(0.3, 0.3, 0.3, 0.3), vpdims2=c(0.3, 0.3, 0.3, 0.3), vpdims3=c(0.3, 0.3, 0.3, 0.3), vpdims4=c(0.3, 0.3, 0.3, 0.3), vpdims5=c(0.3, 0.3, 0.3, 0.3), FDR = 0.1, ypval=5000) #At 10% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2000, 2000, 600, "Tx", vpdims=c(0.3, 0.3, 0.3, 0.3), vpdims2=c(0.3, 0.3, 0.3, 0.3), vpdims3=c(0.3, 0.3, 0.3, 0.3), vpdims4=c(0.3, 0.3, 0.3, 0.3), vpdims5=c(0.3, 0.3, 0.3, 0.3), FDR = 0.05, ypval=5000) #At 5% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2000, 2000, 600, "Tx", vpdims=c(0.3, 0.3, 0.3, 0.3), vpdims2=c(0.3, 0.3, 0.3, 0.3), vpdims3=c(0.3, 0.3, 0.3, 0.3), vpdims4=c(0.3, 0.3, 0.3, 0.3), vpdims5=c(0.3, 0.3, 0.3, 0.3), FDR = 0.01, ypval=5000) #At 1% FDR
+
+###TxWk!
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2000, 2000, 600, "TxWk", vpdims=c(0.3, 0.3, 0.3, 0.3), vpdims2=c(0.3, 0.3, 0.3, 0.3), vpdims3=c(0.3, 0.3, 0.3, 0.3), vpdims4=c(0.3, 0.3, 0.3, 0.3), vpdims5=c(0.3, 0.3, 0.3, 0.3), ypval=5000)
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2000, 2000, 600, "TxWk", vpdims=c(0.3, 0.3, 0.3, 0.3), vpdims2=c(0.3, 0.3, 0.3, 0.3), vpdims3=c(0.3, 0.3, 0.3, 0.3), vpdims4=c(0.3, 0.3, 0.3, 0.3), vpdims5=c(0.3, 0.3, 0.3, 0.3), FDR = 0.1, ypval=5000) #At 10% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2000, 2000, 600, "TxWk", vpdims=c(0.3, 0.3, 0.3, 0.3), vpdims2=c(0.3, 0.3, 0.3, 0.3), vpdims3=c(0.3, 0.3, 0.3, 0.3), vpdims4=c(0.3, 0.3, 0.3, 0.3), vpdims5=c(0.3, 0.3, 0.3, 0.3), FDR = 0.05, ypval=5000) #At 5% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2000, 2000, 600, "TxWk", vpdims=c(0.3, 0.3, 0.3, 0.3), vpdims2=c(0.3, 0.3, 0.3, 0.3), vpdims3=c(0.3, 0.3, 0.3, 0.3), vpdims4=c(0.3, 0.3, 0.3, 0.3), vpdims5=c(0.3, 0.3, 0.3, 0.3), FDR = 0.01, ypval=5000) #At 1% FDR
+
+###EnhG!
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "EnhG", vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7))
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "EnhG", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.1, ypval=2000) #At 10% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "EnhG", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.05, ypval=2000) #At 5% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "EnhG", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.01, ypval=2000) #At 1% FDR
+
+###Enh!
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "Enh", vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7))
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "Enh", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.1) #At 10% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "Enh", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.05) #At 5% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "Enh", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.01) #At 1% FDR
+
+###ZNF_Rpts!
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "ZNF_Rpts", vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7))
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "ZNF_Rpts", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.1) #At 10% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "ZNF_Rpts", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.05) #At 5% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 6200, 2500, 1000, 400, "ZNF_Rpts", vpdims=c(0.3, 0.3, 0.52, 0.7), vpdims2=c(0.3, 0.3, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.01) #At 1% FDR
+
+###Het!
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2500, 1500, 600, "Het", vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), ypval=5000)
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2500, 1500, 600, "Het", vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.1, ypval=5000) #At 10% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2500, 1500, 600, "Het", vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.05, ypval=5000) #At 5% FDR
+chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2500, 1500, 600, "Het", vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.01, ypval=5000) #At 1% FDR
+```
+
+
+###Quantitative histone mark enrichments
+Now, I look at the quantitative enrichment of histone mark peaks from other studies on iPSCs, examining the overlap of these peaks with different classes of Hi-C significant bins.
+```{r Other quantitative enrichments}
+#####Examination of CTCF interruptions.
+full.annotations$CTCF.different <- ifelse(full.annotations$H.CTCF.interrupt==full.annotations$C.CTCF.interrupt, "no", "yes")
+table(full.annotations$CTCF.different, full.annotations$true.promoter, dnn = c("Species diff. CTCF Interruption?" , "Promoter?"))
+chisq.test(table(full.annotations$CTCF.different, full.annotations$true.promoter, dnn = c("Species diff. CTCF Interruption?" , "Promoter?")))
+
+table(filter(full.annotations, true.promoter=="no")$CTCF.different, filter(full.annotations, true.promoter=="no")$DC, dnn=c("Species diff. CTCF Interruption?", "DC?"))
+chisq.test(table(filter(full.annotations, true.promoter=="no")$CTCF.different, filter(full.annotations, true.promoter=="no")$DC))
+
+table(filter(full.annotations, true.promoter=="yes")$CTCF.different, filter(full.annotations, true.promoter=="yes")$DC, dnn=c("Species diff. CTCF Interruption?", "DC?"))
+chisq.test(table(filter(full.annotations, true.promoter=="yes")$CTCF.different, filter(full.annotations, true.promoter=="yes")$DC))
+
+table(filter(full.annotations, true.promoter=="yes")$CTCF.different, filter(full.annotations, true.promoter=="yes")$DE, dnn=c("Species diff. CTCF Interruption?", "DE?"))
+chisq.test(table(filter(full.annotations, true.promoter=="yes")$CTCF.different, filter(full.annotations, true.promoter=="yes")$DE, dnn=c("Species diff. CTCF Interruption?", "DE?")))
+
+table(filter(full.annotations, true.promoter=="yes")$CTCF.different, filter(full.annotations, true.promoter=="yes")$differential=="both", dnn=c("Species diff. CTCF Interruption?", "DC & DE?"))
+chisq.test(table(filter(full.annotations, true.promoter=="yes")$CTCF.different, filter(full.annotations, true.promoter=="yes")$differential=="both", dnn=c("Species diff. CTCF Interruption?", "DE?")))
+#These results are pretty much garbage as the effects we see are the opposite of what we're hoping for.
+
+saveRDS(full.annotations, "output/full.data.annotations.RDS")
+
+#######Make a doubled-down data frame for single columns of quantitative enrichments. Really, will need to do differential status-level de-duplication here first, then recombine those to make this simple with ggplot2. Create one huge for looking at differential statuses, and one big one separating out promoters/non promoters (chrom.annos). Also need polarizing ones for DC/not and DE/not, without exclusivity in the case of both. chrom.annos is what was created in the previous chunk for separating out promoters/non promoters. Now, undertake the same process to create the other necessary dfs:
+
+#First the non-promoter DF, looking at DC/not DC. Remember the promoter/not promoter was created in the first chunk (chrom.annos).
+DC.non.proms <- filter(full.annotations, true.promoter=="no", DC=="yes") %>% deduplicator(.)
+non.DC.non.proms <- filter(full.annotations, true.promoter=="no", DC=="no") %>% deduplicator(.)
+
+#After deduplicating, combine so that there's one column per histone mark I'm interested in, and a column showing DC status.
+nonproms <- data.frame(H1=c(DC.non.proms$H1, DC.non.proms$H2, non.DC.non.proms$H1, non.DC.non.proms$H2), sp_BH_pval=c(rep(DC.non.proms$sp_BH_pval, 2), rep(non.DC.non.proms$sp_BH_pval, 2)), sp_beta=c(rep(DC.non.proms$sp_beta, 2), rep(non.DC.non.proms$sp_beta, 2)), HMM=c(as.character(DC.non.proms$bin1.HMM), as.character(DC.non.proms$bin2.HMM), as.character(non.DC.non.proms$bin1.HMM), as.character(non.DC.non.proms$bin2.HMM)), DHS=c(DC.non.proms$bin1.DHSval, DC.non.proms$bin2.DHSval, non.DC.non.proms$bin1.DHSval, non.DC.non.proms$bin2.DHSval), Hac=c(DC.non.proms$bin1.Hacval, DC.non.proms$bin2.Hacval, non.DC.non.proms$bin1.Hacval, non.DC.non.proms$bin2.Hacval), Hme1=c(DC.non.proms$bin1.Hme1val, DC.non.proms$bin2.Hme1val, non.DC.non.proms$bin1.Hme1val, non.DC.non.proms$bin2.Hme1val), Hme3=c(DC.non.proms$bin1.Hme3val, DC.non.proms$bin2.Hme3val, non.DC.non.proms$bin1.Hme3val, non.DC.non.proms$bin2.Hme3val), HK27=c(DC.non.proms$bin1.HK27val, DC.non.proms$bin2.HK27val, non.DC.non.proms$bin1.HK27val, non.DC.non.proms$bin2.HK27val), DC=c(rep(DC.non.proms$DC, 2), rep(non.DC.non.proms$DC, 2)))
+
+#Now, looking within promoter-contacting Hi-C bins, at which are DC and which are not. Should be fairly simple, and in these analyses, we are focusing on the bins making contact with a promoter (promoter.contacts df has excluded the promoters themselves here). In these cases, after the deduplication is done, it's as simple as rbinding the two filtered dfs, since they have the same number of columns and only a single value for each mark. Dedup function doesn't work here beacause only a single column; simpler case.
+DC.proms <- filter(promoter.contacts, DC=="yes")
+DC.proms <- DC.proms[!duplicated(DC.proms$H2),]
+nonDC.proms <- filter(promoter.contacts, DC=="no")
+nonDC.proms <- nonDC.proms[!duplicated(nonDC.proms$H2),]
+proms.DC <- rbind(DC.proms, nonDC.proms)
+proms.DC <- proms.DC[order(proms.DC$sp_BH_pval),] #Should be complete!
+
+DE.proms <- filter(promoter.contacts, DE=="yes")
+DE.proms <- DE.proms[!duplicated(DE.proms$H2),]
+nonDE.proms <- filter(promoter.contacts, DE=="no")
+nonDE.proms <- nonDE.proms[!duplicated(nonDE.proms$H2),]
+proms.DE <- rbind(DE.proms, nonDE.proms)
+proms.DE <- proms.DE[order(proms.DE$sp_BH_pval),]
+
+DE.only.proms <- filter(promoter.contacts, differential=="expression")
+DC.only.proms <- filter(promoter.contacts, differential=="contact")
+DEDC.proms <- filter(promoter.contacts, differential=="both")
+neither.proms <- filter(promoter.contacts, differential=="no")
+DE.only.proms <- DE.only.proms[!duplicated(DE.only.proms$H2),]
+DC.only.proms <- DC.only.proms[!duplicated(DC.only.proms$H2),]
+DEDC.proms <- DEDC.proms[!duplicated(DEDC.proms$H2),]
+neither.proms <- neither.proms[!duplicated(neither.proms$H2),]
+proms.differential <- rbind(DE.only.proms, DC.only.proms, DEDC.proms, neither.proms)
+proms.differential <- proms.differential[order(proms.differential$sp_BH_pval),]
+colnames(proms.differential) <- colnames(proms.DE) <- colnames(proms.DC) <- colnames(chrom.annos)[1:31]
+
+#Old way of obtaining these, without removing duplicates, without focusing only on the contacts that hit promoters--very naive.
+#dub.anno <- data.frame(H1=c(full.annotations$H1, full.annotations$H2), sp_BH_pval=rep(full.annotations$sp_BH_pval, 2), sp_beta=rep(full.annotations$sp_beta, 2), HMM=c(as.character(full.annotations$bin1.HMM), as.character(full.annotations$bin2.HMM)), DHS=c(full.annotations$bin1.DHSval, full.annotations$bin2.DHSval), Hac=c(full.annotations$bin1.Hacval, full.annotations$bin2.Hacval), Hme1=c(full.annotations$bin1.Hme1val, full.annotations$bin2.Hme1val), Hme3=c(full.annotations$bin1.Hme3val, full.annotations$bin2.Hme3val), HAR=c(full.annotations$bin1.HARval, full.annotations$bin2.HARval), pairID=rep(full.annotations$pairID, 2), CTCF.interrupt=rep(full.annotations$CTCF.interrupt, 2), DC=rep(full.annotations$DC, 2), DE=rep(full.annotations$DE, 2), true.promoter=rep(full.annotations$true.promoter, 2), differential=rep(full.annotations$differential, 2))
+
+###############################Plots of enrichment for different classes of hits and different marks. Seems like it would be nice to create a function for these but really it'll lead to a huge hassle with having to specify different x and y-axis limits for different marks in different sets, and drawing the segments...since I've already done it out this way, might as well keep it.
+##########DHS plots!!!
+#FIGS7A
+all.DHS <- ggplot(data=chrom.annos) + geom_density(aes(x=DHSval, group=true.promoter, color=true.promoter, y=..scaled..)) + ggtitle("Enrichment of DHS Overlapping Hi-C Bins") + xlab("Length of Overlap b/t Bin and DHS Peak") + ylab("Density") + scale_color_manual(name="Promoter Contact?", labels = c("No", "Yes"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 1000))
+box.all.DHS <- ggplot(data=chrom.annos) + geom_violin(aes(x=true.promoter, y=DHSval, group=true.promoter, color=true.promoter), draw_quantiles =c(0.25, 0.5, 0.75) ) + scale_color_manual(values=c("Red", "Blue"), labels=c("No", "Yes"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 500)) + annotate("text", x=1.5, y=300, label="< 2 e -16", size=3, fontface=2) + annotate("segment", x=1.1, xend=1.9, y=270, yend=270)
+print(all.DHS)
+vp <- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.6)
+print(box.all.DHS, vp=vp)
+t.test(chrom.annos$DHS[which(chrom.annos$true.promoter=="yes")], chrom.annos$DHS[which(chrom.annos$true.promoter=="no")])
+
+noprom.DHS <- ggplot(data=nonproms) + geom_density(aes(x=DHS, group=DC, color=DC, y=..scaled..)) + ggtitle("Enrichment of DHS overlapping non-promoter Hi-C Bins") + xlab("Length of overlap b/t bin and DHS peak") + ylab("Density") + scale_color_manual(name="Species Differential:", labels = c("Neither", "Contact"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 1000))
+box.noprom.DHS <- ggplot(data=nonproms) + geom_violin(aes(x=DC, y=DHS, group=DC, color=DC), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(name="Species Differential:", labels = c("Neither", "Contact"), values=c("Red", "Blue"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 500)) + annotate("text", x=1.5, y=300, label="< 2 e -16", size=3) + annotate("segment", x=1.1, xend=1.9, y=270, yend=270)
+print(noprom.DHS)
+print(box.noprom.DHS, vp=vp)
+t.test(filter(nonproms, DC=="no")$DHS, filter(nonproms, DC=="yes")$DHS)
+
+#FIGS7B
+prom.DHS <- ggplot(data=proms.differential) + geom_density(aes(x=DHSval, group=differential, color=differential, y=..scaled..)) + ggtitle("Enrichment of DHS overlapping Promoter Hi-C Bins") + xlab("Length of Overlap b/t Bin and DHS peak") + ylab("Density") + scale_color_manual(name="Species Differential:", labels = c("Both", "Contact", "Expression", "Neither"), values=c("Red", "Blue", "Green", "Purple")) + coord_cartesian(xlim=c(0, 1000))
+box.prom.DHS <- ggplot(data=proms.differential) + geom_violin(aes(x=differential, y=DHSval, group=differential, color=differential), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(name="Species Differential:", labels = c("Both", "Contact", "Expression", "Neither"), values=c("Red", "Blue", "Green", "Purple"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 600)) + annotate("text", x=3.5, y=300, label="5 e -12", size=3, fontface=2) + annotate("text", x=2.5, y=300, label="0.2", size=3, fontface=2) + annotate("text", x=1.5, y=400, label="4 e -2", size=3, fontface=2) + annotate("text", label="2 e -3", x=2, y=480, size=3, fontface=2) + annotate("segment", x=1.1, y=370, xend=1.9, yend=370) + annotate("segment", x=2.1, y=270, xend=2.9, yend=270) + annotate("segment", x=3.1, y=270, xend=3.9, yend=270) + annotate("segment", x=1.1, y=450, xend=2.9, yend=450) + annotate("text", x=2.5, y=550, size=3, label="1 e -5", fontface=2) + annotate("segment", x=1.1, y=520, xend=3.9, yend=520) + annotate("text", x=3, y=400, label="3 e -4", size=3, fontface=2) + annotate("segment", x=2.1, xend=3.9, y=370, yend=370)
+vp <- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.6)
+print(prom.DHS)
+print(box.prom.DHS, vp=vp)
+t.test(filter(proms.differential, differential=="both")$DHSval, filter(proms.differential, differential=="no")$DHSval)
+
+DE.DHS <- ggplot(data=proms.DE) + geom_density(aes(x=DHSval, group=DE, color=DE, y=..scaled..)) + ggtitle("Enrichment of DHS overlapping DE Promoter Hi-C Bins") + xlab("Length of overlap b/t bin and DHS peak") + ylab("Density") + scale_color_manual(name="DE?", labels = c("No", "Yes"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 1000))
+boxDE.DHS <- ggplot(data=proms.DE) + geom_violin(aes(x=DE, y=DHSval, group=DE, color=DE), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(labels=c("No", "Yes"), values=c("Red", "Blue"), guide=FALSE) + coord_cartesian(ylim=c(0, 1000)) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("text", x=1.5, y=400, label="6 e -13", size=3) + annotate("segment", x=1.1, xend=1.9, y=350, yend=350)
+vp <- grid::viewport(width=0.4, height=0.4, x=0.6, y=0.5)
+print(DE.DHS)
+print(boxDE.DHS, vp=vp)
+t.test(filter(proms.DE, DE=="yes")$DHSval, filter(proms.DE, DE=="no")$DHSval)
+
+DC.DHS <- ggplot(data=proms.DC) + geom_density(aes(x=DHSval, group=DC, color=DC, y=..scaled..)) + ggtitle("Enrichment of DHS overlapping DC Promoter Hi-C Bins") + xlab("Length of overlap b/t bin and DHS peak") + ylab("Density") + scale_color_manual(name="DC?", labels = c("No", "Yes"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 1000))
+boxDC.DHS <- ggplot(data=proms.DC) + geom_violin(aes(x=DC, y=DHSval, group=DC, color=DC), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(labels=c("No", "Yes"), values=c("Red", "Blue"), guide=FALSE) + coord_cartesian(ylim=c(0, 1000)) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("text", label="2 e -6", size=3, x=1.5, y=400) + annotate("segment", x=1.1, xend=1.9, y=350, yend=350)#+ geom_text(aes(x=1.5, y=2000, label="0.2901"), show.legend=FALSE, size=3)
+print(DC.DHS)
+print(boxDC.DHS, vp=vp)
+t.test(filter(proms.DC, DC=="yes")$DHSval, filter(proms.DC, DC=="no")$DHSval)
+
+##############H3K27Ac plots!!!
+all.Hac <- ggplot(data=chrom.annos) + geom_density(aes(x=Hacval, group=true.promoter, color=true.promoter, y=..scaled..)) + ggtitle("Enrichment of H3K27ac Overlapping Hi-C Bins") + xlab("Length of overlap b/t bin and H3K27ac peak") + ylab("Density") + scale_color_manual(name="Promoter Contact?", labels = c("No", "Yes"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 2500))
+box.all.Hac <- ggplot(data=chrom.annos) + geom_violin(aes(x=true.promoter, y=Hacval, group=true.promoter, color=true.promoter)) + scale_color_manual(values=c("Red", "Blue"), labels=c("No", "Yes"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 1000)) + annotate("text", label="< 2 e -16", x=1.5, y=400, size=3) + annotate("segment", x=1.1, xend=1.9, y=350, yend=350)# Throws an error when draw_quantiles is added to geom_violin, because of NAs that exist in the data so the quantile call fails? Or...?
+vp <- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.5)
+print(all.Hac)
+print(box.all.Hac, vp=vp)
+t.test(filter(chrom.annos, true.promoter=="yes")$Hacval, filter(chrom.annos, true.promoter=="no")$Hacval)
+
+noprom.Hac <- ggplot(data=nonproms) + geom_density(aes(x=Hac, group=DC, color=DC, y=..scaled..)) + ggtitle("Enrichment of H3K27ac overlapping non-promoter Hi-C Bins") + xlab("Length of overlap b/t bin and H3K27ac peak") + ylab("Density") + scale_color_manual(name="Species Differential:", labels = c("Neither", "Contact"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 2000))
+box.noprom.Hac <- ggplot(data=nonproms) + geom_violin(aes(x=DC, y=Hac, group=DC, color=DC)) + scale_color_manual(name="Species Differential:", labels = c("Neither", "Contact"), values=c("Red", "Blue"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 1000)) + annotate("text", label="1 e -4", x=1.5, y=400, size=3) + annotate("segment", x=1.1, xend=1.9, y=350, yend=350) # Once again throws an error in draw_quantiles due to the NAs in the data (I believe).
+print(noprom.Hac)
+print(box.noprom.Hac, vp=vp)
+t.test(filter(nonproms, DC=="yes")$Hac, filter(nonproms, DC=="no")$Hac)
+
+#FIG7A
+prom.Hac <- ggplot(data=proms.differential) + geom_density(aes(x=Hacval, group=differential, color=differential, y=..scaled..)) + ggtitle("Enrichment of H3K27ac Overlapping Promoter Hi-C Bins") + xlab("Length of Overlap b/t Bin and H3K27ac Peak (BP)") + ylab("Density") + scale_color_manual(name="Species Differential:", labels = c("Both", "Contact", "Expression", "Neither"), values=c("Red", "Blue", "Green", "Purple")) + coord_cartesian(xlim=c(0, 3000)) + guides(color=FALSE)
+box.prom.Hac <- ggplot(data=proms.differential) + geom_violin(aes(x=differential, y=Hacval, group=differential, color=differential), draw_quantiles = c(0.25, 0.5, 0.75))+ scale_color_manual(name="Species Differential:", labels = c("Both", "Contact", "Expression", "Neither"), values=c("Red", "Blue", "Green", "Purple"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank())+ coord_cartesian(ylim=c(0, 1000)) + annotate("segment", x=1.1, xend=1.9, y=430, yend=430) + annotate("segment", x=1.1, xend=2.9, y=700, yend=700) + annotate("segment", x=1.1, xend=3.9, y=880, yend=880) + annotate("segment", x=2.1, xend=2.9, y=430, yend=430) + annotate("segment", x=2.1, xend=3.9, y=560, yend=560) + annotate("segment", x=3.1, xend=3.9, y=430, yend=430) + annotate("text", label="0.4", size=3, x=1.5, y=480, fontface=2) + annotate("text", label="0.1", size=3, x=2.5, y=480, fontface=2) + annotate("text", label="1 e -3", size=3, x=3.5, y=480, fontface=2) + annotate("text", label="2 e -6", size=3, x=3, y=610, fontface=2) + annotate("text", label="0.08", size=3, x=2, y=750, fontface=2) + annotate("text", label="8 e -3", size=3, x=2.5, y=930, fontface=2)
+vp <- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.6)
+print(prom.Hac)
+print(box.prom.Hac, vp=vp)
+t.test(filter(proms.differential, differential=="contact")$Hacval, filter(proms.differential, differential=="no")$Hacval)
+
+DE.Hac <- ggplot(data=proms.DE) + geom_density(aes(x=Hacval, group=DE, color=DE, y=..scaled..)) + ggtitle("Enrichment of H3K27ac overlapping DE Promoter Hi-C Bins") + xlab("Length of overlap b/t bin and H3K27ac peak") + ylab("Density") + scale_color_manual(name="DE?", labels = c("No", "Yes"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 3000))
+boxDE.Hac <- ggplot(data=proms.DE) + geom_violin(aes(x=DE, y=Hacval, group=DE, color=DE), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(labels=c("No", "Yes"), values=c("Red", "Blue"), guide=FALSE) + coord_cartesian(ylim=c(0, 1000)) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("segment", x=1.1, xend=1.9, y=250, yend=250) + annotate("text", x=1.5, y=300, label="1 e -6", size=3)
+print(DE.Hac)
+print(boxDE.Hac, vp=vp)
+t.test(filter(proms.DE, DE=="yes")$Hacval, filter(proms.DE, DE=="no")$Hacval)
+
+DC.Hac <- ggplot(data=proms.DC) + geom_density(aes(x=Hacval, group=DC, color=DC, y=..scaled..)) + ggtitle("Enrichment of H3K27ac overlapping DC Promoter Hi-C Bins") + xlab("Length of overlap b/t bin and H3K27ac peak") + ylab("Density") + scale_color_manual(name="DC?", labels = c("No", "Yes"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 2500))
+boxDC.Hac <- ggplot(data=proms.DC) + geom_violin(aes(x=DC, y=Hacval, group=DC, color=DC), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(labels=c("No", "Yes"), values=c("Red", "Blue"), guide=FALSE) + coord_cartesian(ylim=c(0, 1000)) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("segment", x=1.1, xend=1.9, y=400, yend=400) + annotate("text", x=1.5, y=450, label="3 e -4", size=3)
+print(DC.Hac)
+print(boxDC.Hac, vp=vp)
+t.test(filter(proms.DC, DC=="yes")$Hacval, filter(proms.DC, DC=="no")$Hacval)
+
+
+######H3K4Me1 plots!!!
+all.Hme1 <- ggplot(data=chrom.annos) + geom_density(aes(x=Hme1val, group=true.promoter, color=true.promoter, y=..scaled..)) + ggtitle("Enrichment of H3K4me1 Overlapping Hi-C Bins") + xlab("Length of overlap b/t bin and H3K4me1 peak") + ylab("Density") + scale_color_manual(name="Promoter Contact?", labels = c("No", "Yes"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 3000))
+box.all.Hme1 <- ggplot(data=chrom.annos) + geom_violin(aes(x=true.promoter, y=Hme1val, group=true.promoter, color=true.promoter), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(values=c("Red", "Blue"), labels=c("No", "Yes"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 3000)) + annotate("segment", x=1.1, xend=1.9, y=1250, yend=1250) + annotate("text", x=1.5, y=1450, label="< 2 e -16", size=3)
+print(all.Hme1)
+print(box.all.Hme1, vp=vp)
+t.test(filter(chrom.annos, true.promoter=="yes")$Hme1val, filter(chrom.annos, true.promoter=="no")$Hme1val)
+
+#FIG7C
+prom.Hme1 <- ggplot(data=proms.differential) + geom_density(aes(x=Hme1val, group=differential, color=differential, y=..scaled..)) + ggtitle("Enrichment of H3K4me1 overlapping Promoter Hi-C Bins") + xlab("Length of overlap b/t bin and H3K4me1 peak") + ylab("Density") + scale_color_manual(name="Species Differential:", labels = c("Both", "Contact", "Expression", "Neither"), values=c("Red", "Blue", "Green", "Purple")) + coord_cartesian(xlim=c(0, 6000)) + guides(color=FALSE)
+box.prom.Hme1 <- ggplot(data=proms.differential) + geom_violin(aes(x=differential, y=Hme1val, group=differential, color=differential), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(name="Species Differential:", labels = c("Both", "Contact", "Expression", "Neither"), values=c("Red", "Blue", "Green", "Purple"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 6000)) + annotate("segment", x=1.1, xend=1.9, y=1500, yend=1500) + annotate("segment", x=2.1, xend=2.9, y=1500, yend=1500) + annotate("segment", x=3.1, xend=3.9, y=1500, yend=1500) + annotate("segment", x=1.1, xend=2.9, y=3900, yend=3900) + annotate("segment", x=1.1, xend=3.9, y=5100, yend=5100) + annotate("segment", x=2.1, xend=3.9, y=2700, yend=2700) + annotate("text", x=1.5, y=1800, size=3, label="0.03", fontface=2) + annotate("text", x=2.5, y=1800, size=3, label="0.6", fontface=2) + annotate("text", x=3.5, y=1800, size=3, label="0.5", fontface=2) + annotate("text", x=3, y=3000, size=3, label="0.5", fontface=2) + annotate("text", x=2.5, y=5400, size=3, label="0.04", fontface=2) + annotate("text", x=2, y=4200, size=3, label="0.03", fontface=2)
+vp <- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.5)
+print(prom.Hme1)
+print(box.prom.Hme1, vp=vp)
+t.test(filter(proms.differential, differential=="contact")$Hme1val, filter(proms.differential, differential=="expression")$Hme1val)
+
+noprom.Hme1 <- ggplot(data=nonproms) + geom_density(aes(x=Hme1, group=DC, color=DC, y=..scaled..)) + ggtitle("Enrichment of H3K4me1 overlapping non-promoter Hi-C Bins") + xlab("Length of overlap b/t bin and H3K4me1 peak") + ylab("Density") + scale_color_manual(name="Species Differential:", labels = c("Neither", "Contact"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 4000))
+box.noprom.Hme1 <- ggplot(data=nonproms) + geom_violin(aes(x=DC, y=Hme1, group=DC, color=DC), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(name="Species Differential:", labels = c("Neither", "Contact"), values=c("Red", "Blue"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 2200)) + annotate("segment", x=1.1, xend=1.9, y=750, yend=750) + annotate("text", x=1.5, y=860, size=3, label="0.05")
+print(noprom.Hme1)
+print(box.noprom.Hme1, vp=vp)
+t.test(filter(nonproms, DC=="no")$Hme1, filter(nonproms, DC=="yes")$Hme1)
+
+DE.Hme1 <- ggplot(data=proms.DE) + geom_density(aes(x=Hme1val, group=DE, color=DE, y=..scaled..)) + ggtitle("Enrichment of H3K4me1 overlapping DE Promoter Hi-C Bins") + xlab("Length of overlap b/t bin and H3K4me1 peak") + ylab("Density") + scale_color_manual(name="DE?", labels = c("No", "Yes"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 4000))
+boxDE.Hme1 <- ggplot(data=proms.DE) + geom_violin(aes(x=DE, y=Hme1val, group=DE, color=DE), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(labels=c("No", "Yes"), values=c("Red", "Blue"), guide=FALSE) + coord_cartesian(ylim=c(0, 2200)) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("text", x=1.5, y=1360, label="0.9", size=3) + annotate("segment", x=1.1, xend=1.9, y=1250, yend=1250)
+print(DE.Hme1)
+print(boxDE.Hme1, vp=vp)
+t.test(filter(proms.DE, DE=="yes")$Hme1val, filter(proms.DE, DE=="no")$Hme1val)
+
+DC.Hme1 <- ggplot(data=proms.DC) + geom_density(aes(x=Hme1val, group=DC, color=DC, y=..scaled..)) + ggtitle("Enrichment of H3K4me1 overlapping DC Promoter Hi-C Bins") + xlab("Length of overlap b/t bin and H3K4me1 peak") + ylab("Density") + scale_color_manual(name="DC?", labels = c("No", "Yes"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 5000))
+boxDC.Hme1 <- ggplot(data=proms.DC) + geom_violin(aes(x=DC, y=Hme1val, group=DC, color=DC), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(labels=c("No", "Yes"), values=c("Red", "Blue"), guide=FALSE) + coord_cartesian(ylim=c(0, 2200)) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("segment", x=1.1, xend=1.9, y=1200, yend=1200) + annotate("text", x=1.5, y=1310, label="0.7", size=3)
+print(DC.Hme1)
+print(boxDC.Hme1, vp=vp)
+t.test(filter(proms.DC, DC=="yes")$Hme1val, filter(proms.DC, DC=="no")$Hme1val)
+
+####H3K4Me3 plots!!!
+all.Hme3 <- ggplot(data=chrom.annos) + geom_density(aes(x=Hme3val, group=true.promoter, color=true.promoter, y=..scaled..)) + ggtitle("Enrichment of H3K4me3 Overlapping Hi-C Bins") + xlab("Length of overlap b/t bin and H3K4me3 peak") + ylab("Density") + scale_color_manual(name="Promoter Contact?", labels = c("No", "Yes"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 6000))
+box.all.Hme3 <- ggplot(data=chrom.annos) + geom_violin(aes(x=true.promoter, y=Hme3val, group=true.promoter, color=true.promoter), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(values=c("Red", "Blue"), labels=c("No", "Yes"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 4000)) + annotate("segment", x=1.1, xend=1.9, y=2200, yend=2200) + annotate("text", label="< 2 e -16", x=1.5, y=2400, size=3)
+print(all.Hme3)
+print(box.all.Hme3, vp=vp)
+t.test(filter(chrom.annos, true.promoter=="yes")$Hme3val, filter(chrom.annos, true.promoter=="no")$Hme3val)
+
+#FIG7C
+prom.Hme3 <- ggplot(data=proms.differential) + geom_density(aes(x=Hme3val, group=differential, color=differential, y=..scaled..)) + ggtitle("Enrichment of H3K4me3 overlapping Promoter Hi-C Bins") + xlab("Length of overlap b/t bin and H3K4me3 peak") + ylab("Density") + scale_color_manual(name="Species Differential:", labels = c("Both", "Contact", "Expression", "Neither"), values=c("Red", "Blue", "Green", "Purple")) + guides(color=FALSE) + coord_cartesian(xlim=c(0, 7500))
+box.prom.Hme3 <- ggplot(data=proms.differential) + geom_violin(aes(x=differential, y=Hme3val, group=differential, color=differential), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(name="Species Differential:", labels = c("Both", "Contact", "Expression", "Neither"), values=c("Red", "Blue", "Green", "Purple"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 2000)) + annotate("segment", x=1.1, xend=1.9, y=750, yend=750) + annotate("segment", x=2.1, xend=2.9, y=750, yend=750) + annotate("segment", x=3.1, xend=3.9, y=750, yend=750) + annotate("segment", x=2.1, xend=3.9, y=1000, yend=1000) + annotate("segment", x=1.1, xend=2.9, y=1250, yend=1250) + annotate("segment", x=1.1, xend=3.9, y=1500, yend=1500) + annotate("text", x=1.5, y=840, size=3, label="0.2", fontface=2) + annotate("text", x=2.5, y=840, size=3, label="0.02", fontface=2) + annotate("text", x=3.5, y=840, size=3, label="< 2 e -16", fontface=2) + annotate("text", x=3, y=1090, size=3, label="9 e -8", fontface=2) + annotate("text", x=2.7, y=1590, size=3, label="2 e -5", fontface=2) + annotate("text", x=2, y=1340, size=3, label="6 e -3", fontface=2)
+print(prom.Hme3)
+vp <- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.6)
+print(box.prom.Hme3, vp=vp)
+t.test(filter(proms.differential, differential=="both")$Hme3val, filter(proms.differential, differential=="expression")$Hme3val)
+
+noprom.Hme3 <- ggplot(data=nonproms) + geom_density(aes(x=Hme3, group=DC, color=DC, y=..scaled..)) + ggtitle("Enrichment of H3K4me3 overlapping non-promoter Hi-C Bins") + xlab("Length of overlap b/t bin and H3K4me3 peak") + ylab("Density") + scale_color_manual(name="Species Differential:", labels = c("Neither", "Contact"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 4000))
+box.noprom.Hme3 <- ggplot(data=nonproms) + geom_violin(aes(x=DC, y=Hme3, group=DC, color=DC), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(name="Species Differential:", labels = c("Neither", "Contact"), values=c("Red", "Blue"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 1000)) + annotate("segment", x=1.1, xend=1.9, y=250, yend=250) + annotate("text", x=1.5, y=300, size=3, label="< 2 e -16")
+print(noprom.Hme3)
+print(box.noprom.Hme3, vp=vp)
+t.test(filter(nonproms, DC=="no")$Hme3, filter(nonproms, DC=="yes")$Hme3)
+
+DE.Hme3 <- ggplot(data=proms.DE) + geom_density(aes(x=Hme3val, group=DE, color=DE, y=..scaled..)) + ggtitle("Enrichment of H3K4me3 overlapping DE Promoter Hi-C Bins") + xlab("Length of overlap b/t bin and H3K4me3 peak") + ylab("Density") + scale_color_manual(name="DE?", labels = c("No", "Yes"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 4000))
+boxDE.Hme3 <- ggplot(data=proms.DE) + geom_violin(aes(x=DE, y=Hme3val, group=DE, color=DE), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(labels=c("No", "Yes"), values=c("Red", "Blue"), guide=FALSE) + coord_cartesian(ylim=c(0, 1000)) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("segment", x=1.1, xend=1.9, y=500, yend=500) + annotate("text", x=1.5, y=550, size=3, label="< 2 e -16")
+print(DE.Hme3)
+print(boxDE.Hme3, vp=vp)
+t.test(filter(proms.DE, DE=="yes")$Hme3val, filter(proms.DE, DE=="no")$Hme3val)
+
+DC.Hme3 <- ggplot(data=proms.DC) + geom_density(aes(x=Hme3val, group=DC, color=DC, y=..scaled..)) + ggtitle("Enrichment of H3K4me3 overlapping DC Promoter Hi-C Bins") + xlab("Length of overlap b/t bin and H3K4me3 peak") + ylab("Density") + scale_color_manual(name="DC?", labels = c("No", "Yes"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 6000))
+boxDC.Hme3 <- ggplot(data=proms.DC) + geom_violin(aes(x=DC, y=Hme3val, group=DC, color=DC), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(labels=c("No", "Yes"), values=c("Red", "Blue"), guide=FALSE) + coord_cartesian(ylim=c(0, 2000)) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("segment", x=1.1, xend=1.9, y=1000, yend=1000) + annotate("text", x=1.5, y=1090, size=3, label="1 e -9")
+vp <- grid::viewport(width=0.4, height=0.4, x=0.6, y=0.6)
+print(DC.Hme3)
+print(boxDC.Hme3, vp=vp)
+t.test(filter(proms.DC, DC=="yes")$Hme3val, filter(proms.DC, DC=="no")$Hme3val)
+
+####H3K27me3 plots!!!
+all.HK27 <- ggplot(data=chrom.annos) + geom_density(aes(x=HK27val, group=true.promoter, color=true.promoter, y=..scaled..)) + ggtitle("Enrichment of H3K27me3 Overlapping Hi-C Bins") + xlab("Length of overlap b/t bin and H3K27me3 peak") + ylab("Density") + scale_color_manual(name="Promoter Contact?", labels = c("No", "Yes"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 2500))
+box.all.HK27 <- ggplot(data=chrom.annos) + geom_violin(aes(x=true.promoter, y=HK27val, group=true.promoter, color=true.promoter), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(values=c("Red", "Blue"), labels=c("No", "Yes"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 1000)) + annotate("segment", x=1.1, xend=1.9, y=700, yend=700) + annotate("text", label="1 e -14", x=1.5, y=760, size=3)
+vp <- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.6)
+print(all.HK27)
+print(box.all.HK27, vp=vp)
+t.test(filter(chrom.annos, true.promoter=="yes")$HK27val, filter(chrom.annos, true.promoter=="no")$HK27val)
+
+#FIG7D
+prom.HK27 <- ggplot(data=proms.differential) + geom_density(aes(x=HK27val, group=differential, color=differential, y=..scaled..)) + ggtitle("Enrichment of H3K27me3 overlapping Promoter Hi-C Bins") + xlab("Length of overlap b/t bin and H3K27me3 peak") + ylab("Density") + scale_color_manual(name="Species Differential:", labels = c("Both", "Contact", "Expression", "Neither"), values=c("Red", "Blue", "Green", "Purple")) + coord_cartesian((xlim=c(0, 4000))) + guides(color=FALSE)
+box.prom.HK27 <- ggplot(data=proms.differential) + geom_violin(aes(x=differential, y=HK27val, group=differential, color=differential), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(name="Species Differential:", labels = c("Both", "Contact", "Expression", "Neither"), values=c("Red", "Blue", "Green", "Purple"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 2000)) + annotate("segment", x=1.1, xend=1.9, y=750, yend=750) + annotate("segment", x=2.1, xend=2.9, y=750, yend=750) + annotate("segment", x=3.1, xend=3.9, y=750, yend=750) + annotate("segment", x=2.1, xend=3.9, y=1000, yend=1000) + annotate("segment", x=1.1, xend=2.9, y=1250, yend=1250) + annotate("segment", x=1.1, xend=3.9, y=1500, yend=1500) + annotate("text", x=1.5, y=840, size=3, label="0.3", fontface=2) + annotate("text", x=2.5, y=840, size=3, label="0.2", fontface=2) + annotate("text", x=3.5, y=840, size=3, label="0.6", fontface=2) + annotate("text", x=3, y=1090, size=3, label="0.2", fontface=2) + annotate("text", x=2.7, y=1590, size=3, label="0.7", fontface=2) + annotate("text", x=2, y=1340, size=3, label="0.8", fontface=2)
+print(prom.HK27)
+vp <- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.5)
+print(box.prom.HK27, vp=vp)
+t.test(filter(proms.differential, differential=="expression")$HK27val, filter(proms.differential, differential=="both")$HK27val)
+
+noprom.HK27 <- ggplot(data=nonproms) + geom_density(aes(x=HK27, group=DC, color=DC, y=..scaled..)) + ggtitle("Enrichment of H3K27me3 overlapping non-promoter Hi-C Bins") + xlab("Length of overlap b/t bin and H3K27me3 peak") + ylab("Density") + scale_color_manual(name="Species Differential:", labels = c("Neither", "Contact"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 4000))
+box.noprom.HK27 <- ggplot(data=nonproms) + geom_violin(aes(x=DC, y=HK27, group=DC, color=DC), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(name="Species Differential:", labels = c("Neither", "Contact"), values=c("Red", "Blue"), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 1000)) + annotate("segment", x=1.1, xend=1.9, y=250, yend=250) + annotate("text", x=1.5, y=300, size=3, label="4 e -12")
+print(noprom.HK27)
+print(box.noprom.HK27, vp=vp)
+t.test(filter(nonproms, DC=="no")$HK27, filter(nonproms, DC=="yes")$HK27)
+
+DE.HK27 <- ggplot(data=proms.DE) + geom_density(aes(x=HK27val, group=DE, color=DE, y=..scaled..)) + ggtitle("Enrichment of H3K27me3 overlapping DE Promoter Hi-C Bins") + xlab("Length of overlap b/t bin and H3K27me3 peak") + ylab("Density") + scale_color_manual(name="DE?", labels = c("No", "Yes"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 4000))
+boxDE.HK27 <- ggplot(data=proms.DE) + geom_violin(aes(x=DE, y=HK27val, group=DE, color=DE), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(labels=c("No", "Yes"), values=c("Red", "Blue"), guide=FALSE) + coord_cartesian(ylim=c(0, 1000)) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("segment", x=1.1, xend=1.9, y=500, yend=500) + annotate("text", x=1.5, y=550, size=3, label="0.6")
+print(DE.HK27)
+print(boxDE.HK27, vp=vp)
+t.test(filter(proms.DE, DE=="yes")$HK27val, filter(proms.DE, DE=="no")$HK27val)
+
+DC.HK27 <- ggplot(data=proms.DC) + geom_density(aes(x=HK27val, group=DC, color=DC, y=..scaled..)) + ggtitle("Enrichment of H3K27me3 overlapping DC Promoter Hi-C Bins") + xlab("Length of overlap b/t bin and H3K27me3 peak") + ylab("Density") + scale_color_manual(name="DC?", labels = c("No", "Yes"), values=c("Red", "Blue")) + coord_cartesian(xlim=c(0, 4000))
+boxDC.HK27 <- ggplot(data=proms.DC) + geom_violin(aes(x=DC, y=HK27val, group=DC, color=DC), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(labels=c("No", "Yes"), values=c("Red", "Blue"), guide=FALSE) + coord_cartesian(ylim=c(0, 2000)) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + annotate("segment", x=1.1, xend=1.9, y=1000, yend=1000) + annotate("text", x=1.5, y=1090, size=3, label="0.3")
+vp <- grid::viewport(width=0.4, height=0.4, x=0.6, y=0.6)
+print(DC.HK27)
+print(boxDC.HK27, vp=vp)
+t.test(filter(proms.DC, DC=="yes")$HK27val, filter(proms.DC, DC=="no")$HK27val)
+```

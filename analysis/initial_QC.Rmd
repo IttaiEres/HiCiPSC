@@ -316,7 +316,7 @@ fwrite(data.4, "output/data.4.init.QC", quote=FALSE, sep="\t", row.names=FALSE, 
 fwrite(data.4.fixed, "output/data.4.fixed.init.QC", quote=FALSE, sep="\t", row.names=FALSE, col.names=TRUE, na="NA", showProgress = FALSE)
 ```
 
-#Homer-specific QC; Fig S8
+#Homer-specific QC; Fig S11
 ```{r HOMER-specific QC Metrics}
 #Read in pre-prepped tables of this information.
 rand.frag <- fread("~/Desktop/Hi-C/homer_QCs/petag.Local.ALL.distn", header=TRUE, stringsAsFactors = FALSE, data.table=FALSE)
@@ -343,9 +343,9 @@ group_by(dist.distn, binID) %>% summarise(A_H=sum(A_H), B_H=sum(B_H), C_C=sum(C_
 distdf <- data.frame(dist=rep(mydist$binID, 8), fraction=c(mydist$A_H, mydist$B_H, mydist$C_C, mydist$D_C, mydist$E_H, mydist$F_H, mydist$G_C, mydist$H_C), ID=c(rep("A-21792", 30001), rep("B-28126", 30001), rep("C-3649", 30001), rep("D-40300", 30001), rep("E-28815", 30001), rep("F-28834", 30001), rep("G-3624", 30001), rep("H-3651", 30001)), species=c(rep("Human", 60002), rep("Chimpanzee", 60002), rep("Human", 60002), rep("Chimpanzee", 60002)))
 
 #Now, plot out on several different distance scales to see if there is any strong species effect.
-#FIGS8
-ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 50000)) + xlab("Distance Between Mates") + ylab("Fraction of Hi-C PE reads") + ggtitle("Hi-C Pair Distance Distributions") #FIGS8B
+#FIGS11
+ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 50000)) + xlab("Distance Between Mates") + ylab("Fraction of Hi-C PE reads") + ggtitle("Hi-C Pair Distance Distributions") #FIGS11B
 ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 100000)) + xlab("Distance between mates") + ylab("Fraction of Hi-C PE reads") + ggtitle("Hi-C Pair Distance Distributions")
-ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 500000)) + xlab("Distance Between mates") + ylab("Fraction of Hi-C PE reads") + ggtitle("Hi-C Pair Distance Distributions") #FIGS8A
+ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 500000)) + xlab("Distance Between mates") + ylab("Fraction of Hi-C PE reads") + ggtitle("Hi-C Pair Distance Distributions") #FIGS11A
 #Once again, there appears to be no clear separation between species here. There doesn't even appear to be a batch effect!
 ```

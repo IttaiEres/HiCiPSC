@@ -205,8 +205,9 @@ plotMDS(dge_final$E[,1:8], labels=species, col=color, main="MDS Plot") #Shows se
 ###Now, apply voom to get quality weights.
 meta.exp.data <- data.frame("SP"=c("C", "C", "C", "C", "H", "H", "H", "H"), "SX"=c("M","M" ,"F","F","F", "M","M","F"))
 SP <- factor(meta.exp.data$SP,levels = c("H","C"))
-exp.design <- model.matrix(~0+SP)#(~1+meta.exp.data$SP+meta.exp.data$SX)
-colnames(exp.design) <- c("Human", "Chimp")
+SX <- factor(meta.exp.data$SX, levels=c("M", "F"))
+exp.design <- model.matrix(~0+SP+SX) #Include both species and sex as covariates.
+colnames(exp.design) <- c("Human", "Chimp", "Sex")
 weighted.data <- voom(dge_final, exp.design, plot=TRUE, normalize.method = "cyclicloess")
 
 ##Obtain rest of LM results, with particular eye to DE table!
@@ -226,8 +227,8 @@ nonDEgenes <- detable$genes[-which(detable$adj.P.Val<=0.05)]
 #Rearrange RPKM and weight columns in voom object to be similar to the rest of my setup throughout in other dataframes.
 weighted.data$E <- weighted.data$E[,c(8, 6, 1, 4, 7, 5, 2, 3)]
 weighted.data$weights <- weighted.data$weights[,c(8, 6, 1, 4, 7, 5, 2, 3)]
-RPKM <- weighted.data$E
-rownames(RPKM) <- NULL #Just to match what I had before on midway2, about to write this out.
+RPKM <- as.data.frame(weighted.data$E)
+RPKM$genes <- rownames(RPKM) #Just to match what I had before on midway2, about to write this out.
 saveRDS(RPKM, file="output/IEE.RPKM.RDS")
 saveRDS(weighted.data, file="output/IEE_voom_object.RDS") #write this object out, can then be read in with readRDS.
 ```
@@ -238,6 +239,20 @@ In this section I find the overlap between the final filtered set of Hi-C signif
 #Now, read in filtered data from linear_modeling_QC.Rmd.
 data.filtered <- fread("output/data.4.filtered.lm.QC", header=TRUE, data.table=FALSE, stringsAsFactors = FALSE, showProgress=FALSE)
 meta.data <- data.frame("SP"=c("H", "H", "C", "C", "H", "H", "C", "C"), "SX"=c("F", "M", "M", "F", "M", "F", "M", "F"), "Batch"=c(1, 1, 1, 1, 2, 2, 2, 2))
+
+
+###Grab DC and non-DC Example Interactions from Data### For creating FIG3 and FIGS7
+great.indices <- which(data.filtered$sp_BH_pval<=0.05&data.filtered$dist_diff<=10000&data.filtered$Hdist<=150000&data.filtered$disc_species=="B"&data.filtered$Hdist>=50000)
+mydat <- data.filtered[great.indices,]
+mydat <- select(mydat, sp_BH_pval, sp_beta, Hchr, H1, H2, Cchr, C1, C2, Hmean, Cmean, dist_diff, Hdist, Cdist)
+mydat <- mydat[order(mydat$sp_BH_pval),]
+which.max(mydat$sp_beta)
+
+weak.indices <- which(data.filtered$sp_BH_pval>=0.95&data.filtered$dist_diff<=10000&data.filtered$Hdist<=150000&data.filtered$disc_species=="B"&data.filtered$Hdist>=50000)
+mydat <- data.filtered[weak.indices,]
+mydat <- select(mydat, sp_BH_pval, sp_beta, Hchr, H1, H2, Cchr, C1, C2, Hmean, Cmean, dist_diff, Hdist, Cdist)
+mydat <- mydat[order(mydat$Hmean, decreasing = TRUE),]
+##
 
 #TABLES1
 #Write out data.filtered regions that are DC for supplementary table:
@@ -267,18 +282,12 @@ colnames(chimpgenes) <- c("genes", "Cchr", "Cstart", "Cend", "Cstrand")
 humgenes$Hchr <- paste("chr", humgenes$Hchr, sep="") #All properly formatted now!
 
 #Bedtools groupby appears to have not worked properly to create files of single TSSs for genes from the meta ortho exons file, but this totally does! I've also utilized dplyr's group_by on the original file as well to ensure the same results. Now just making gene BED files that are 1-nt overlap at the very beginning of the first exon. Since I maintain strand information and will utilize it in bedtools closest-to, I am not concerned about whether the nt overlap goes the right direction or not. Note that if plyr is accidentally loaded AFTER dplyr, this will have issues (periods added at the end of start coords):
-group_by(humgenes, genes) %>% summarise(Hchr=unique(Hchr), Hstart=as.numeric(min(Hstart)), Hstrand=unique(Hstrand)) -> humgenes
-group_by(chimpgenes, genes) %>% summarise(Cchr=unique(Cchr), Cstart=min(Cstart), Cstrand=unique(Cstrand)) -> chimpgenes
+group_by(humgenes, genes) %>% summarise(Hchr=unique(Hchr), Hstart=as.numeric(min(Hstart)), Hend=Hstart+1, Hstrand=unique(Hstrand), holder=".") -> humgenes
+group_by(chimpgenes, genes) %>% summarise(Cchr=unique(Cchr), Cstart=min(Cstart), Cend=Cstart+1, Cstrand=unique(Cstrand), holder=".") -> chimpgenes
 
-#Quickly create a bed file to extract the genes that may overlap the region I'm pulling out for the paper example (chr5:147210000:147750000)
-options(scipen = 999)
-mytest <- filter(humgenes, Hchr=="chr5")
-mytest <- mytest[(mytest$genes %in% weighted.data$genes$genes),]
-mean.species.expression <- as.data.frame(weighted.data$E) #Now, need to pull out the mean expression values for all those genes!
-mean.species.expression$genes <- rownames(mean.species.expression)
-mean.species.expression$Hmean <- rowMeans(mean.species.expression[,c(1:2,5:6)])
-mean.species.expression$Cmean <- rowMeans(mean.species.expression[,c(3:4,7:8)])
-mean.species.expression <- mean.species.expression[,(-1:-8)]
+#Format both of these properly for how the code was previously written.
+humgenes <- humgenes[,c(2:4, 1, 6, 5)]
+chimpgenes <- chimpgenes[,c(2:4,1, 6, 5)]
 
 #Now, prep bed files from the filtered data for each bin, in order to run bedtools-closest on them with the human and chimp gene data. This is for getting each bin's proximity to TSS by overlapping with the dfs just made (humgenes and chimpgenes). In the end this set of bedfiles is fairly useless, because really it would be preferable to get rid of duplicates so that I can merely group_by on a given bin afterwards and left_join as necessary. So somewhat deprecated, but I keep it here still:
 hbin1 <- data.frame(chr=data.filtered$Hchr, start=as.numeric(gsub("chr.*-", "", data.filtered$H1)), end=as.numeric(gsub("chr.*-", "", data.filtered$H1))+10000)
@@ -292,22 +301,27 @@ hbins <- hbins[!duplicated(hbins),]
 cbins <- rbind(cbin1[!duplicated(cbin1),], cbin2[!duplicated(cbin2),])
 cbins <- cbins[!duplicated(cbins),]
 
+#Need to reformat hbins here for proper bedtools use:
+hbins$chr <- gsub("Chr. ", "chr", hbins$chr) #All good.
+
 #Now, write all of these files out for analysis with bedtools.
-write.table(hbin1, "~/Desktop/Hi-C/gene_expression/10kb_filt_overlaps/unsorted/hbin1.bed", quote = FALSE, sep="\t", row.names = FALSE, col.names=FALSE)
-write.table(hbin2, "~/Desktop/Hi-C/gene_expression/10kb_filt_overlaps/unsorted/hbin2.bed", quote = FALSE, sep="\t", row.names = FALSE, col.names=FALSE)
-write.table(cbin1, "~/Desktop/Hi-C/gene_expression/10kb_filt_overlaps/unsorted/cbin1.bed", quote = FALSE, sep="\t", row.names = FALSE, col.names=FALSE)
-write.table(cbin2, "~/Desktop/Hi-C/gene_expression/10kb_filt_overlaps/unsorted/cbin2.bed", quote = FALSE, sep="\t", row.names = FALSE, col.names=FALSE)
-write.table(humgenes, "~/Desktop/Hi-C/gene_expression/10kb_filt_overlaps/unsorted/humgenes.bed", quote=FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
-write.table(chimpgenes, "~/Desktop/Hi-C/gene_expression/10kb_filt_overlaps/unsorted/chimpgenes.bed", quote=FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
-write.table(hbins, "~/Desktop/Hi-C/gene_expression/10kb_filt_overlaps/unsorted/hbins.bed", quote=FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
-write.table(cbins, "~/Desktop/Hi-C/gene_expression/10kb_filt_overlaps/unsorted/cbins.bed", quote=FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
+options(scipen=999)
+#write.table(hbin1, "~/Desktop/Hi-C/gene_expression/10kb_filt_overlaps/unsorted/hbin1.bed", quote = FALSE, sep="\t", row.names = FALSE, col.names=FALSE)
+#write.table(hbin2, "~/Desktop/Hi-C/gene_expression/10kb_filt_overlaps/unsorted/hbin2.bed", quote = FALSE, sep="\t", row.names = FALSE, col.names=FALSE)
+#write.table(cbin1, "~/Desktop/Hi-C/gene_expression/10kb_filt_overlaps/unsorted/cbin1.bed", quote = FALSE, sep="\t", row.names = FALSE, col.names=FALSE)
+#write.table(cbin2, "~/Desktop/Hi-C/gene_expression/10kb_filt_overlaps/unsorted/cbin2.bed", quote = FALSE, sep="\t", row.names = FALSE, col.names=FALSE)
+write.table(humgenes, "data/hic_gene_overlap/humgenes.bed", quote=FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
+write.table(chimpgenes, "data/hic_gene_overlap/chimpgenes.bed", quote=FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
+write.table(hbins, "data/hic_gene_overlap/hbins.bed", quote=FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
+write.table(cbins, "data/hic_gene_overlap/cbins.bed", quote=FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
 options(scipen=0)
 
 #Read in new, simpler bedtools closest files for genes. This is after running two commands, after sorting the files w/ sort -k1,1 -k2,2n in.bed > out.bed:
 #bedtools closest -D a -a cgenes.sorted.bed -b cbins.sorted.bed > cgene.hic.overlap
 #bedtools closest -D a -a hgenes.sorted.bed -b hbins.sorted.bed > hgene.hic.overlap
-hgene.hic <- fread("~/Desktop/Hi-C/gene_expression/10kb_filt_overlaps/hgene.hic.overlap", header=FALSE, stringsAsFactors = FALSE, data.table=FALSE)
-cgene.hic <- fread("~/Desktop/Hi-C/gene_expression/10kb_filt_overlaps/cgene.hic.overlap", header=FALSE, stringsAsFactors = FALSE, data.table=FALSE)
+#A bash file showing this is included in the data/hic_gene_overlap directory (overlapper.sh)
+hgene.hic <- fread("data/hic_gene_overlap/hgene.hic.overlap", header=FALSE, stringsAsFactors = FALSE, data.table=FALSE)
+cgene.hic <- fread("data/hic_gene_overlap/cgene.hic.overlap", header=FALSE, stringsAsFactors = FALSE, data.table=FALSE)
 
 
 #Visualize the overlap of genes with bins and see how many genes we get back!
@@ -436,7 +450,7 @@ left_join(detable, genes.hic.info, by="genes") -> gene.hic.overlap.info
 filt.indices <- rowSums(is.na(gene.hic.overlap.info)) #51 NA values are found when there is absolutely no Hi-C information.
 filt.indices <- which(filt.indices==51)
 gene.hic.filt <- gene.hic.overlap.info[-filt.indices,] #Still leaves a solid 8,174 genes. Note that I will have to choose human or chimp values here for many of these columns, as not all of the values are the same (and many are missing in one species relative to the other). In some cases, may be able to just take minimum or maximum value from either in order to get at what I want.
-saveRDS(gene.hic.filt, "~/Desktop/Hi-C/gene.hic.filt.RDS")
+saveRDS(gene.hic.filt, "output/gene.hic.filt.RDS")
 ```
 
 #Differential Expression-Differential Hi-C Enrichment Analyses 
@@ -473,7 +487,7 @@ prop.calculator <- function(de.vec, hic.vec, i, k){
 }
 
 #This is a function that computes observed and expected proportions of DE and DHiC enrichments,  and spits out a variety of different visualizations for them. As input it takes a dataframe, the names of its DHiC and DE p-value columns, and a name to represent the type of Hi-C contact summary for the gene that ends up on the x-axis of all the plots.
-enrichment.plotter <- function(df, HiC_col, DE_col, xlab, xmax=0.3, i=c(0.01, 0.025, 0.05, 0.075, 0.1), k=seq(0.01, 1, 0.01)){
+enrichment.plotter <- function(df, HiC_col, DE_col, xlab, xmax=0.3, i=c(0.01, 0.025, 0.05, 0.075, 0.1), k=seq(0.01, 1, 0.01), recip=F){
   enrich.table <- data.frame(DEFDR = c(rep(i[1], 100), rep(i[2], 100), rep(i[3], 100), rep(i[4], 100), rep(i[5], 100)), DHICFDR=rep(k, 5), prop.obs=NA, prop.exp=NA, chisq.p=NA, Dneither=NA, DE=NA, DHiC=NA, Dboth=NA)
   for(de.FDR in i){
     for(hic.FDR in k){
@@ -484,16 +498,23 @@ enrichment.plotter <- function(df, HiC_col, DE_col, xlab, xmax=0.3, i=c(0.01, 0.
   dhics.enriched <- ggplot(data=enrich.table, aes(x=DHICFDR, y=Dboth/(Dboth+DHiC), group=as.factor(DEFDR), color=as.factor(DEFDR))) + geom_line() + geom_line(aes(y=(((((DE+Dboth)/(Dneither+DE+DHiC+Dboth))*((DHiC+Dboth)/(Dneither+DE+DHiC+Dboth)))*(Dneither+DE+DHiC+Dboth))/(DHiC+Dboth))), linetype="dashed") + ylab("Proportion of DC genes that are DE") +xlab(xlab) + ggtitle("Enrichment of DE in DC Genes") + coord_cartesian(xlim=c(0, xmax)) + guides(color=guide_legend(title="DE FDR"))
   joint.enriched <- ggplot(data=enrich.table, aes(x=DHICFDR, y=Dboth/(Dneither+DE+DHiC+Dboth), group=as.factor(DEFDR), color=as.factor(DEFDR))) + geom_line() + ylab("Proportion of ALL Genes both DE & DHi-C") + xlab(xlab) + geom_line(aes(y=((DE+Dboth)/(Dneither+DE+DHiC+Dboth))*((DHiC+Dboth)/(Dneither+DE+DHiC+Dboth))), linetype="dashed") + ggtitle("Enrichment of Joint DE & DHi-C in All Genes")
   chisq.p <- ggplot(data=enrich.table, aes(x=DHICFDR, y=-log10(chisq.p), group=as.factor(DEFDR), color=as.factor(DEFDR))) + geom_point() + geom_hline(yintercept=-log10(0.05), color="red") + ggtitle("Chi-squared Test P-values for Enrichment of DC in DE Genes") + xlab(xlab) + ylab("-log10(chi-squared p-values)") + coord_cartesian(xlim=c(0, xmax)) + guides(color=guide_legend(title="DE FDR"))
+  if(recip==TRUE){
+      des.enriched <- ggplot(data=enrich.table, aes(x=DHICFDR, y=prop.obs, group=as.factor(DEFDR), color=as.factor(DEFDR))) +geom_line()+ geom_line(aes(y=prop.exp), linetype="dashed", size=0.5) + ggtitle("Enrichment of DE in DC Genes") + xlab(xlab) + ylab("Proportion of DC genes that are DE") + guides(color=guide_legend(title="FDR for DC Genes"))
+  dhics.enriched <- ggplot(data=enrich.table, aes(x=DHICFDR, y=Dboth/(Dboth+DHiC), group=as.factor(DEFDR), color=as.factor(DEFDR))) + geom_line() + geom_line(aes(y=(((((DE+Dboth)/(Dneither+DE+DHiC+Dboth))*((DHiC+Dboth)/(Dneither+DE+DHiC+Dboth)))*(Dneither+DE+DHiC+Dboth))/(DHiC+Dboth))), linetype="dashed") + ylab("Proportion of DE genes that are DC") +xlab(xlab) + ggtitle("Enrichment of DC in DE Genes") + coord_cartesian(xlim=c(0, xmax)) + guides(color=guide_legend(title="DC FDR"))
+  joint.enriched <- ggplot(data=enrich.table, aes(x=DHICFDR, y=Dboth/(Dneither+DE+DHiC+Dboth), group=as.factor(DEFDR), color=as.factor(DEFDR))) + geom_line() + ylab("Proportion of ALL Genes both DE & DHi-C") + xlab(xlab) + geom_line(aes(y=((DE+Dboth)/(Dneither+DE+DHiC+Dboth))*((DHiC+Dboth)/(Dneither+DE+DHiC+Dboth))), linetype="dashed") + ggtitle("Enrichment of Joint DE & DHi-C in All Genes")
+  chisq.p <- ggplot(data=enrich.table, aes(x=DHICFDR, y=-log10(chisq.p), group=as.factor(DEFDR), color=as.factor(DEFDR))) + geom_point() + geom_hline(yintercept=-log10(0.05), color="red") + ggtitle("Chi-squared Test P-values for Enrichment of DE in DC Genes") + xlab(xlab) + ylab("-log10(chi-squared p-values)") + coord_cartesian(xlim=c(0, xmax)) + guides(color=guide_legend(title="DC FDR"))
+  }
   print(des.enriched)
   print(dhics.enriched)
   print(joint.enriched)
   print(chisq.p)
-  print(enrich.table[which(enrich.table$DEFDR==0.025),]) #Added to figure out comparison for the paper.
+  print(enrich.table)#[which(enrich.table$DEFDR==0.1),]) #Added to figure out comparison for the paper.
 }
 
 #Visualization of enrichment of DE/DC in one another. For most of these, using the gene.hic.filt df is sufficient as their Hi-C FDR numbers are the same. For the upstream genes it's a little more complicated because gene.hic.filt doesn't incorporate strand information on the genes, so use the specific US dfs for that, with the USFDR column.
-#FIG4A
-enrichment.plotter(gene.hic.filt, "min_FDR.H", "adj.P.Val", "Minimum FDR of Hi-C Contacts Overlapping Gene", xmax=1) #FIG4A
+#FIG6
+enrichment.plotter(gene.hic.filt, "min_FDR.H", "adj.P.Val", "Minimum FDR of Hi-C Contacts Overlapping Gene", xmax=1) #FIG6A/B
+enrichment.plotter(gene.hic.filt, "adj.P.Val", "min_FDR.H", "Minimum DE FDR of Genes Overlapping Hi-C Contacts", xmax=1, recip=TRUE) #Can switching this around give what the reviewer requests easily? Yes, it can.
 enrichment.plotter(gene.hic.filt, "min_FDR.C", "adj.P.Val", "Minimum FDR of Hi-C Contacts Overlapping Gene, Chimp")
 #enrichment.plotter(h_US, "USFDR", "adj.P.Val", "FDR for Closest Upstream Hi-C Contact Overlapping Gene, Human") #These two are ugly, and can't be run anyway until next chunk is complete to create their DFs. It's OK without them.
 #enrichment.plotter(c_US, "USFDR", "adj.P.Val", "FDR for Closest Upstream Hi-C Contact Overlapping Gene, Chimp")
@@ -504,12 +525,12 @@ enrichment.plotter(gene.hic.filt, "median_FDR.C", "adj.P.Val", "Median FDR of Hi
 enrichment.plotter(gene.hic.filt, "weighted_Z.s2post.H", "adj.P.Val", "FDR for Weighted p-val Combine of Hi-C Contacts Overlapping Gene, Human")
 enrichment.plotter(gene.hic.filt, "weighted_Z.s2post.C", "adj.P.Val", "FDR for Weighted p-val Combine of Hi-C Contacts Overlapping Gene, Chimp")
 
-#FIG4B
-enrichment.plotter(gene.hic.filt, "weighted_Z.ALLvar.H", "adj.P.Val", "FDR for Weighted p-val Combine of Hi-C Contacts Overlapping Gene", xmax=1) #FIG4B
+#FIG6C/D
+enrichment.plotter(gene.hic.filt, "weighted_Z.ALLvar.H", "adj.P.Val", "FDR for Weighted p-val Combine of Hi-C Contacts Overlapping Gene", xmax=1) #FIG6C/D
 enrichment.plotter(gene.hic.filt, "weighted_Z.ALLvar.C", "adj.P.Val", "FDR for Weighted p-val Combine of Hi-C Contacts Overlapping Gene, Chimp")
 
 #Custom function for doing this for the paper:
-pap.enrichment.plotter <- function(df, HiC_col, DE_col, xlab, xmax=0.3, i=c(0.01, 0.025, 0.05, 0.075, 0.1), k=seq(0.01, 1, 0.01), significance=FALSE){
+pap.enrichment.plotter <- function(df, HiC_col, DE_col, xlab, xmax=0.3, i=c(0.01, 0.025, 0.05, 0.075, 0.1), k=seq(0.01, 1, 0.01), significance=FALSE, recip=FALSE){
   enrich.table <- data.frame(DEFDR = c(rep(i[1], 100), rep(i[2], 100), rep(i[3], 100), rep(i[4], 100), rep(i[5], 100)), DHICFDR=rep(k, 5), prop.obs=NA, prop.exp=NA, chisq.p=NA, Dneither=NA, DE=NA, DHiC=NA, Dboth=NA)
   for(de.FDR in i){
     for(hic.FDR in k){
@@ -520,6 +541,12 @@ pap.enrichment.plotter <- function(df, HiC_col, DE_col, xlab, xmax=0.3, i=c(0.01
   dhics.enriched <- ggplot(data=enrich.table, aes(x=DHICFDR, y=Dboth/(Dboth+DHiC), group=as.factor(DEFDR), color=as.factor(DEFDR))) + geom_line() + geom_line(aes(y=(((((DE+Dboth)/(Dneither+DE+DHiC+Dboth))*((DHiC+Dboth)/(Dneither+DE+DHiC+Dboth)))*(Dneither+DE+DHiC+Dboth))/(DHiC+Dboth))), linetype="dashed") + ylab("Proportion of DC genes that are DE") +xlab(xlab) + ggtitle("Enrichment of DE in DC Genes") + coord_cartesian(xlim=c(0, xmax), ylim=c(0.05, 0.32)) + guides(color=FALSE)
   joint.enriched <- ggplot(data=enrich.table, aes(x=DHICFDR, y=Dboth/(Dneither+DE+DHiC+Dboth), group=as.factor(DEFDR), color=as.factor(DEFDR))) + geom_line() + ylab("Proportion of ALL Genes both DE & DHi-C") + xlab(xlab) + geom_line(aes(y=((DE+Dboth)/(Dneither+DE+DHiC+Dboth))*((DHiC+Dboth)/(Dneither+DE+DHiC+Dboth))), linetype="dashed") + ggtitle("Enrichment of Joint DE & DHi-C in All Genes")
   chisq.p <- ggplot(data=enrich.table, aes(x=DHICFDR, y=-log10(chisq.p), group=as.factor(DEFDR), color=as.factor(DEFDR))) + geom_point() + geom_hline(yintercept=-log10(0.05), color="red") + ggtitle("Chi-squared Test P-values") + xlab(xlab) + ylab("-log10(chi-squared p-values)") + coord_cartesian(xlim=c(0, xmax), ylim=c(0, 3.2)) + guides(color=guide_legend(title="DE FDR"))
+  if(recip==TRUE){
+      des.enriched <- ggplot(data=enrich.table, aes(x=DHICFDR, y=prop.obs, group=as.factor(DEFDR), color=as.factor(DEFDR))) +geom_line()+ geom_line(aes(y=prop.exp), linetype="dashed", size=0.5) + ggtitle("Enrichment of DE in DC Genes") + xlab(xlab) + ylab("Proportion of DC genes that are DE") + guides(color=guide_legend(title="FDR for DC Genes"))
+  dhics.enriched <- ggplot(data=enrich.table, aes(x=DHICFDR, y=Dboth/(Dboth+DHiC), group=as.factor(DEFDR), color=as.factor(DEFDR))) + geom_line() + geom_line(aes(y=(((((DE+Dboth)/(Dneither+DE+DHiC+Dboth))*((DHiC+Dboth)/(Dneither+DE+DHiC+Dboth)))*(Dneither+DE+DHiC+Dboth))/(DHiC+Dboth))), linetype="dashed") + ylab("Proportion of DE genes that are DC") +xlab(xlab) + ggtitle("Enrichment of DC in DE Genes") + coord_cartesian(xlim=c(0, xmax))  + guides(color=FALSE)
+  joint.enriched <- ggplot(data=enrich.table, aes(x=DHICFDR, y=Dboth/(Dneither+DE+DHiC+Dboth), group=as.factor(DEFDR), color=as.factor(DEFDR))) + geom_line() + ylab("Proportion of ALL Genes both DE & DHi-C") + xlab(xlab) + geom_line(aes(y=((DE+Dboth)/(Dneither+DE+DHiC+Dboth))*((DHiC+Dboth)/(Dneither+DE+DHiC+Dboth))), linetype="dashed") + ggtitle("Enrichment of Joint DE & DHi-C in All Genes")
+  chisq.p <- ggplot(data=enrich.table, aes(x=DHICFDR, y=-log10(chisq.p), group=as.factor(DEFDR), color=as.factor(DEFDR))) + geom_point() + geom_hline(yintercept=-log10(0.05), color="red") + ggtitle("Chi-squared Test P-values") + xlab(xlab) + ylab("-log10(chi-squared p-values)") + coord_cartesian(xlim=c(0, xmax)) + guides(color=guide_legend(title="DC FDR"))
+  }
 if(significance==TRUE){
     return(chisq.p)
   }
@@ -528,13 +555,19 @@ if(significance==TRUE){
     }
 }
 
-#FIG4
-FIG4A <- pap.enrichment.plotter(gene.hic.filt, "min_FDR.H", "adj.P.Val", "Minimum FDR of Contacts", xmax=1) #FIG4A
-FIG4B <- pap.enrichment.plotter(gene.hic.filt, "min_FDR.H", "adj.P.Val", "Minimum FDR of Contacts", xmax=1, significance = TRUE) #FIG4B
-FIG4C <- pap.enrichment.plotter(gene.hic.filt, "weighted_Z.ALLvar.H", "adj.P.Val", "FDR for Weighted P-val Combination", xmax=1) #FIG4C
-FIG4D <- pap.enrichment.plotter(gene.hic.filt, "weighted_Z.ALLvar.H", "adj.P.Val", "FDR for Weighted P-val Combination", xmax=1, significance = TRUE) #FIG4D
-FIG4 <- plot_grid(FIG4A, FIG4B, FIG4C, FIG4D, labels=c("A", "B", "C", "D"), align="h", rel_widths=c(1, 1.2))
-save_plot("~/Desktop/FIG4.png", FIG4, nrow=2, ncol=2)
+#FIG6
+FIG6A <- pap.enrichment.plotter(gene.hic.filt, "min_FDR.H", "adj.P.Val", "Minimum FDR of Contacts", xmax=1) #FIG6A
+FIG6B <- pap.enrichment.plotter(gene.hic.filt, "min_FDR.H", "adj.P.Val", "Minimum FDR of Contacts", xmax=1, significance = TRUE) #FIG6B
+FIG6C <- pap.enrichment.plotter(gene.hic.filt, "weighted_Z.ALLvar.H", "adj.P.Val", "FDR for Weighted P-val Combination", xmax=1) #FIG6C
+FIG6D <- pap.enrichment.plotter(gene.hic.filt, "weighted_Z.ALLvar.H", "adj.P.Val", "FDR for Weighted P-val Combination", xmax=1, significance = TRUE) #FIG6D
+FIG6 <- plot_grid(FIG6A, FIG6B, FIG6C, FIG6D, labels=c("A", "B", "C", "D"), align="h", rel_widths=c(1, 1.2))
+save_plot("~/Desktop/FIG6.png", FIG6, nrow=2, ncol=2)
+
+#FIGS9
+FIGS9A <- pap.enrichment.plotter(gene.hic.filt, "adj.P.Val", "min_FDR.H",  "Minimum FDR of Genes", xmax=1, recip=TRUE) #FIGS9A
+FIGS9B <- pap.enrichment.plotter(gene.hic.filt, "adj.P.Val", "min_FDR.H",  "Minimum FDR of Genes", xmax=1, significance = TRUE, recip=TRUE) #FIGS9B
+FIGS9 <- plot_grid(FIGS9A, FIGS9B, labels=c("A", "B"), align="h", rel_widths=c(1, 1.2))
+save_plot("~/Desktop/FIGS9.png", FIGS9, nrow=1, ncol=2)
 ```
 Now that I've seen some enrichment of differential contact (DC) in differential expression (DE) based on my linear modeling results from before, I would like to further quantify this effect. In order to do so, I now extract log2 observed/expected homer-normalized contact frequency values and RPKM expression values for each gene/bin set, so I can look at correlations of these values and assess their explanatory power.
 
@@ -607,12 +640,12 @@ h_US <- IF.extractor(gene.hic.filt, "HID", "US_bin.H", contacts, "H", TRUE)
 c_US <- IF.extractor(gene.hic.filt, "CID", "US_bin.C", contacts, "C", TRUE)
 
 #Write these out so they can be permuted upon on midway2.
-fwrite(h_minFDR, "~/Desktop/Hi-C/HiC_covs/h_minFDR", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
-fwrite(c_minFDR, "~/Desktop/Hi-C/HiC_covs/c_minFDR", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
-fwrite(h_maxB, "~/Desktop/Hi-C/HiC_covs/h_maxB", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
-fwrite(c_maxB, "~/Desktop/Hi-C/HiC_covs/c_maxB", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
-fwrite(h_US, "~/Desktop/Hi-C/HiC_covs/h_US", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
-fwrite(c_US, "~/Desktop/Hi-C/HiC_covs/c_US", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
+fwrite(h_minFDR, "data/old_mediation_permutations/HiC_covs/h_minFDR", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
+fwrite(c_minFDR, "data/old_mediation_permutations/HiC_covs/c_minFDR", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
+fwrite(h_maxB, "data/old_mediation_permutations/HiC_covs/h_maxB", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
+fwrite(c_maxB, "data/old_mediation_permutations/HiC_covs/c_maxB", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
+fwrite(h_US, "data/old_mediation_permutations/HiC_covs/h_US", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
+fwrite(c_US, "data/old_mediation_permutations/HiC_covs/c_US", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
 
 #Now the same thing, but subsetting down to ONLY the genes that show evidence for DE at 5% FDR.
 h_minFDR_DE <- filter(h_minFDR, adj.P.Val<=0.05)
@@ -622,12 +655,12 @@ c_maxB_DE <- filter(c_maxB, adj.P.Val<=0.05)
 h_US_DE <- filter(h_US, adj.P.Val<=0.05)
 c_US_DE <- filter(c_US, adj.P.Val<=0.05)
 
-fwrite(h_minFDR_DE, "~/Desktop/Hi-C/HiC_covs/h_minFDR_DE", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
-fwrite(c_minFDR_DE, "~/Desktop/Hi-C/HiC_covs/c_minFDR_DE", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
-fwrite(h_maxB_DE, "~/Desktop/Hi-C/HiC_covs/h_maxB_DE", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
-fwrite(c_maxB_DE, "~/Desktop/Hi-C/HiC_covs/c_maxB_DE", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
-fwrite(h_US_DE, "~/Desktop/Hi-C/HiC_covs/h_US_DE", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
-fwrite(c_US_DE, "~/Desktop/Hi-C/HiC_covs/c_US_DE", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
+fwrite(h_minFDR_DE, "data/old_mediation_permutations/HiC_covs/h_minFDR_DE", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
+fwrite(c_minFDR_DE, "data/old_mediation_permutations/HiC_covs/c_minFDR_DE", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
+fwrite(h_maxB_DE, "data/old_mediation_permutations/HiC_covs/h_maxB_DE", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
+fwrite(c_maxB_DE, "data/old_mediation_permutations/HiC_covs/c_maxB_DE", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
+fwrite(h_US_DE, "data/old_mediation_permutations/HiC_covs/h_US_DE", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
+fwrite(c_US_DE, "data/old_mediation_permutations/HiC_covs/c_US_DE", quote = FALSE, sep = "\t", na = "NA", col.names = TRUE)
 ```
 Now I use these data frames and join each again on the RPKM table by genes, in order to obtain RPKM expression values for each gene-Hi-C bin set.
 
@@ -721,8 +754,8 @@ DE.perm <-  cor.permuter(DEcontacts, DEexprs, 10)
 nonDE.perm <- cor.permuter(nonDEcontacts, nonDEexprs, 10)
 
 #Now visualize.
-#FIGS4
-ggplot(data=filter(ggcors, type=="all"|type=="DE"|type=="non-DE")) + stat_density(aes(x=cor, group=type, color=type, y=..scaled..), position="identity", geom="line") + stat_density(data=full.perm, aes(x=cor, group=type), geom="line", linetype="dotted", position="identity") + stat_density(data=DE.perm, aes(x=cor, group=type), geom="line", linetype="dashed", position="identity") + stat_density(data=nonDE.perm, aes(x=cor, group=type), geom="line", linetype="twodash", position="identity") + ggtitle("Correlation b/t RPKM Expression and Hi-C Contact Frequency") + xlab("Pearson Correlations, RPKM Expression & Hi-C Contact Frequency") + ylab("Density") + scale_color_manual("Gene Set", values=c("red", "blue", "green"), labels=c("All genes", "DE genes", "non-DE genes")) #FIGS4
+#FIGS8
+ggplot(data=filter(ggcors, type=="all"|type=="DE"|type=="non-DE")) + stat_density(aes(x=cor, group=type, color=type, y=..scaled..), position="identity", geom="line") + stat_density(data=full.perm, aes(x=cor, group=type), geom="line", linetype="dotted", position="identity") + stat_density(data=DE.perm, aes(x=cor, group=type), geom="line", linetype="dashed", position="identity") + stat_density(data=nonDE.perm, aes(x=cor, group=type), geom="line", linetype="twodash", position="identity") + ggtitle("Correlation b/t RPKM Expression and Hi-C Contact Frequency") + xlab("Pearson Correlations, RPKM Expression & Hi-C Contact Frequency") + ylab("Density") + scale_color_manual("Gene Set", values=c("red", "blue", "green"), labels=c("All genes", "DE genes", "non-DE genes")) + theme(plot.title=element_text(hjust=0.3))#FIGS8
 #See that permuted datasets have a tighter correlation distribution with a strong peak at 0. Reassuring. In the future I will repeat this analysis on Midway2, running 10000 permutations to see the full range of permuted data possible.
 
 ####Deprecated, for use in species-specific analysis.
@@ -819,12 +852,12 @@ Here, I visualize the difference in classes of DE hits changing (either gaining,
 ```{r Permutation Visualizations}
 ##Visualization of the permutations!
 perm.vis <- function(categories.df.file, df, metadata, hictype, DE=FALSE){
-  if(DE==TRUE){expected1 <- readRDS(paste("~/Desktop/Hi-C/HiC_covs/results/new_results/DE/batch1/", categories.df.file, sep=""))
-  expected2 <-  readRDS(paste("~/Desktop/Hi-C/HiC_covs/results/new_results/DE/batch2/", categories.df.file, sep=""))
+  if(DE==TRUE){expected1 <- readRDS(paste("data/old_mediation_permutations/perm_results/DE/batch1/", categories.df.file, sep=""))
+  expected2 <-  readRDS(paste("data/old_mediation_permutations/perm_results/DE/batch2/", categories.df.file, sep=""))
   observed <- lmcorrect(weighted.data, df[which(df$adj.P.Val<=0.05), c("A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651")], df[which(df$adj.P.Val<=0.05), c("A_21792_HIC", "B_28126_HIC", "C_3649_HIC", "D_40300_HIC", "E_28815_HIC", "F_28834_HIC", "G_3624_HIC", "H_3651_HIC", "genes")], metadata)
   }
-  else{expected1 <- readRDS(paste("~/Desktop/Hi-C/HiC_covs/results/new_results/batch1/", categories.df.file, sep=""))
-  expected2 <- readRDS(paste("~/Desktop/Hi-C/HiC_covs/results/new_results/batch2/", categories.df.file, sep=""))
+  else{expected1 <- readRDS(paste("data/old_mediation_permutations/perm_results/batch1/", categories.df.file, sep=""))
+  expected2 <- readRDS(paste("data/old_mediation_permutations/perm_results/batch2/", categories.df.file, sep=""))
   observed <- lmcorrect(weighted.data, df[,c("A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651")], df[,c("A_21792_HIC", "B_28126_HIC", "C_3649_HIC", "D_40300_HIC", "E_28815_HIC", "F_28834_HIC", "G_3624_HIC", "H_3651_HIC", "genes")], metadata)
   }
   expected <- c(expected1[1:5000], expected2[1:5000])
@@ -865,218 +898,9 @@ perm.vis("permout_c_US_DE", cUSDE, meta.data, "(upstream contact, Chimps)", DE=T
 ```
 The permutations reveal that the observed data does appear pretty significant: it falls well outside the range of the distributions in each of the categories. The most important is showing that many more genes lose their DE status after regressing out Hi-C data in the observed case as compared to the permutations.
 
-###Exploration of higher-order structure in relation to gene expression. A/B Compartment Analysis
-Here, I look at A/B compartment calls from HOMER and see if DE and/or DC genes are more likely to be in different compartments between species.
-```{r}
-###Start with A/B compartments; much simpler. Read them in!
-A_AB <- fread("~/Desktop/Hi-C/AB_compartments/50kb/A-21792.PC1.txt", header = TRUE, data.table=FALSE)
-B_AB <- fread("~/Desktop/Hi-C/AB_compartments/50kb/B-28126.PC1.txt", header = TRUE, data.table=FALSE)
-E_AB <- fread("~/Desktop/Hi-C/AB_compartments/50kb/E-28815.PC1.txt", header = TRUE, data.table=FALSE)
-F_AB <- fread("~/Desktop/Hi-C/AB_compartments/50kb/F-28834.PC1.txt", header = TRUE, data.table=FALSE)
-C_AB <- fread("~/Desktop/Hi-C/AB_compartments/50kb/C-3649.PC1.txt", header = TRUE, data.table=FALSE)
-D_AB <- fread("~/Desktop/Hi-C/AB_compartments/50kb/D-40300.PC1.txt", header = TRUE, data.table=FALSE)
-G_AB <- fread("~/Desktop/Hi-C/AB_compartments/50kb/G-3624.PC1.txt", header = TRUE, data.table=FALSE)
-H_AB <- fread("~/Desktop/Hi-C/AB_compartments/50kb/H-3651.PC1.txt", header = TRUE, data.table=FALSE)
-
-colnames(A_AB) <- colnames(B_AB) <- colnames(C_AB) <- colnames(D_AB) <- colnames(E_AB) <- colnames(F_AB) <- colnames(G_AB) <- colnames(H_AB) <- c("peakID", "chr", "start", "end", "strand", "PC1")
-
-#Interestingly, within a species they're not all the same length (which doesn't make much sense as I thought these were identical genomes). A and F are females, B and E are males, so that's why B and E are larger--just remove chrY data to deal with that. But why aren't B and E identical, or A and F identical? Perhaps this is because not every individual gets enough reads at each of the regions to call compartments? Not really clear to me...for now, use ALL regions I can by combining these DFs, taking the mean PC1 value across individuals for those hits which ARE repeated (should be the vast majority).
-humans.AB <- rbind(A_AB, B_AB, E_AB, F_AB)
-humans.AB <- group_by(humans.AB, peakID) %>% summarise(chr=unique(chr), start=unique(start), end=unique(end), strand=unique(strand), PC1=mean(PC1))
-
-chimps.AB <- rbind(C_AB, D_AB, G_AB, H_AB)
-chimps.AB <- group_by(chimps.AB, peakID) %>% summarise(chr=unique(chr), start=unique(start), end=unique(end), strand=unique(strand), PC1=mean(PC1))
-
-#Now, I want to assign a compartment (A or B) to each of these loci, so that they can then be examined WRT the Hi-C bins that might overlap them.
-humans.AB$compartment <- ifelse(humans.AB$PC1>0, "A", "B")
-chimps.AB$compartment <- ifelse(chimps.AB$PC1>0, "A", "B")
-
-#Really, only want to look at genes we can actually call DE on based on expression levels, so only care about those genes in detable object. Can extract their exact positions from hgene.hic and cgene.hic and create peakIDs for them that match the AB compartment peak names. Basically, I just want to call which of the AB compartment peak bins they'll fall into. Note that those compartments were made 50kb at a time, so I need to round to lower 50k (or higher, depending on strand and proximity to boundary!) to figure out which compartment a gene belongs to.
-colnames(hgene.hic) <- c("Hchr", "Hstart", "Hend", "genes", "Hplace", "Hstrand", "binchr", "binstart", "binend", "bindist.TSS")
-colnames(cgene.hic) <- c("Cchr", "Cstart", "Cend", "genes", "Cplace", "Cstrand", "binchr", "binstart", "binend", "bindist.TSS")
-
-#Add in lengths for appropriate PCA bin assignment in next part.
-colnames(human_lengths) <- colnames(chimp_lengths) <- c("genes", "length")
-hgene.PCA <- left_join(hgene.hic, human_lengths, by="genes")
-cgene.PCA <- left_join(cgene.hic, chimp_lengths, by="genes")
-
-#Assign genes to A/B compartment bins based on their position along the 50kb interval and their gene length, as well as strand orientation (trying to get the gene body in the actual 50kb interval).
-hgene.PCA$HID <- paste(hgene.PCA$Hchr, ifelse(hgene.PCA$Hstrand=="+", ifelse(hgene.PCA$Hstart%%50000>=(50000-hgene.PCA$length), as.integer(50000*ceiling(hgene.PCA$Hstart/50000)), as.integer(50000*floor(hgene.PCA$Hstart/50000))), ifelse(hgene.PCA$Hstart%%50000<=hgene.PCA$length, as.integer((50000*floor(hgene.PCA$Hstart/50000)-50000)), as.integer(50000*floor(hgene.PCA$Hstart/50000)))), sep="-")
-cgene.PCA$CID <- paste(cgene.PCA$Cchr, ifelse(cgene.PCA$Cstrand=="+", ifelse(cgene.PCA$Cstart%%50000>=(50000-cgene.PCA$length), as.integer(50000*ceiling(cgene.PCA$Cstart/50000)), as.integer(50000*floor(cgene.PCA$Cstart/50000))), ifelse(cgene.PCA$Cstart%%50000<=cgene.PCA$length, as.integer((50000*floor(cgene.PCA$Cstart/50000)-50000)), as.integer(50000*floor(cgene.PCA$Cstart/50000)))), sep="-")
-#hgene.hic$HID <- ifelse(hgene.hic$Hstrand=="+", paste(hgene.hic$Hchr, as.integer(50000*floor(hgene.hic$Hstart/50000)), sep="-"))
-#cgene.hic$CID <- paste(cgene.hic$Cchr, as.integer(50000*floor(cgene.hic$Cstart/50000)), sep="-")
-hgenes.compartments <- select(hgene.PCA, Hchr, Hstart, genes, Hstrand, HID)
-cgenes.compartments <- select(cgene.PCA, Cchr, Cstart, genes, Cstrand, CID)
-compartment.genes <- left_join(detable, hgenes.compartments, by="genes") %>% left_join(., cgenes.compartments, by="genes")
-
-#See how many genes fall within 5 kb of one of the boundaries here (at every 50kb interval): Though this was only considering the lower end, not if they fall on the other edge of the boundary (45k modulo remainder is equivalent and comparable #s!). REALLY what I should care about are positive strand genes falling at the upper edge of a boundary (implying their gene body may lie in the next compartment) and negative strand genes falling at the lower edge of a boundary (implying their gene body may lie in the previous compartment). If I have positive strand genes near the beginning or negative strand genes near the end that's not really an issue as their gene bodies should lie entirely within the compartment. It's really just those two specific cases.
-sum((compartment.genes$Hstart%%50000)<=5000, na.rm=TRUE)
-sum((compartment.genes$Cstart%%50000)<=5000, na.rm=TRUE)
-#In both species, roughly 1k of the genes we can consider at all fall near (w/in 5kb) one of the A/B boundaries we've established here. Could there be issues with pos/neg strand and how close they are to the boundary? I can check on this...or can also assume it's balanced across both issues. If the results from a naive analysis don't look good I can go back and fix this part of that.
-
-#Now, merge compartment.genes and the humans.AB and chimps.AB compartment assignment DFs!
-HAB <- select(humans.AB, peakID, compartment, PC1)
-CAB <- select(chimps.AB, peakID, compartment, PC1)
-colnames(HAB) <- c("HID", "compartment.H", "PC.H")
-colnames(CAB) <- c("CID", "compartment.C", "PC.C")
-
-final.AB <- left_join(compartment.genes, HAB, by="HID") %>% left_join(., CAB, by="CID")
-final.AB$comp.diff <- ifelse(final.AB$compartment.H==final.AB$compartment.C, "no", "yes") #Note that 311 of these rows have missing data from at least one species so this determination can't be made? Often b/c of being on a scaffold in chimps.
-final.AB$PC.diff <- abs(final.AB$PC.H-final.AB$PC.C)
-final.AB <- final.AB[order(final.AB$adj.P.Val),]
-final.AB$DE <- ifelse(final.AB$adj.P.Val<=0.05, "yes", "no")
-table(final.AB$DE, final.AB$comp.diff, dnn=c("DE?", "Different Compartment b/t Species?"))
-chisq.test(table(final.AB$DE, final.AB$comp.diff, dnn=c("DE?", "Same Compartment b/t Species?")))
-#So roughly 7.9% of DE genes are in different compartments between species, whereas ~8.1% of non-DE genes are in different compartments between species...shitty! And not significant!
-
-#Would be nice to know if the differential compartments between species are at least concentrated in those differential contacts b/t species?! Add a column of the DC status between species.
-final.AB$DC <- ifelse(final.AB$genes %in% filter(gene.hic.filt, min_FDR.H<=0.05|min_FDR.C<=0.05)$genes, "yes", "no")
-table(final.AB$DC, final.AB$comp.diff, dnn=c("DC?", "Different Compartment b/t Species?"))
-chisq.test(table(final.AB$DC, final.AB$comp.diff, dnn=c("DC?", "Different Compartment b/t Species?")))
-#Again, not significant...can see that the genes which are DC have ~6.5% of them in different compartments b/t species, while the non-DC ones have 8.2% of them in different compartments b/t species. Note that this is also the exact opposite result I was hoping for...
-
-#So a simple classification system is not sufficient for A/B compartment changes between the species. What if I actually took the mean PC value and plotted the difference bewtween species vs decreasing significance? The final.AB df is already ordered by DE p-val, so can do this real quick simply:
-ggplot(data=final.AB) + geom_line(aes(x=adj.P.Val, y=PC.diff)) + ggtitle("Absolute Difference of PC1 Ordered by DE Significance") + xlab("Decreasing DE Significance") + ylab("|PC1 Difference b/t Species|")
-t.test(filter(final.AB, adj.P.Val<=0.05)$PC.diff, filter(final.AB, adj.P.Val>0.05)$PC.diff)
-ggplot(data=final.AB) + geom_violin(aes(group=DE, x=DE, y=PC.diff), draw_quantiles = c(0.25, 0.5, 0.75)) + ggtitle("Absolute Difference of PC1 | DE") + xlab("DE Status") + ylab("|PC1 Difference b/t Species|")
-#None of this is particularly encouraging...but what if I did it on DC status? Can just check on binary status here to see if it'll even be significant or not:
-t.test(filter(final.AB, DC=="yes")$PC.diff, filter(final.AB, DC=="no")$PC.diff)
-#Aaaaand it's not. My inclination is to not spend any more time on the PCA element of this since the results don't seem to be good at all...
-
-#Just a quick check to see if not using absolute difference would be better?
-final.AB$PC.hdiff <- final.AB$PC.C-final.AB$PC.H
-ggplot(data=final.AB) + geom_line(aes(x=adj.P.Val, y=PC.hdiff)) + ggtitle("Difference of PC1 Ordered by DE Significance") + xlab("Decreasing DE Significance") + ylab("PC1 Difference b/t Species (H-C)")
-t.test(filter(final.AB, adj.P.Val<=0.05)$PC.hdiff, filter(final.AB, adj.P.Val>0.05)$PC.hdiff)
-ggplot(data=final.AB) + geom_violin(aes(group=DE, x=DE, y=PC.hdiff), draw_quantiles = c(0.25, 0.5, 0.75)) + ggtitle("Difference of PC1 | DE") + xlab("DE Status") + ylab("PC1 Difference b/t Species (H-C)")
-#None of this is particularly encouraging...but what if I did it on DC status? Can just check on binary status here to see if it'll even be significant or not:
-t.test(filter(final.AB, DC=="yes")$PC.hdiff, filter(final.AB, DC=="no")$PC.hdiff) #Interestingly, if starting with humans as baseline here, this p-val is ALMOST significant!!!! Same if starting with chimps--just not using absolute value makes this almost significant...
-#Note that I also tried coloring the differences of PC1 plots by DC status and saw lines of both short and long variety, no clear trend of a bigger difference b/t species there, so no point in putting in the work to look at DC on x-axis.
-#With the finished AB compartment DFs, should be as easy as just assigning Hi-C bins to A or B! Note that this current paradigm is limited to the genes that had direct overlap with a significant Hi-C bin; there's no reason for this! FIX! gene.hic.filt may not be the best data frame for this to work on then, since it doesn't include position information on all genes--get that!
-# ABall <- select(gene.hic.filt, genes, logFC, AveExpr, adj.P.Val, B, HID, min_FDR_bin.H, CID, min_FDR_bin.C)
-# hcomps <- select(humans.AB, peakID, compartment)
-# ccomps <- select(chimps.AB, peakID, compartment)
-# colnames(hcomps) <- c("HID", "compartment.H")
-# colnames(ccomps) <- c("CID", "compartment.C")
-# left_join(ABall, hcomps, by="HID") %>% left_join(., ccomps, by="CID") -> AB.all
-# 
-# head(gene.hic.filt)
-
-#Exploration of why they're not identically sized, not important. Also show some within-species exploration of the variance in these values; probably also not important. Collapsed.
-# good.indices <- which(B_AB$`#peakID` %in% E_AB$`#peakID`)
-# test <- B_AB[-good.indices,]
-# good.indices <- which(E_AB$`#peakID` %in% B_AB$`#peakID`)
-# test2 <- E_AB[-good.indices,]
-
-#See how much within-species variance exists in these, after standardizing them to be identical across individuals from same species (remove X chromosome?). Or just do left joins on one and see what variance is like in that subset--most 
-# left_join(A_AB, B_AB, by="peakID") %>% left_join(., E_AB, by="peakID") %>% left_join(., F_AB, by="peakID") -> newtest
-# newtest <- select(newtest, peakID, PC1.x, PC1.y, PC1.x.x, PC1.y.y)
-# colnames(newtest) <- c("peakID", "A", "B", "E", "F")
-# newtest$var <- apply(newtest[,-1], 1, var)
-# ggplot(data=newtest) + geom_violin(aes(x="", y=var))
-# sum(newtest$var>1, na.rm=TRUE) #Returns ~1000, so of about 54k rows there are 1000 with high variance between individuals. Leave it be for now, just something to think about in case this looks wonky later.
-
-#Look at some candidates of the strongest compartment differences real quick to see if anything interesting here?
-quantile(final.AB$PC.diff, probs=c(0.5, 0.6, 0.7, 0.8, 0.85, 0.9, 0.95, 0.99), na.rm = TRUE)
-theonepercent <- which(final.AB$PC.diff>=1.7327811)
-extremes <- final.AB[theonepercent,]
-#I went back with some of this to look...nothing looks great TBH. For what it's worth, at least there are more instances in compartment differences where it's open in humans and closed in chimps than vice versa:
-sum(final.AB$comp.diff=="yes"&final.AB$compartment.H=="A"&final.AB$compartment.C=="B", na.rm=TRUE) #Open in humans, closed in chimps
-sum(final.AB$comp.diff=="yes"&final.AB$compartment.H=="B"&final.AB$compartment.C=="A", na.rm=TRUE) #Open in chimps, closed in humans
-
-####25kb PCA A/B compartment analysis. Repeat this entire analysis utilizing 25kb as the window size for PCA calls.
-###Start with A/B compartments; much simpler. Read them in!
-A_AB <- fread("~/Desktop/Hi-C/AB_compartments/25kb/A-21792.PC1.txt", header = TRUE, data.table=FALSE)
-B_AB <- fread("~/Desktop/Hi-C/AB_compartments/25kb/B-28126.PC1.txt", header = TRUE, data.table=FALSE)
-E_AB <- fread("~/Desktop/Hi-C/AB_compartments/25kb/E-28815.PC1.txt", header = TRUE, data.table=FALSE)
-F_AB <- fread("~/Desktop/Hi-C/AB_compartments/25kb/F-28834.PC1.txt", header = TRUE, data.table=FALSE)
-C_AB <- fread("~/Desktop/Hi-C/AB_compartments/25kb/C-3649.PC1.txt", header = TRUE, data.table=FALSE)
-D_AB <- fread("~/Desktop/Hi-C/AB_compartments/25kb/D-40300.PC1.txt", header = TRUE, data.table=FALSE)
-G_AB <- fread("~/Desktop/Hi-C/AB_compartments/25kb/G-3624.PC1.txt", header = TRUE, data.table=FALSE)
-H_AB <- fread("~/Desktop/Hi-C/AB_compartments/25kb/H-3651.PC1.txt", header = TRUE, data.table=FALSE)
-
-colnames(A_AB) <- colnames(B_AB) <- colnames(C_AB) <- colnames(D_AB) <- colnames(E_AB) <- colnames(F_AB) <- colnames(G_AB) <- colnames(H_AB) <- c("peakID", "chr", "start", "end", "strand", "PC1")
-
-#Interestingly, within a species they're not all the same length (which doesn't make much sense as I thought these were identical genomes). A and F are females, B and E are males, so that's why B and E are larger--just remove chrY data to deal with that. But why aren't B and E identical, or A and F identical? Perhaps this is because not every individual gets enough reads at each of the regions to call compartments? Not really clear to me...for now, use ALL regions I can by combining these DFs, taking the mean PC1 value across individuals for those hits which ARE repeated (should be the vast majority).
-humans.AB <- rbind(A_AB, B_AB, E_AB, F_AB)
-humans.AB <- group_by(humans.AB, peakID) %>% summarise(chr=unique(chr), start=unique(start), end=unique(end), strand=unique(strand), PC1=mean(PC1))
-
-chimps.AB <- rbind(C_AB, D_AB, G_AB, H_AB)
-chimps.AB <- group_by(chimps.AB, peakID) %>% summarise(chr=unique(chr), start=unique(start), end=unique(end), strand=unique(strand), PC1=mean(PC1))
-
-#Now, I want to assign a compartment (A or B) to each of these loci, so that they can then be examined WRT the Hi-C bins that might overlap them.
-humans.AB$compartment <- ifelse(humans.AB$PC1>0, "A", "B")
-chimps.AB$compartment <- ifelse(chimps.AB$PC1>0, "A", "B")
-
-#Really, only want to look at genes we can actually call DE on based on expression levels, so only care about those genes in detable object. Can extract their exact positions from hgene.hic and cgene.hic and create peakIDs for them that match the AB compartment peak names. Basically, I just want to call which of the AB compartment peak bins they'll fall into. Note that those compartments were made 50kb at a time, so I need to round to lower 50k (or higher, depending on strand and proximity to boundary!) to figure out which compartment a gene belongs to.
-colnames(hgene.hic) <- c("Hchr", "Hstart", "Hend", "genes", "Hplace", "Hstrand", "binchr", "binstart", "binend", "bindist.TSS")
-colnames(cgene.hic) <- c("Cchr", "Cstart", "Cend", "genes", "Cplace", "Cstrand", "binchr", "binstart", "binend", "bindist.TSS")
-
-#Add in lengths for appropriate PCA bin assignment in next part.
-colnames(human_lengths) <- colnames(chimp_lengths) <- c("genes", "length")
-hgene.PCA <- left_join(hgene.hic, human_lengths, by="genes")
-cgene.PCA <- left_join(cgene.hic, chimp_lengths, by="genes")
-
-#Assign genes to A/B compartment bins based on their position along the 50kb interval and their gene length, as well as strand orientation (trying to get the gene body in the actual 50kb interval).
-hgene.PCA$HID <- paste(hgene.PCA$Hchr, ifelse(hgene.PCA$Hstrand=="+", ifelse(hgene.PCA$Hstart%%25000>=(25000-hgene.PCA$length), as.integer(25000*ceiling(hgene.PCA$Hstart/25000)), as.integer(25000*floor(hgene.PCA$Hstart/25000))), ifelse(hgene.PCA$Hstart%%25000<=hgene.PCA$length, as.integer((25000*floor(hgene.PCA$Hstart/25000)-25000)), as.integer(25000*floor(hgene.PCA$Hstart/25000)))), sep="-")
-cgene.PCA$CID <- paste(cgene.PCA$Cchr, ifelse(cgene.PCA$Cstrand=="+", ifelse(cgene.PCA$Cstart%%25000>=(25000-cgene.PCA$length), as.integer(25000*ceiling(cgene.PCA$Cstart/25000)), as.integer(25000*floor(cgene.PCA$Cstart/25000))), ifelse(cgene.PCA$Cstart%%25000<=cgene.PCA$length, as.integer((25000*floor(cgene.PCA$Cstart/25000)-25000)), as.integer(25000*floor(cgene.PCA$Cstart/25000)))), sep="-")
-#hgene.hic$HID <- ifelse(hgene.hic$Hstrand=="+", paste(hgene.hic$Hchr, as.integer(25000*floor(hgene.hic$Hstart/25000)), sep="-"))
-#cgene.hic$CID <- paste(cgene.hic$Cchr, as.integer(25000*floor(cgene.hic$Cstart/25000)), sep="-")
-hgenes.compartments <- select(hgene.PCA, Hchr, Hstart, genes, Hstrand, HID)
-cgenes.compartments <- select(cgene.PCA, Cchr, Cstart, genes, Cstrand, CID)
-compartment.genes <- left_join(detable, hgenes.compartments, by="genes") %>% left_join(., cgenes.compartments, by="genes")
-
-#See how many genes fall within 5 kb of one of the boundaries here (at every 50kb interval): Though this was only considering the lower end, not if they fall on the other edge of the boundary (45k modulo remainder is equivalent and comparable #s!). REALLY what I should care about are positive strand genes falling at the upper edge of a boundary (implying their gene body may lie in the next compartment) and negative strand genes falling at the lower edge of a boundary (implying their gene body may lie in the previous compartment). If I have positive strand genes near the beginning or negative strand genes near the end that's not really an issue as their gene bodies should lie entirely within the compartment. It's really just those two specific cases.
-sum((compartment.genes$Hstart%%25000)<=5000, na.rm=TRUE)
-sum((compartment.genes$Cstart%%25000)<=5000, na.rm=TRUE)
-#In both species, roughly 1k of the genes we can consider at all fall near (w/in 5kb) one of the A/B boundaries we've established here. Could there be issues with pos/neg strand and how close they are to the boundary? I can check on this...or can also assume it's balanced across both issues. If the results from a naive analysis don't look good I can go back and fix this part of that.
-
-#Now, merge compartment.genes and the humans.AB and chimps.AB compartment assignment DFs!
-HAB <- select(humans.AB, peakID, compartment, PC1)
-CAB <- select(chimps.AB, peakID, compartment, PC1)
-colnames(HAB) <- c("HID", "compartment.H", "PC.H")
-colnames(CAB) <- c("CID", "compartment.C", "PC.C")
-
-final.AB <- left_join(compartment.genes, HAB, by="HID") %>% left_join(., CAB, by="CID")
-final.AB$comp.diff <- ifelse(final.AB$compartment.H==final.AB$compartment.C, "no", "yes") #Note that 311 of these rows have missing data from at least one species so this determination can't be made? Often b/c of being on a scaffold in chimps.
-final.AB$PC.diff <- abs(final.AB$PC.H-final.AB$PC.C)
-final.AB <- final.AB[order(final.AB$adj.P.Val),]
-final.AB$DE <- ifelse(final.AB$adj.P.Val<=0.05, "yes", "no")
-table(final.AB$DE, final.AB$comp.diff, dnn=c("DE?", "Different Compartment b/t Species?"))
-chisq.test(table(final.AB$DE, final.AB$comp.diff, dnn=c("DE?", "Same Compartment b/t Species?")))
-#So roughly 6.61% of DE genes are in different compartments between species, whereas 6.68% of non-DE genes are in different compartments between species...shitty! And not significant!
-
-#Would be nice to know if the differential compartments between species are at least concentrated in those differential contacts b/t species?! Add a column of the DC status between species.
-final.AB$DC <- ifelse(final.AB$genes %in% filter(gene.hic.filt, min_FDR.H<=0.05|min_FDR.C<=0.05)$genes, "yes", "no")
-table(final.AB$DC, final.AB$comp.diff, dnn=c("DC?", "Different Compartment b/t Species?"))
-chisq.test(table(final.AB$DC, final.AB$comp.diff, dnn=c("DC?", "Different Compartment b/t Species?")))
-#Again, not significant...can see that the genes which are DC have ~6.3% of them in different compartments b/t species, while the non-DC ones have 6.7% of them in different compartments b/t species. Note that this is also the exact opposite result I was hoping for...
-
-#So a simple classification system is not sufficient for A/B compartment changes between the species. What if I actually took the mean PC value and plotted the difference bewtween species vs decreasing significance? The final.AB df is already ordered by DE p-val, so can do this real quick simply:
-ggplot(data=final.AB) + geom_line(aes(x=adj.P.Val, y=PC.diff)) + ggtitle("Absolute Difference of PC1 Ordered by DE Significance") + xlab("Decreasing DE Significance") + ylab("|PC1 Difference b/t Species|")
-t.test(filter(final.AB, DE=="yes")$PC.diff, filter(final.AB, DE=="no")$PC.diff)
-ggplot(data=final.AB) + geom_violin(aes(group=DE, x=DE, y=PC.diff), draw_quantiles = c(0.25, 0.5, 0.75)) + ggtitle("Absolute Difference of PC1 | DE") + xlab("DE Status") + ylab("|PC1 Difference b/t Species|")
-#None of this is particularly encouraging...but what if I did it on DC status? Can just check on binary status here to see if it'll even be significant or not:
-t.test(filter(final.AB, DC=="yes")$PC.diff, filter(final.AB, DC=="no")$PC.diff)
-#This time it is!...
-ggplot(data=final.AB) + geom_violin(aes(group=DC, x=DC, y=PC.diff), draw_quantiles = c(0.25, 0.5, 0.75)) + ggtitle("Absolute Difference of PC1 | DC") + xlab("DC Status") + ylab("|PC1 Difference b/t Species|") + annotate("text", x=1.5, y=1, label="8.5 e - 3")
-#table(final.AB$DC, final.AB$PC.diff, dnn=c("DC?", "Different Compartment b/t Species?")) Doesn't make sense here
-
-
-#Just a quick check to see if not using absolute difference would be better?
-final.AB$PC.hdiff <- final.AB$PC.C-final.AB$PC.H
-ggplot(data=final.AB) + geom_line(aes(x=adj.P.Val, y=PC.hdiff)) + ggtitle("Difference of PC1 Ordered by DE Significance") + xlab("Decreasing DE Significance") + ylab("PC1 Difference b/t Species (H-C)")
-t.test(filter(final.AB, adj.P.Val<=0.05)$PC.hdiff, filter(final.AB, adj.P.Val>0.05)$PC.hdiff)
-ggplot(data=final.AB) + geom_violin(aes(group=DE, x=DE, y=PC.hdiff), draw_quantiles = c(0.25, 0.5, 0.75)) + ggtitle("Difference of PC1 | DE") + xlab("DE Status") + ylab("PC1 Difference b/t Species (H-C)")
-#None of this is particularly encouraging...but what if I did it on DC status? Can just check on binary status here to see if it'll even be significant or not:
-t.test(filter(final.AB, DC=="yes")$PC.hdiff, filter(final.AB, DC=="no")$PC.hdiff)
-
-#Overall, most of the A/B compartment calling results look rather atrocious...nothing much interesting to be gleaned here, unfortuantely.
-```
-
 #Differences in effect size/sign changes
 This next section would be to look at differences in effect size and sign changes when doing the two separate lms (one before and one after regressing out Hi-C data from RPKM expression). Unfortunately the ash results I get have all their svalues as 1 so this is boring/not interesting right now. Hence it is not included. But let's give it another go!
 ```{r Differences in Effect Sizes}
-#######FRESH CODE 6-21-18#########
 design <- model.matrix(~meta.data$SP)
 exprs <- select(hmin, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes) #Should be done on just DE genes, filter with adj.P.Val<=0.05
 hic <- select(hmin,"A_21792_HIC", "B_28126_HIC", "C_3649_HIC", "D_40300_HIC", "E_28815_HIC", "F_28834_HIC", "G_3624_HIC", "H_3651_HIC")
@@ -1091,20 +915,22 @@ designy <- as.factor(c("human", "human", "chimp", "chimp", "human", "human", "ch
 colnames(hic) <- colnames(exprs)
 hic <- as.data.table(hic)
 exprs <- as.data.table(exprs)
+
+#For further specifics on the function used for the mediation below, please see: https://github.com/jhsiao999/mediation/blob/master/pkg/R/mediate.test.regressing.R
 test <- mediate.test.regressing(exprs, designy, hic)
 
 #Shrink dat variance!
-vshrDE <- vash(test$d_se[myDEindices], df=6)
-vshrnonDE <- vash(test$d_se[-myDEindices], df=6)
-vshrink <- vash(test$d_se, df=6)
+vshrDE <- vash(test$d_se[myDEindices], df=5)
+vshrnonDE <- vash(test$d_se[-myDEindices], df=5)
+vshrink <- vash(test$d_se, df=5)
 
 #Separate out DE from non-DE genes:
 DEtest <- test[myDEindices,]
 nonDEtest <- test[-myDEindices,]
 
 #Ash on DE genes
-ash_reg <- ash(as.vector(DEtest$d), as.vector(vshrDE$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
-summary(ash_reg$result$svalue<=0.05) #Incredible result, looks too good to be true.
+ash_reg <- ash(as.vector(DEtest$d), as.vector(vshrDE$sd.post), mixcompdist = "normal") 
+summary(ash_reg$result$svalue<=0.05)
 ind_sig <- (ash_reg$result$svalue < 0.05)
 ind_sig[ind_sig == TRUE] <- "red"
 ind_sig[ind_sig == FALSE] <- "black"
@@ -1112,92 +938,6 @@ ind_sig[ind_sig == FALSE] <- "black"
 plot(x=ash_reg$result$betahat, y=ash_reg$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in Effect Size from 2 Linear Models", main="Difference of Effect Size in DE Genes", pch=16, cex=0.6, col=ind_sig, xlim=c(-4.5, 4.5), ylim=c(0, 3))
 legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
 plot(ash_reg$result$betahat, -log10(ash_reg$result$svalue))
-
-###### START EXAMPLE
-#Figure out where some of these are to pull out good examples, try to find a dense region of them
-myhits <- which(ash_reg$result$svalue<=0.05) #These SHOULD line up with DEtest indices...
-realhits <- myDEindices[myhits] #Now go back to exprs original with these indices to get the gene names!
-exprs <- select(hmin, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes) #Should be done on just DE genes, filter with adj.P.Val<=0.05
-demgenes <- exprs[realhits,9]
-testcases <- filter(gene.hic.filt, genes %in% demgenes)
-table(testcases$genechr.H)
-testcases$sval <- ash_reg$result$svalue[myhits]
-testcases <- testcases[order(testcases$sval),]
-
-#Now, pull out expression values for those suckers:
-options(scipen = 999)
-mytest <- filter(humgenes, genes %in% testcases$genes)
-mytest <- mytest[(mytest$genes %in% weighted.data$genes$genes),]
-mean.species.expression <- as.data.frame(weighted.data$E) #Now, need to pull out the mean expression values for all those genes!
-mean.species.expression$genes <- rownames(mean.species.expression)
-mean.species.expression$Hmean <- rowMeans(mean.species.expression[,c(1:2,5:6)])
-mean.species.expression$Cmean <- rowMeans(mean.species.expression[,c(3:4,7:8)])
-mean.species.expression <- mean.species.expression[,(-1:-8)]
-
-left_join(testcases, mean.species.expression, by="genes") -> filt.example
-filter(filt.example, min_FDR.H<=0.05|min_FDR.C<=0.05) -> final.example
-final.example$Hmean-final.example$Cmean
-#gonna end up pulling 48th row example from final.example. Pull out its contact frequency vals for arc diagram creation:
-final.example[48,]
-which((data.filtered$H1=="chr17-64470000"|data.filtered$H2=="chr17-64470000")&(data.filtered$C1=="chr17-63970000"|data.filtered$C2=="chr17-63970000"))
-which((data.filtered$H1=="chr17-64470000"&data.filtered$H2=="chr17-64430000")|(data.filtered$H2=="chr17-64470000"&data.filtered$H1=="chr17-64430000"))
-
-#Check on what other contacts might be significant in the region
-QC <- filter(data.filtered, Hchr=="Chr. 17"&sp_BH_pval<=0.05)
-QC$H1 <- gsub(".*-", "", QC$H1)
-QC$H2 <- gsub(".*-", "", QC$H2)
-which((QC$H1>=64400000&QC$H1<=64500000)&(QC$H2>=64400000&QC$H2<=64500000))
-QC[c(218,323,397),]
-
-
-#filter(example, Hstart>=140500000&Hstart<=141500000) -> filt.example
-hgenebed <- select(filt.example, genechr.H, genepos.H, Hmean)
-cgenebed <- select(filt.example, genechr.C, genepos.C, Cmean)
-hgenebed$end <- hgenebed$genepos.H+5000
-cgenebed$end <- cgenebed$genepos.C+5000
-hgenebed <- hgenebed[,c(1,2,4,3)]
-cgenebed <- cgenebed[,c(1,2,4,3)]
-cgenebed <- cgenebed[complete.cases(cgenebed),]
-
-fwrite(hgenebed, "~/Desktop/Hi-C/pyGenomeTracks/filt.h.genes.bed", quote=FALSE, sep="\t", col.names =FALSE)
-fwrite(cgenebed, "~/Desktop/Hi-C/pyGenomeTracks/filt.c.genes.bed", quote=FALSE, sep="\t", col.names =FALSE)
-
-#Write out the appropriate columns from data.filtered to make an "arcs" file for visualization:
-harcs <- filter(data.filtered, sp_beta>0, sp_BH_pval<=0.05) %>% select(., H1, H2, Hmean) #Note chr notation different due to other things changed; check on this later.
-harcs$chr <- gsub("-.*", "", harcs$H1)
-harcs$H1start <- as.numeric(gsub(".*-", "", harcs$H1))
-harcs$H1end <- harcs$H1start+10000
-harcs$H2start <- as.numeric(gsub(".*-", "", harcs$H2))
-harcs$H2end <- harcs$H2start+10000
-harcs <- harcs[,c(4:6, 4, 7:8, 3)]
-harcs <- format(harcs, scientific=FALSE)
-fwrite(harcs, "~/Desktop/Hi-C/pyGenomeTracks/RNAseq/humans.arcs", quote=FALSE, sep="\t", col.names=FALSE)
-
-#Prep the same thing for chimpanzees:
-carcs <- filter(data.filtered, sp_beta<0, sp_BH_pval<=0.05) %>% select(., C1, C2, Cmean) #Note chr notation different due to other things changed; check on this later.
-carcs$chr <- gsub("-.*", "", carcs$C1)
-carcs$C1start <- as.numeric(gsub(".*-", "", carcs$C1))
-carcs$C1end <- carcs$C1start+10000
-carcs$C2start <- as.numeric(gsub(".*-", "", carcs$C2))
-carcs$C2end <- carcs$C2start+10000
-carcs <- carcs[,c(4:6, 4, 7:8, 3)]
-carcs <- format(carcs, scientific=FALSE)
-fwrite(carcs, "~/Desktop/Hi-C/pyGenomeTracks/RNAseq/chimps.arcs", quote=FALSE, sep="\t", col.names=FALSE)
-
-
-#Now add in an extra column placeholder so strand is in the right column for bedtools, and rearrange columns as well for bedtools' ease.
-humgenes$placeholder <- "."
-chimpgenes$placeholder <- "."
-humgenes$Hend <- humgenes$Hstart+1
-chimpgenes$Cend <- chimpgenes$Cstart+1
-humgenes <- humgenes[,c(2:3, 6, 1, 5, 4)]
-chimpgenes <- chimpgenes[,c(2:3, 6, 1, 5, 4)]
-
-#Turn off scientific notation for writing the file out for bedtools to be able to use correctly.
-options(scipen=999)
-
-####### END EXAMPLE
-
 
 #Now on non-DE genes
 ash_reg_nonDE <- ash(as.vector(nonDEtest$d), as.vector(vshrnonDE$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
@@ -1230,6 +970,101 @@ plot(ash_reg$result$PosteriorMean, ash_reg_full$result$PosteriorMean[myDEindices
 #Look at this just in non-DE:
 plot(ash_reg_nonDE$result$PosteriorMean, ash_reg_full$result$PosteriorMean[-myDEindices])
 ```
+
+#```{r, include=FALSE, echo=FALSE, Work for getting example regions. Useful for pyGenomeTracks}
+# #Grab genes that were significantly mediated:
+# therows <- which(ash_reg$result$svalue<=0.05)
+# besthits <- myDEindices[therows]
+# mygenes <- genes[besthits]
+# 
+# ###### START EXAMPLE
+# #Figure out where some of these are to pull out good examples, try to find a dense region of them
+# myhits <- which(ash_reg$result$svalue<=0.05) #These SHOULD line up with DEtest indices...
+# realhits <- myDEindices[myhits] #Now go back to exprs original with these indices to get the gene names!
+# exprs <- select(hmin, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes) #Should be done on just DE genes, filter with adj.P.Val<=0.05
+# demgenes <- exprs[realhits,9]
+# testcases <- filter(gene.hic.filt, genes %in% demgenes)
+# table(testcases$genechr.H)
+# testcases$sval <- ash_reg$result$svalue[myhits]
+# testcases <- testcases[order(testcases$sval),]
+# 
+# #Now, pull out expression values for those suckers:
+# options(scipen = 999)
+# mytest <- filter(humgenes, genes %in% testcases$genes)
+# mytest <- mytest[(mytest$genes %in% weighted.data$genes$genes),]
+# mean.species.expression <- as.data.frame(weighted.data$E) #Now, need to pull out the mean expression values for all those genes!
+# mean.species.expression$genes <- rownames(mean.species.expression)
+# mean.species.expression$Hmean <- rowMeans(mean.species.expression[,c(1:2,5:6)])
+# mean.species.expression$Cmean <- rowMeans(mean.species.expression[,c(3:4,7:8)])
+# mean.species.expression <- mean.species.expression[,(-1:-8)]
+# 
+# left_join(testcases, mean.species.expression, by="genes") -> filt.example
+# filter(filt.example, min_FDR.H<=0.05|min_FDR.C<=0.05) -> final.example
+# final.example$Hmean-final.example$Cmean
+# #gonna end up pulling 48th row example from final.example. Pull out its contact frequency vals for arc diagram creation:
+# final.example[48,]
+# which((data.filtered$H1=="chr17-64470000"|data.filtered$H2=="chr17-64470000")&(data.filtered$C1=="chr17-63970000"|data.filtered$C2=="chr17-63970000"))
+# which((data.filtered$H1=="chr17-64470000"&data.filtered$H2=="chr17-64430000")|(data.filtered$H2=="chr17-64470000"&data.filtered$H1=="chr17-64430000"))
+# 
+# #Check on what other contacts might be significant in the region
+# QC <- filter(data.filtered, Hchr=="Chr. 17"&sp_BH_pval<=0.05)
+# QC$H1 <- gsub(".*-", "", QC$H1)
+# QC$H2 <- gsub(".*-", "", QC$H2)
+# which((QC$H1>=64400000&QC$H1<=64500000)&(QC$H2>=64400000&QC$H2<=64500000))
+# QC[c(218,323,397),]
+# 
+# 
+# #filter(example, Hstart>=140500000&Hstart<=141500000) -> filt.example
+# hgenebed <- select(filt.example, genechr.H, genepos.H, Hmean)
+# cgenebed <- select(filt.example, genechr.C, genepos.C, Cmean)
+# hgenebed$end <- hgenebed$genepos.H+5000
+# cgenebed$end <- cgenebed$genepos.C+5000
+# hgenebed <- hgenebed[,c(1,2,4,3)]
+# cgenebed <- cgenebed[,c(1,2,4,3)]
+# cgenebed <- cgenebed[complete.cases(cgenebed),]
+# 
+# fwrite(hgenebed, "~/Desktop/Hi-C/pyGenomeTracks/filt.h.genes.bed", quote=FALSE, sep="\t", col.names =FALSE)
+# fwrite(cgenebed, "~/Desktop/Hi-C/pyGenomeTracks/filt.c.genes.bed", quote=FALSE, sep="\t", col.names =FALSE)
+# 
+# #Write out the appropriate columns from data.filtered to make an "arcs" file for visualization:
+# harcs <- filter(data.filtered, sp_beta>0, sp_BH_pval<=0.05) %>% select(., H1, H2, Hmean) #Note chr notation different due to other things changed; check on this later.
+# harcs$chr <- gsub("-.*", "", harcs$H1)
+# harcs$H1start <- as.numeric(gsub(".*-", "", harcs$H1))
+# harcs$H1end <- harcs$H1start+10000
+# harcs$H2start <- as.numeric(gsub(".*-", "", harcs$H2))
+# harcs$H2end <- harcs$H2start+10000
+# harcs <- harcs[,c(4:6, 4, 7:8, 3)]
+# harcs <- format(harcs, scientific=FALSE)
+# fwrite(harcs, "~/Desktop/Hi-C/pyGenomeTracks/RNAseq/humans.arcs", quote=FALSE, sep="\t", col.names=FALSE)
+# 
+# #Prep the same thing for chimpanzees:
+# carcs <- filter(data.filtered, sp_beta<0, sp_BH_pval<=0.05) %>% select(., C1, C2, Cmean) #Note chr notation different due to other things changed; check on this later.
+# carcs$chr <- gsub("-.*", "", carcs$C1)
+# carcs$C1start <- as.numeric(gsub(".*-", "", carcs$C1))
+# carcs$C1end <- carcs$C1start+10000
+# carcs$C2start <- as.numeric(gsub(".*-", "", carcs$C2))
+# carcs$C2end <- carcs$C2start+10000
+# carcs <- carcs[,c(4:6, 4, 7:8, 3)]
+# carcs <- format(carcs, scientific=FALSE)
+# fwrite(carcs, "~/Desktop/Hi-C/pyGenomeTracks/RNAseq/chimps.arcs", quote=FALSE, sep="\t", col.names=FALSE)
+# 
+# 
+# #Now add in an extra column placeholder so strand is in the right column for bedtools, and rearrange columns as well for bedtools' ease.
+# humgenes$placeholder <- "."
+# chimpgenes$placeholder <- "."
+# humgenes$Hend <- humgenes$Hstart+1
+# chimpgenes$Cend <- chimpgenes$Cstart+1
+# humgenes <- humgenes[,c(2:3, 6, 1, 5, 4)]
+# chimpgenes <- chimpgenes[,c(2:3, 6, 1, 5, 4)]
+# 
+# #Turn off scientific notation for writing the file out for bedtools to be able to use correctly.
+# options(scipen=999)
+# 
+# ####### END EXAMPLE
+#
+#```
+
+
 
 #Mediation Review Questions
 #```{r, include=FALSE, echo=FALSE}
