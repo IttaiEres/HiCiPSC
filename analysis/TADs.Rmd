@@ -1,0 +1,1916 @@
+---
+title: "TADs"
+author: "Ittai Eres"
+date: "2019-03-14"
+output: workflowr::wflow_html
+---
+
+## Introduction
+This file is provided as an overview of the many different TAD analyses that have gone into checking the robustness of the results presented in the paper. It includes many different types of analyses across a wide variety of different normalization and TAD calling parameters.
+
+```{r library loading, echo=FALSE, include=FALSE}
+#Load in necessary packages
+library(limma)
+library(plyr)
+library(tidyr)
+library(data.table)
+library(reshape2)
+#library(ggplot2)
+library(cowplot)
+library(plotly)
+library(dplyr)
+library(Hmisc)
+library(gplots)
+library(stringr)
+library(heatmaply)
+library(RColorBrewer)
+library(edgeR)
+library(tidyverse)
+library(compiler)
+Sys.getenv("PATH")
+Sys.setenv(PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/Library/TeX/texbin:/opt/local/bin:/Users/ittaieres/miniconda3/bin")
+library(bedr)
+library(UpSetR)
+enableJIT(3)
+```
+
+## Juicer_Mega Analyses
+These analyses represent those run on two "consensus" Hi-C maps--one for each species. These maps were built from the juicer .hic files from each individual, as described here: https://groups.google.com/forum/#!searchin/3d-genomics/mega|sort:date/3d-genomics/N95zVXHThSw/66Afq3NlBQAJ
+Note I had to tinker with some things in command line to get it to work for me on our cluster: https://groups.google.com/forum/#!searchin/3d-genomics/mega%7Csort:date/3d-genomics/dgqNM32cEmQ/0H0kZtd-CQAJ
+```{r Juicer Mega Domain and Boundary Characteristics}
+#Since I only have one conact map and thus one set of TAD calls per species, this analyses precludes looking at intra-species variance. I'll get into individual level data in some of the next sections with other contact maps--here, I look at conservation of TAD boundaries and sizes within these mega maps exclusively.
+
+#####DOMAIN ANALYSES#####
+###NON-ORTHO TAD ANALYSES###
+###First, with no eye to orthology whatsoever--just look at different metrics of the TADs, including number found, size, corner score distributions, genome coverage, and number of genes in the average TAD. Read-in and format of files here.
+Hdomains.10 <- fread("data/TADs/Human_inter_30_KR_contact_domains/10000.domains", header=FALSE, data.table=FALSE)
+Hdomains.25 <- fread("data/TADs/Human_inter_30_KR_contact_domains/25000.domains", header=FALSE, data.table=FALSE)
+Hdomains.50 <- fread("data/TADs/Human_inter_30_KR_contact_domains/50000.domains", header=FALSE, data.table=FALSE)
+Hdomains.100 <- fread("data/TADs/Human_inter_30_KR_contact_domains/100000.domains", header=FALSE, data.table=FALSE)
+Hdomains.250 <- fread("data/TADs/Human_inter_30_KR_contact_domains/250000.domains", header=FALSE, data.table=FALSE)
+Hdomains.500 <- fread("data/TADs/Human_inter_30_KR_contact_domains/500000.domains", header=FALSE, data.table=FALSE)
+
+Cdomains.10 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/10000.domains", header=FALSE, data.table=FALSE)
+Cdomains.25 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/25000.domains", header=FALSE, data.table=FALSE)
+Cdomains.50 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/50000.domains", header=FALSE, data.table=FALSE)
+Cdomains.100 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/100000.domains", header=FALSE, data.table=FALSE)
+Cdomains.250 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/250000.domains", header=FALSE, data.table=FALSE)
+Cdomains.500 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/500000.domains", header=FALSE, data.table=FALSE)
+
+Hdomains.10$size <- Hdomains.10$V3-Hdomains.10$V2
+Hdomains.10$res <- "10kb"
+Hdomains.10$species <- "Human"
+Hdomains.25$size <- Hdomains.25$V3-Hdomains.25$V2
+Hdomains.25$res <- "25kb"
+Hdomains.25$species <- "Human"
+Hdomains.50$size <- Hdomains.50$V3-Hdomains.50$V2
+Hdomains.50$res <- "50kb"
+Hdomains.50$species <- "Human"
+Hdomains.100$size <- Hdomains.100$V3-Hdomains.100$V2
+Hdomains.100$res <- "100kb"
+Hdomains.100$species <- "Human"
+Hdomains.250$size <- Hdomains.250$V3-Hdomains.250$V2
+Hdomains.250$res <- "250kb"
+Hdomains.250$species <- "Human"
+Hdomains.500$size <- Hdomains.500$V3-Hdomains.500$V2
+Hdomains.500$res <- "500kb"
+Hdomains.500$species <- "Human"
+
+Cdomains.10$size <- Cdomains.10$V3-Cdomains.10$V2
+Cdomains.10$res <- "10kb"
+Cdomains.10$species <- "Chimpanzee"
+Cdomains.25$size <- Cdomains.25$V3-Cdomains.25$V2
+Cdomains.25$res <- "25kb"
+Cdomains.25$species <- "Chimpanzee"
+Cdomains.50$size <- Cdomains.50$V3-Cdomains.50$V2
+Cdomains.50$res <- "50kb"
+Cdomains.50$species <- "Chimpanzee"
+Cdomains.100$size <- Cdomains.100$V3-Cdomains.100$V2
+Cdomains.100$res <- "100kb"
+Cdomains.100$species <- "Chimpanzee"
+Cdomains.250$size <- Cdomains.250$V3-Cdomains.250$V2
+Cdomains.250$res <- "250kb"
+Cdomains.250$species <- "Chimpanzee"
+Cdomains.500$size <- Cdomains.500$V3-Cdomains.500$V2
+Cdomains.500$res <- "500kb"
+Cdomains.500$species <- "Chimpanzee"
+
+ggall <- rbind(Hdomains.10, Hdomains.25, Hdomains.50, Hdomains.100, Hdomains.250, Hdomains.500, Cdomains.10, Cdomains.25, Cdomains.50, Cdomains.100, Cdomains.250, Cdomains.500)
+ggall$res <- factor(ggall$res, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+
+###Size Analysis###
+ggplot(data=ggall) + geom_boxplot(aes(x=res, y=size, fill=species)) + xlab("Resolution of Analysis") + ylab("TAD Size") + ggtitle("All Arrowhead TAD Size Distributions") + coord_cartesian(ylim=c(0, 20000000))
+
+t.test(Hdomains.10$size, Cdomains.10$size)
+t.test(Hdomains.25$size, Cdomains.25$size)
+t.test(Hdomains.50$size, Cdomains.50$size)
+t.test(Hdomains.100$size, Cdomains.100$size)
+t.test(Hdomains.250$size, Cdomains.250$size)
+t.test(Hdomains.500$size, Cdomains.500$size)
+
+###Confidence Analysis###
+ggplot(data=ggall) + geom_boxplot(aes(x=res, y=V4, fill=species)) + xlab("Resolution of Analysis") + ylab("TAD Confidence Score") + ggtitle("All Arrowhead TAD Scores")
+
+t.test(Hdomains.10$V4, Cdomains.10$V4)
+t.test(Hdomains.25$V4, Cdomains.25$V4)
+t.test(Hdomains.50$V4, Cdomains.50$V4)
+t.test(Hdomains.100$V4, Cdomains.100$V4)
+t.test(Hdomains.250$V4, Cdomains.250$V4)
+t.test(Hdomains.500$V4, Cdomains.500$V4)
+
+###Total domains found analysis###
+ggfound <- data.frame(species=c(rep("Human", 6), rep("Chimpanzee", 6)), resolution=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"), TADs.found=c(nrow(Hdomains.10), nrow(Hdomains.25), nrow(Hdomains.50), nrow(Hdomains.100), nrow(Hdomains.250), nrow(Hdomains.500), nrow(Cdomains.10), nrow(Cdomains.25), nrow(Cdomains.50), nrow(Cdomains.100), nrow(Cdomains.250), nrow(Cdomains.500)))
+ggfound$resolution <- factor(ggfound$resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+ggplot(data=ggfound) + geom_line(aes(x=resolution, y=TADs.found, group=species, color=species)) + xlab("Resolution of Analysis") + ylab("Total # TADs Discovered") + ggtitle("All TAD Inferences Across Species and Resolutions")
+
+###Genome coverage analysis
+Hcov.10 <- fread("data/TADs/Human_inter_30_KR_contact_domains/10000.genome.coverage", header=FALSE, data.table=FALSE)
+Hcov.25 <- fread("data/TADs/Human_inter_30_KR_contact_domains/25000.genome.coverage", header=FALSE, data.table=FALSE)
+Hcov.50 <- fread("data/TADs/Human_inter_30_KR_contact_domains/50000.genome.coverage", header=FALSE, data.table=FALSE)
+Hcov.100 <- fread("data/TADs/Human_inter_30_KR_contact_domains/100000.genome.coverage", header=FALSE, data.table=FALSE)
+Hcov.250 <- fread("data/TADs/Human_inter_30_KR_contact_domains/250000.genome.coverage", header=FALSE, data.table=FALSE)
+Hcov.500 <- fread("data/TADs/Human_inter_30_KR_contact_domains/500000.genome.coverage", header=FALSE, data.table=FALSE)
+
+Ccov.10 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/10000.genome.coverage", header=FALSE, data.table=FALSE)
+Ccov.25 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/25000.genome.coverage", header=FALSE, data.table=FALSE)
+Ccov.50 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/50000.genome.coverage", header=FALSE, data.table=FALSE)
+Ccov.100 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/100000.genome.coverage", header=FALSE, data.table=FALSE)
+Ccov.250 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/250000.genome.coverage", header=FALSE, data.table=FALSE)
+Ccov.500 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/500000.genome.coverage", header=FALSE, data.table=FALSE)
+
+Hcov.10$species <- Hcov.25$species <- Hcov.50$species <- Hcov.100$species <- Hcov.250$species <-  Hcov.500$species <- "Human"
+Ccov.10$species <- Ccov.25$species <- Ccov.50$species <- Ccov.100$species <- Ccov.250$species <- Ccov.500$species <- "Chimpanzee"
+
+Hcov.10$resolution <- "10kb"
+Hcov.25$resolution <- "25kb"
+Hcov.50$resolution <- "50kb"
+Hcov.100$resolution <- "100kb"
+Hcov.250$resolution <- "250kb"
+Hcov.500$resolution <- "500kb"
+
+Ccov.10$resolution <- "10kb"
+Ccov.25$resolution <- "25kb"
+Ccov.50$resolution <- "50kb"
+Ccov.100$resolution <- "100kb"
+Ccov.250$resolution <- "250kb"
+Ccov.500$resolution <- "500kb"
+
+ggallcov <- rbind(Hcov.10, Hcov.25, Hcov.50, Hcov.100, Hcov.250, Hcov.500, Ccov.10, Ccov.25, Ccov.50, Ccov.100, Ccov.250, Ccov.500) %>% filter(.,V1=="genome")
+ggallcov$resolution <- factor(ggallcov$resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+ggplot(data=ggallcov, aes(x=resolution, y=V5, color=factor(V2), shape=species, group=resolution)) + geom_jitter(size=3) + coord_cartesian(ylim=c(0, 0.75)) + xlab("Resolution of Analysis") + ylab("Proportion of Genome covered by X TADs") + ggtitle("All TAD Genome Coverage") + guides(color=guide_legend(title="X TADs"))
+
+##Gene density analysis
+###Now, look at gene density of the orthologous genes w/ the orthologously mappable TADs:
+Hgene.10 <- fread("data/TADs/Human_inter_30_KR_contact_domains/10000.gene.overlap", header=FALSE, data.table=FALSE)
+Hgene.10$resolution <- "10kb"
+Hgene.25 <- fread("data/TADs/Human_inter_30_KR_contact_domains/25000.gene.overlap", header=FALSE, data.table=FALSE)
+Hgene.25$resolution <- "25kb"
+Hgene.50 <- fread("data/TADs/Human_inter_30_KR_contact_domains/50000.gene.overlap", header=FALSE, data.table=FALSE)
+Hgene.50$resolution <- "50kb"
+Hgene.100 <- fread("data/TADs/Human_inter_30_KR_contact_domains/100000.gene.overlap", header=FALSE, data.table=FALSE)
+Hgene.100$resolution <- "100kb"
+Hgene.250 <- fread("data/TADs/Human_inter_30_KR_contact_domains/250000.gene.overlap", header=FALSE, data.table=FALSE)
+Hgene.250$resolution <- "250kb"
+Hgene.500 <- fread("data/TADs/Human_inter_30_KR_contact_domains/500000.gene.overlap", header=FALSE, data.table=FALSE)
+Hgene.500$resolution <- "500kb"
+Hgene.10$species <- Hgene.25$species <- Hgene.50$species <- Hgene.100$species <- Hgene.250$species <- Hgene.500$species <-  "Human"
+
+Cgene.10 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/10000.gene.overlap", header=FALSE, data.table=FALSE)
+Cgene.10$resolution <- "10kb"
+Cgene.25 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/25000.gene.overlap", header=FALSE, data.table=FALSE)
+Cgene.25$resolution <- "25kb"
+Cgene.50 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/50000.gene.overlap", header=FALSE, data.table=FALSE)
+Cgene.50$resolution <- "50kb"
+Cgene.100 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/100000.gene.overlap", header=FALSE, data.table=FALSE)
+Cgene.100$resolution <- "100kb"
+Cgene.250 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/250000.gene.overlap", header=FALSE, data.table=FALSE)
+Cgene.250$resolution <- "250kb"
+Cgene.500 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/500000.gene.overlap", header=FALSE, data.table=FALSE)
+Cgene.500$resolution <- "500kb"
+Cgene.10$species <- Cgene.25$species <- Cgene.50$species <- Cgene.100$species <- Cgene.250$species <- Cgene.500$species <-  "Chimpanzee"
+
+gggenes <- rbind(Hgene.10, Hgene.25, Hgene.50, Hgene.100, Hgene.250, Hgene.500, Cgene.10, Cgene.25, Cgene.50, Cgene.100, Cgene.250, Cgene.500)
+gggenes$resolution <- factor(gggenes$resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+ggplot(data=gggenes) + geom_boxplot(aes(x=resolution, y=V5, fill=species)) + xlab("Resolution of Analysis") + ylab("TAD Gene Density") + ggtitle("All TAD Gene Density Across Species & Resolutions")
+
+t.test(Hgene.10$V5, Cgene.10$V5)
+t.test(Hgene.25$V5, Cgene.25$V5)
+t.test(Hgene.50$V5, Cgene.50$V5)
+t.test(Hgene.100$V5, Cgene.100$V5)
+t.test(Hgene.250$V5, Cgene.250$V5)
+t.test(Hgene.500$V5, Cgene.500$V5)
+
+##########################ORTHO TAD ANALYSES###
+##Repeat all above on only orthologously mappable TADs--just look at different metrics of the TADs, including genome coverage, size, corner score distributions, number of genes in the average TAD, etc. Read-in and format of files here.
+Hdomains.10 <- fread("data/TADs/Human_inter_30_KR_contact_domains/10000.domains.ortho.hg38", header=FALSE, data.table=FALSE)
+Hdomains.25 <- fread("data/TADs/Human_inter_30_KR_contact_domains/25000.domains.ortho.hg38", header=FALSE, data.table=FALSE)
+Hdomains.50 <- fread("data/TADs/Human_inter_30_KR_contact_domains/50000.domains.ortho.hg38", header=FALSE, data.table=FALSE)
+Hdomains.100 <- fread("data/TADs/Human_inter_30_KR_contact_domains/100000.domains.ortho.hg38", header=FALSE, data.table=FALSE)
+Hdomains.250 <- fread("data/TADs/Human_inter_30_KR_contact_domains/250000.domains.ortho.hg38", header=FALSE, data.table=FALSE)
+Hdomains.500 <- fread("data/TADs/Human_inter_30_KR_contact_domains/500000.domains.ortho.hg38", header=FALSE, data.table=FALSE)
+
+Cdomains.10 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/10000.domains.ortho.panTro5", header=FALSE, data.table=FALSE)
+Cdomains.25 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/25000.domains.ortho.panTro5", header=FALSE, data.table=FALSE)
+Cdomains.50 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/50000.domains.ortho.panTro5", header=FALSE, data.table=FALSE)
+Cdomains.100 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/100000.domains.ortho.panTro5", header=FALSE, data.table=FALSE)
+Cdomains.250 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/250000.domains.ortho.panTro5", header=FALSE, data.table=FALSE)
+Cdomains.500 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/500000.domains.ortho.panTro5", header=FALSE, data.table=FALSE)
+
+Hdomains.10$size <- Hdomains.10$V3-Hdomains.10$V2
+Hdomains.10$res <- "10kb"
+Hdomains.10$species <- "Human"
+Hdomains.25$size <- Hdomains.25$V3-Hdomains.25$V2
+Hdomains.25$res <- "25kb"
+Hdomains.25$species <- "Human"
+Hdomains.50$size <- Hdomains.50$V3-Hdomains.50$V2
+Hdomains.50$res <- "50kb"
+Hdomains.50$species <- "Human"
+Hdomains.100$size <- Hdomains.100$V3-Hdomains.100$V2
+Hdomains.100$res <- "100kb"
+Hdomains.100$species <- "Human"
+Hdomains.250$size <- Hdomains.250$V3-Hdomains.250$V2
+Hdomains.250$res <- "250kb"
+Hdomains.250$species <- "Human"
+Hdomains.500$size <- Hdomains.500$V3-Hdomains.500$V2
+Hdomains.500$res <- "500kb"
+Hdomains.500$species <- "Human"
+
+Cdomains.10$size <- Cdomains.10$V3-Cdomains.10$V2
+Cdomains.10$res <- "10kb"
+Cdomains.10$species <- "Chimpanzee"
+Cdomains.25$size <- Cdomains.25$V3-Cdomains.25$V2
+Cdomains.25$res <- "25kb"
+Cdomains.25$species <- "Chimpanzee"
+Cdomains.50$size <- Cdomains.50$V3-Cdomains.50$V2
+Cdomains.50$res <- "50kb"
+Cdomains.50$species <- "Chimpanzee"
+Cdomains.100$size <- Cdomains.100$V3-Cdomains.100$V2
+Cdomains.100$res <- "100kb"
+Cdomains.100$species <- "Chimpanzee"
+Cdomains.250$size <- Cdomains.250$V3-Cdomains.250$V2
+Cdomains.250$res <- "250kb"
+Cdomains.250$species <- "Chimpanzee"
+Cdomains.500$size <- Cdomains.500$V3-Cdomains.500$V2
+Cdomains.500$res <- "500kb"
+Cdomains.500$species <- "Chimpanzee"
+
+ggall <- rbind(Hdomains.10, Hdomains.25, Hdomains.50, Hdomains.100, Hdomains.250, Hdomains.500, Cdomains.10, Cdomains.25, Cdomains.50, Cdomains.100, Cdomains.250, Cdomains.500)
+ggall$res <- factor(ggall$res, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+
+#Size analysis
+ggplot(data=ggall) + geom_boxplot(aes(x=res, y=size, fill=species)) + xlab("Resolution of Analysis") + ylab("TAD Size") + ggtitle("Orthologous Mappable Arrowhead TAD Size Distributions") + coord_cartesian(ylim=c(0, 20000000))
+
+t.test(Hdomains.10$size, Cdomains.10$size)
+t.test(Hdomains.25$size, Cdomains.25$size)
+t.test(Hdomains.50$size, Cdomains.50$size)
+t.test(Hdomains.100$size, Cdomains.100$size)
+t.test(Hdomains.250$size, Cdomains.250$size)
+t.test(Hdomains.500$size, Cdomains.500$size)
+
+###Confidence Analysis###
+ggplot(data=ggall) + geom_boxplot(aes(x=res, y=V4, fill=species)) + xlab("Resolution of Analysis") + ylab("TAD Confidence Score") + ggtitle("Orthologous Mappable Arrowhead TAD Scores")
+
+t.test(Hdomains.10$V4, Cdomains.10$V4)
+t.test(Hdomains.25$V4, Cdomains.25$V4)
+t.test(Hdomains.50$V4, Cdomains.50$V4)
+t.test(Hdomains.100$V4, Cdomains.100$V4)
+t.test(Hdomains.250$V4, Cdomains.250$V4)
+t.test(Hdomains.500$V4, Cdomains.500$V4)
+
+###Total domains found analysis###
+ggfound <- data.frame(species=c(rep("Human", 6), rep("Chimpanzee", 6)), resolution=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"), TADs.found=c(nrow(Hdomains.10), nrow(Hdomains.25), nrow(Hdomains.50), nrow(Hdomains.100), nrow(Hdomains.250), nrow(Hdomains.500), nrow(Cdomains.10), nrow(Cdomains.25), nrow(Cdomains.50), nrow(Cdomains.100), nrow(Cdomains.250), nrow(Cdomains.500)))
+ggfound$resolution <- factor(ggfound$resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+ggplot(data=ggfound) + geom_line(aes(x=resolution, y=TADs.found, group=species, color=species)) + xlab("Resolution of Analysis") + ylab("Total # TADs Discovered") + ggtitle("Ortho. TAD Inferences Across Species and Resolutions")
+
+###Genome coverage analysis
+Hcov.10 <- fread("data/TADs/Human_inter_30_KR_contact_domains/10000.ortho.genome.coverage", header=FALSE, data.table=FALSE)
+Hcov.25 <- fread("data/TADs/Human_inter_30_KR_contact_domains/25000.ortho.genome.coverage", header=FALSE, data.table=FALSE)
+Hcov.50 <- fread("data/TADs/Human_inter_30_KR_contact_domains/50000.ortho.genome.coverage", header=FALSE, data.table=FALSE)
+Hcov.100 <- fread("data/TADs/Human_inter_30_KR_contact_domains/100000.ortho.genome.coverage", header=FALSE, data.table=FALSE)
+Hcov.250 <- fread("data/TADs/Human_inter_30_KR_contact_domains/250000.ortho.genome.coverage", header=FALSE, data.table=FALSE)
+Hcov.500 <- fread("data/TADs/Human_inter_30_KR_contact_domains/500000.ortho.genome.coverage", header=FALSE, data.table=FALSE)
+
+Ccov.10 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/10000.ortho.genome.coverage", header=FALSE, data.table=FALSE)
+Ccov.25 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/25000.ortho.genome.coverage", header=FALSE, data.table=FALSE)
+Ccov.50 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/50000.ortho.genome.coverage", header=FALSE, data.table=FALSE)
+Ccov.100 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/100000.ortho.genome.coverage", header=FALSE, data.table=FALSE)
+Ccov.250 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/250000.ortho.genome.coverage", header=FALSE, data.table=FALSE)
+Ccov.500 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/500000.ortho.genome.coverage", header=FALSE, data.table=FALSE)
+
+Hcov.10$species <- Hcov.25$species <- Hcov.50$species <- Hcov.100$species <- Hcov.250$species <- Hcov.500$species <- "Human"
+Ccov.10$species <- Ccov.25$species <- Ccov.50$species <- Ccov.100$species <- Ccov.250$species <- Ccov.500$species <- "Chimpanzee"
+
+Hcov.10$resolution <- "10kb"
+Hcov.25$resolution <- "25kb"
+Hcov.50$resolution <- "50kb"
+Hcov.100$resolution <- "100kb"
+Hcov.250$resolution <- "250kb"
+Hcov.500$resolution <- "500kb"
+
+Ccov.10$resolution <- "10kb"
+Ccov.25$resolution <- "25kb"
+Ccov.50$resolution <- "50kb"
+Ccov.100$resolution <- "100kb"
+Ccov.250$resolution <- "250kb"
+Ccov.500$resolution <- "500kb"
+
+ggallcov <- rbind(Hcov.10, Hcov.25, Hcov.50, Hcov.100, Hcov.250, Hcov.500, Ccov.10, Ccov.25, Ccov.50, Ccov.100, Ccov.250, Ccov.500) %>% filter(.,V1=="genome")
+ggallcov$resolution <- factor(ggallcov$resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+ggplot(data=ggallcov, aes(x=resolution, y=V5, color=factor(V2), shape=species, group=resolution)) + geom_jitter(size=3) + xlab("Resolution of Analysis") + ylab("Proportion of Genome covered by X TADs") + ggtitle("Orthologous Mappable TAD Genome Coverage") + guides(color=guide_legend(title="X TADs")) + coord_cartesian(ylim=c(0, 0.75))
+
+###Now, look at gene density of the orthologous genes w/ the orthologously mappable TADs:
+Hgene.10 <- fread("data/TADs/Human_inter_30_KR_contact_domains/10000.ortho.gene.overlap", header=FALSE, data.table=FALSE)
+Hgene.10$resolution <- "10kb"
+Hgene.25 <- fread("data/TADs/Human_inter_30_KR_contact_domains/25000.ortho.gene.overlap", header=FALSE, data.table=FALSE)
+Hgene.25$resolution <- "25kb"
+Hgene.50 <- fread("data/TADs/Human_inter_30_KR_contact_domains/50000.ortho.gene.overlap", header=FALSE, data.table=FALSE)
+Hgene.50$resolution <- "50kb"
+Hgene.100 <- fread("data/TADs/Human_inter_30_KR_contact_domains/100000.ortho.gene.overlap", header=FALSE, data.table=FALSE)
+Hgene.100$resolution <- "100kb"
+Hgene.250 <- fread("data/TADs/Human_inter_30_KR_contact_domains/250000.ortho.gene.overlap", header=FALSE, data.table=FALSE)
+Hgene.250$resolution <- "250kb"
+Hgene.500 <- fread("data/TADs/Human_inter_30_KR_contact_domains/500000.ortho.gene.overlap", header=FALSE, data.table=FALSE)
+Hgene.500$resolution <- "500kb"
+Hgene.10$species <- Hgene.25$species <- Hgene.50$species <- Hgene.100$species <- Hgene.250$species <- Hgene.500$species <-  "Human"
+
+Cgene.10 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/10000.ortho.gene.overlap", header=FALSE, data.table=FALSE)
+Cgene.10$resolution <- "10kb"
+Cgene.25 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/25000.ortho.gene.overlap", header=FALSE, data.table=FALSE)
+Cgene.25$resolution <- "25kb"
+Cgene.50 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/50000.ortho.gene.overlap", header=FALSE, data.table=FALSE)
+Cgene.50$resolution <- "50kb"
+Cgene.100 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/100000.ortho.gene.overlap", header=FALSE, data.table=FALSE)
+Cgene.100$resolution <- "100kb"
+Cgene.250 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/250000.ortho.gene.overlap", header=FALSE, data.table=FALSE)
+Cgene.250$resolution <- "250kb"
+Cgene.500 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/500000.ortho.gene.overlap", header=FALSE, data.table=FALSE)
+Cgene.500$resolution <- "500kb"
+Cgene.10$species <- Cgene.25$species <- Cgene.50$species <- Cgene.100$species <- Cgene.250$species <- Cgene.500$species <-  "Chimpanzee"
+
+gggenes <- rbind(Hgene.10, Hgene.25, Hgene.50, Hgene.100, Hgene.250, Hgene.500, Cgene.10, Cgene.25, Cgene.50, Cgene.100, Cgene.250, Cgene.500)
+gggenes$resolution <- factor(gggenes$resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+ggplot(data=gggenes) + geom_boxplot(aes(x=resolution, y=V5, fill=species)) + xlab("Resolution of Analysis") + ylab("TAD Gene Density") + ggtitle("Orth. TAD Gene Density Across Species & Resolutions")
+
+t.test(Hgene.10$V5, Cgene.10$V5)
+t.test(Hgene.25$V5, Cgene.25$V5)
+t.test(Hgene.50$V5, Cgene.50$V5)
+t.test(Hgene.100$V5, Cgene.100$V5)
+t.test(Hgene.250$V5, Cgene.250$V5)
+t.test(Hgene.500$V5, Cgene.500$V5)
+
+
+
+#####BOUNDARY ANALYSES#####
+###NON-ORTHO###
+###No need to bother looking at number of boundaries found or their corner score distributions--these will just be doubled-down versions of what I already made above for the TADs themselves. So here, before moving to orthologous boundaries, I look at chromosomal distribution.
+Hbounds.10 <- fread("data/TADs/Human_inter_30_KR_contact_domains/10000.boundaries", header=FALSE, data.table=FALSE)
+Hbounds.10$resolution <- "10kb"
+Hbounds.25 <- fread("data/TADs/Human_inter_30_KR_contact_domains/25000.boundaries", header=FALSE, data.table=FALSE)
+Hbounds.25$resolution <- "25kb"
+Hbounds.50 <- fread("data/TADs/Human_inter_30_KR_contact_domains/50000.boundaries", header=FALSE, data.table=FALSE)
+Hbounds.50$resolution <- "50kb"
+Hbounds.100 <- fread("data/TADs/Human_inter_30_KR_contact_domains/100000.boundaries", header=FALSE, data.table=FALSE)
+Hbounds.100$resolution <- "100kb"
+Hbounds.250 <- fread("data/TADs/Human_inter_30_KR_contact_domains/250000.boundaries", header=FALSE, data.table=FALSE)
+Hbounds.250$resolution <- "250kb"
+Hbounds.500 <- fread("data/TADs/Human_inter_30_KR_contact_domains/500000.boundaries", header=FALSE, data.table=FALSE)
+Hbounds.500$resolution <- "500kb"
+Hbounds.10$species <- Hbounds.25$species <- Hbounds.50$species <- Hbounds.100$species <- Hbounds.250$species <- Hbounds.500$species <- "Human"
+
+Cbounds.10 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/10000.boundaries", header=FALSE, data.table=FALSE)
+Cbounds.10$resolution <- "10kb"
+Cbounds.25 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/25000.boundaries", header=FALSE, data.table=FALSE)
+Cbounds.25$resolution <- "25kb"
+Cbounds.50 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/50000.boundaries", header=FALSE, data.table=FALSE)
+Cbounds.50$resolution <- "50kb"
+Cbounds.100 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/100000.boundaries", header=FALSE, data.table=FALSE)
+Cbounds.100$resolution <- "100kb"
+Cbounds.250 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/250000.boundaries", header=FALSE, data.table=FALSE)
+Cbounds.250$resolution <- "250kb"
+Cbounds.500 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/500000.boundaries", header=FALSE, data.table=FALSE)
+Cbounds.500$resolution <- "500kb"
+Cbounds.10$species <- Cbounds.25$species <- Cbounds.50$species <- Cbounds.100$species <- Cbounds.250$species <- Cbounds.500$species <- "Chimpanzee"
+
+bounds.chromos <- rbind(Hbounds.10, Hbounds.25, Hbounds.50, Hbounds.100, Hbounds.250, Hbounds.500, Cbounds.10, Cbounds.25, Cbounds.50, Cbounds.100, Cbounds.250, Cbounds.500)
+bounds.chromos$V1 <- factor(bounds.chromos$V1, levels=c("chr1", "chr2", "chr2A", "chr2B", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "chrY"))
+ggplot(data=bounds.chromos, aes(x=V1, fill=species)) + geom_histogram(stat="count", position="dodge") + ggtitle("Chromosomal Distribution of All TAD Boundaries") + xlab("Chromosome") + ylab("Boundary Count")
+
+###Repeat on orthologous boundaries, then look at orthologous boundaries' conservation.
+Hbounds.10 <- fread("data/TADs/Human_inter_30_KR_contact_domains/10000.boundaries.ortho.hg38", header=FALSE, data.table=FALSE)
+Hbounds.10$resolution <- "10kb"
+Hbounds.25 <- fread("data/TADs/Human_inter_30_KR_contact_domains/25000.boundaries.ortho.hg38", header=FALSE, data.table=FALSE)
+Hbounds.25$resolution <- "25kb"
+Hbounds.50 <- fread("data/TADs/Human_inter_30_KR_contact_domains/50000.boundaries.ortho.hg38", header=FALSE, data.table=FALSE)
+Hbounds.50$resolution <- "50kb"
+Hbounds.100 <- fread("data/TADs/Human_inter_30_KR_contact_domains/100000.boundaries.ortho.hg38", header=FALSE, data.table=FALSE)
+Hbounds.100$resolution <- "100kb"
+Hbounds.250 <- fread("data/TADs/Human_inter_30_KR_contact_domains/250000.boundaries.ortho.hg38", header=FALSE, data.table=FALSE)
+Hbounds.250$resolution <- "250kb"
+Hbounds.500 <- fread("data/TADs/Human_inter_30_KR_contact_domains/500000.boundaries.ortho.hg38", header=FALSE, data.table=FALSE)
+Hbounds.500$resolution <- "500kb"
+Hbounds.10$species <- Hbounds.25$species <- Hbounds.50$species <- Hbounds.100$species <- Hbounds.250$species <- Hbounds.500$species <- "Human"
+
+Cbounds.10 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/10000.boundaries.ortho.panTro5", header=FALSE, data.table=FALSE)
+Cbounds.10$resolution <- "10kb"
+Cbounds.25 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/25000.boundaries.ortho.panTro5", header=FALSE, data.table=FALSE)
+Cbounds.25$resolution <- "25kb"
+Cbounds.50 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/50000.boundaries.ortho.panTro5", header=FALSE, data.table=FALSE)
+Cbounds.50$resolution <- "50kb"
+Cbounds.100 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/100000.boundaries.ortho.panTro5", header=FALSE, data.table=FALSE)
+Cbounds.100$resolution <- "100kb"
+Cbounds.250 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/250000.boundaries.ortho.panTro5", header=FALSE, data.table=FALSE)
+Cbounds.250$resolution <- "250kb"
+Cbounds.500 <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/500000.boundaries.ortho.panTro5", header=FALSE, data.table=FALSE)
+Cbounds.500$resolution <- "500kb"
+Cbounds.10$species <- Cbounds.25$species <- Cbounds.50$species <- Cbounds.100$species <- Cbounds.250$species <- Cbounds.500$species <- "Chimpanzee"
+
+bounds.chromos <- rbind(Hbounds.10, Hbounds.25, Hbounds.50, Hbounds.100, Hbounds.250, Hbounds.500, Cbounds.10, Cbounds.25, Cbounds.50, Cbounds.100, Cbounds.250, Cbounds.500)
+bounds.chromos$V1 <- factor(bounds.chromos$V1, levels=c("chr1", "chr2", "chr2A", "chr2B", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "chrY"))
+ggplot(data=bounds.chromos, aes(x=V1, fill=species)) + geom_histogram(stat="count", position="dodge") + ggtitle("Chromosomal Distribution of Ortho. TAD Boundaries") + xlab("Chromosome") + ylab("Boundary Count")
+```
+
+```{r Juicer Mega Interspecies Boundary Conservation}
+###Interspecies TAD boundary overlap with bedtools merged files###
+
+#A function to examine overlap of TAD boundaries. This is done by first merging boundary files within each species (using bedtools merge, and in order to subset down to the number of actual distinct boundaries). Since Arrowhead can call nested TADs, I merge here in essence to eliminate boundaries being identified repeatedly due to multiple domains having the same or overlapping boundaries. I then add a column to both species' merged boundary files indicating the species identifier, combine these two files, and run a bedtools merge again, collapsing the column with species identifiers to determine how many boundaries are actually shared between the species.
+#This is for running on the output of boundary.mega.merger.intersect.sh
+bounder <- function(resolution, species="H"){
+  if(species=="H"){
+  variable <- fread(paste("data/TADs/overlaps/", resolution, ".hg38.final.merged", sep=""), header=FALSE, data.table=FALSE)}
+  if(species=="C"){
+  variable <- fread(paste("data/TADs/overlaps/", resolution, ".panTro5.final.merged", sep=""), header=FALSE, data.table=FALSE)
+  }
+  h.only <- sum(variable$V4=="Human")
+  c.only <- sum(variable$V4=="Chimp")
+  shared <- nrow(variable) - h.only - c.only
+  weird <- sum(variable$V4!="Human"&variable$V4!="Chimp"&variable$V4!="Human,Chimp"&variable$V4!="Chimp,Human") #Just checking to get a sense of how many of these cases there are, where boundaries overlapping each other will end up being extended due to merging and overlapping across multiple boundaries. These are still counted as conserved in this analysis though, since I calculated shared above merely by subtracting the number of human-only and chimp-only boundaries.
+  print(weird) #Just print them out for edification.
+  myvec <- c(shared, h.only, c.only, resolution, weird)
+  return(myvec)
+}
+options(scipen=999)
+bounds.5 <- bounder(5000)
+bounds.10 <- bounder(10000)
+bounds.25 <- bounder(25000)
+bounds.50 <- bounder(50000)
+bounds.100 <- bounder(100000)
+bounds.250 <- bounder(250000)
+bounds.500 <- bounder(500000)
+
+mybounds <- as.data.frame(rbind(bounds.10, bounds.25, bounds.50, bounds.100, bounds.250, bounds.500))
+colnames(mybounds) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+mybounds$Resolution <- (mybounds$Resolution)/1000
+mybounds$Resolution <- paste(mybounds$Resolution, "kb", sep="")
+mybounds$totals <- mybounds$Shared + mybounds$Human + mybounds$Chimpanzee
+mybounds$shared.perc <- mybounds$Shared/mybounds$totals
+mybounds$human.perc <- mybounds$Human/mybounds$totals
+mybounds$chimp.perc <- mybounds$Chimpanzee/mybounds$totals
+ggbounds <- melt(mybounds[,1:4])
+ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+colnames(ggbounds) <- c("Resolution", "Species", "count")
+ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee")) #+ geom_text()#Need to add percentages here
+
+###Interspecies TAD boundary overlap with bedtools -c###
+
+#Now, I also show an analysis where I do not do any merging of the boundaries at all, for the sake of robustness. Here, instead of merging boundary files, I reciprocally use bedtools intersect -c on each file. The resultant files will list all the boundaries found as orthologously mappable across species in the first several columns, with the number of boundaries it overlapped (by any amount) in the other file in the 5th column. This counts each individual TAD's boundaries as unique, even if they have overlap. In this case, the number of "shared" boundaries may be different between the files output from each species, since I am checking different sets' overlaps against each other and one set may contain many adjacent/overlapping boundaries that overlap one boundary in the other. Hence, I merely chose whichever "shared" number is larger between the two species, to try to be conservative towards calling conservation. This is done on the output of the mega.bounds.intersect.c.sh file.
+#Function to assess the output properly.
+bounder.c <- function(resolution, species="H"){
+  if(species=="H"){
+    dataframe.H <- fread(paste("data/TADs/overlaps/", resolution, ".boundaries.overlap.H2C.hg38", sep=""))
+    dataframe.C <- fread(paste("data/TADs/overlaps/", resolution, ".boundaries.overlap.C2H.hg38", sep=""))
+  }
+  if(species=="C"){
+    dataframe.H <- fread(paste("data/TADs/overlaps/", resolution, ".boundaries.overlap.H2C.panTro5", sep=""))
+    dataframe.C <- fread(paste("data/TADs/overlaps/", resolution, ".boundaries.overlap.C2H.panTro5", sep=""))
+  }
+  h.only <- sum(dataframe.H$V5==0)
+  c.only <- sum(dataframe.C$V5==0)
+  shared <- max((nrow(dataframe.H)-h.only), (nrow(dataframe.C)-c.only))
+  myvec <- c(shared, h.only, c.only, resolution)
+  names(myvec) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+  return(myvec)
+}
+
+options(scipen=999)
+bounds.5 <- bounder.c(5000)
+bounds.10 <- bounder.c(10000)
+bounds.25 <- bounder.c(25000)
+bounds.50 <- bounder.c(50000)
+bounds.100 <- bounder.c(100000)
+bounds.250 <- bounder.c(250000)
+bounds.500 <- bounder.c(500000)
+
+mybounds <- as.data.frame(rbind(bounds.10, bounds.25, bounds.50, bounds.100, bounds.250, bounds.500))
+colnames(mybounds) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+mybounds$Resolution <- (mybounds$Resolution)/1000
+mybounds$Resolution <- paste(mybounds$Resolution, "kb", sep="")
+mybounds$totals <- mybounds$Shared + mybounds$Human + mybounds$Chimpanzee
+mybounds$shared.perc <- mybounds$Shared/mybounds$totals
+mybounds$human.perc <- mybounds$Human/mybounds$totals
+mybounds$chimp.perc <- mybounds$Chimpanzee/mybounds$totals
+ggbounds <- melt(mybounds[,1:4])
+ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+colnames(ggbounds) <- c("Resolution", "Species", "count")
+ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
+#FIG4B
+
+###Interspecies TAD boundary Rao Style Overlaps###
+
+#Now, for one last check on boundaries, do it with the Rao overlap style for assessment of domain conservation.
+#Rao-style overlapper for boundaries instead of domains (50kb is too large). The boundary elements are set to 15kb in size, and 50kb was used for median domain sizes of 185kb, so an appropriate approximate similar leniency would be 4 kb here. We'll try rounding to 5 and include a parameter for changing it to see how it affects it. The reality is that this shows much lower conservation than my other boundary conservation metrics because it is built for domain conservation and requires a certain amount of overlap for the boundaries to be considered conserved (whereas my prior analyses called any overlap as conserved). This function works on the output of the mega.bounds.rao.sh processing file.
+rao.bounds.overlapper <- function(resolution, leniency=5000, mega=TRUE, species="H"){
+  if(species=="H"){
+  df.h <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".boundaries.HC.closest.hg38", sep=""), data.table=F, header=F)
+  df.c <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".boundaries.CH.closest.hg38", sep=""), data.table=F, header=F)
+  }
+  if(species=="C"){
+    df.h <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".boundaries.HC.closest.panTro5", sep=""), data.table=F, header=F)
+  df.c <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".boundaries.CH.closest.panTro5", sep=""), data.table=F, header=F)
+  }
+  df.h$size <- df.h$V3-df.h$V2
+  df.c$size <- df.c$V3-df.c$V2
+  df.h$dist_max <- ifelse((df.h$size*.5)<=leniency, df.h$size*.5, leniency)
+  df.c$dist_max <- ifelse((df.c$size*.5)<=leniency, df.c$size*.5, leniency)
+  if(mega==FALSE){
+    df.h$conserved <- ifelse((((df.h$V2-df.h$V5)^2+(df.h$V3-df.h$V6)^2)^0.5)<=df.h$dist_max, "yes", "no")
+    df.c$conserved <- ifelse((((df.c$V2-df.c$V5)^2+(df.c$V3-df.c$V6)^2)^0.5)<=df.c$dist_max, "yes", "no")}
+  if(mega==TRUE){
+    df.h$conserved <- ifelse((((df.h$V2-df.h$V6)^2+(df.h$V3-df.h$V7)^2)^0.5)<=df.h$dist_max, "yes", "no")
+    df.c$conserved <- ifelse((((df.c$V2-df.c$V6)^2+(df.c$V3-df.c$V7)^2)^0.5)<=df.c$dist_max, "yes", "no")
+  }
+  df.h$ID <- paste(df.h$V1, df.h$V2, df.h$V3, sep="_")
+  df.c$ID <- paste(df.c$V1, df.c$V2, df.c$V3, sep="_")
+  cons.total.h <- length(unique(filter(df.h, conserved=="yes")$ID))
+  cons.total.c <- length(unique(filter(df.c, conserved=="yes")$ID))
+  ourcons <- max(as.numeric(cons.total.h), as.numeric(cons.total.c))
+  myvec <- c(ourcons, length(unique(df.h$ID))-ourcons, length(unique(df.c$ID))-ourcons, resolution)
+  names(myvec) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+  return(myvec)
+}
+
+options(scipen=999)
+bounds.5 <- rao.bounds.overlapper(5000) #This is the only case where cons.H!=cons.C, just go with cons.H to inflate proportion conserved (it's more)
+bounds.10 <- rao.bounds.overlapper(10000)
+bounds.25 <- rao.bounds.overlapper(25000)
+bounds.50 <- rao.bounds.overlapper(50000)
+bounds.100 <- rao.bounds.overlapper(100000)
+bounds.250 <- rao.bounds.overlapper(250000)
+bounds.500 <- rao.bounds.overlapper(500000)
+#Boundaries closest to failed for chimp coords on 100kb and 250kb...
+
+mybounds <- as.data.frame(rbind(bounds.10, bounds.25, bounds.50, bounds.100, bounds.250, bounds.500))
+colnames(mybounds) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+mybounds$Resolution <- (mybounds$Resolution)/1000
+mybounds$Resolution <- paste(mybounds$Resolution, "kb", sep="")
+mybounds$totals <- mybounds$Shared + mybounds$Human + mybounds$Chimpanzee
+mybounds$shared.perc <- mybounds$Shared/mybounds$totals
+mybounds$human.perc <- mybounds$Human/mybounds$totals
+mybounds$chimp.perc <- mybounds$Chimpanzee/mybounds$totals
+ggbounds <- melt(mybounds[,1:4])
+ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+colnames(ggbounds) <- c("Resolution", "Species", "count")
+ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
+#FIG S4B
+```
+
+```{r Juicer Mega Interspecies Domain Conservation}
+###Interspecies Domain Conservation using Rao et al. Method###
+#First, define a function to call domain conservation as was performed in Rao et al. 2014.
+#50kb is the leniency used by Rao et al for interspecies comparisons of domains, 0.5*|i-j| was also used for interspecies comparison (as opposed to 0.2*|i-j| for the cell types within human comparison), under the reasoning that we should be somewhat more permissive with flexibility of calling conservation allowing for errors in liftOver. This function works on the output of the files processed by mega.domains.rao.sh
+rao.domain.overlapper <- function(resolution, mega=TRUE, species="H", leniency=50000){
+  if(species=="H"){
+  df.h <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".HC.closest.hg38", sep=""), data.table=F, header=F)
+  df.c <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".CH.closest.hg38", sep=""), data.table=F, header=F)
+  }
+  if(species=="C"){
+    df.h <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".HC.closest.panTro5", sep=""), data.table=F, header=F)
+  df.c <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".CH.closest.panTro5", sep=""), data.table=F, header=F)
+  }
+  df.h$size <- df.h$V3-df.h$V2
+  df.c$size <- df.c$V3-df.c$V2
+  df.h$dist_max <- ifelse((df.h$size*.5)<=leniency, df.h$size*.5, leniency)
+  df.c$dist_max <- ifelse((df.c$size*.5)<=leniency, df.c$size*.5, leniency)
+  if(mega==FALSE){
+    df.h$conserved <- ifelse((((df.h$V2-df.h$V5)^2+(df.h$V3-df.h$V6)^2)^0.5)<=df.h$dist_max, "yes", "no")
+    df.c$conserved <- ifelse((((df.c$V2-df.c$V5)^2+(df.c$V3-df.c$V6)^2)^0.5)<=df.c$dist_max, "yes", "no")}
+  if(mega==TRUE){
+    df.h$conserved <- ifelse((((df.h$V2-df.h$V6)^2+(df.h$V3-df.h$V7)^2)^0.5)<=df.h$dist_max, "yes", "no")
+    df.c$conserved <- ifelse((((df.c$V2-df.c$V6)^2+(df.c$V3-df.c$V7)^2)^0.5)<=df.c$dist_max, "yes", "no")
+  }
+  df.h$ID <- paste(df.h$V1, df.h$V2, df.h$V3, sep="_")
+  df.c$ID <- paste(df.c$V1, df.c$V2, df.c$V3, sep="_")
+  cons.total.h <- length(unique(filter(df.h, conserved=="yes")$ID))
+  cons.total.c <- length(unique(filter(df.c, conserved=="yes")$ID))
+  if(cons.total.h!=cons.total.c){print(paste("conservation estimates different b/t species, human=", cons.total.h, " chimp=", cons.total.c, sep=""))}
+  ourcons <- max(as.numeric(cons.total.h), as.numeric(cons.total.c))
+  myvec <- c(ourcons, length(unique(df.h$ID))-ourcons, length(unique(df.c$ID))-ourcons, resolution)
+  names(myvec) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+  return(myvec)
+}
+
+domains.5 <- rao.domain.overlapper(5000)
+domains.10 <- rao.domain.overlapper(10000)
+domains.25 <- rao.domain.overlapper(25000)
+domains.50 <- rao.domain.overlapper(50000)
+domains.100 <- rao.domain.overlapper(100000)
+domains.250 <- rao.domain.overlapper(250000)
+domains.500 <- rao.domain.overlapper(500000)
+
+mydomains <- as.data.frame(rbind(domains.10, domains.25, domains.50, domains.100, domains.250, domains.500))
+colnames(mydomains) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+mydomains$Resolution <- (mydomains$Resolution)/1000
+mydomains$Resolution <- paste(mydomains$Resolution, "kb", sep="")
+mydomains$totals <- mydomains$Shared + mydomains$Human + mydomains$Chimpanzee
+mydomains$shared.perc <- mydomains$Shared/mydomains$totals
+mydomains$human.perc <- mydomains$Human/mydomains$totals
+mydomains$chimp.perc <- mydomains$Chimpanzee/mydomains$totals
+ggdomains <- melt(mydomains[,1:4])
+ggdomains$Resolution <- factor(ggdomains$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+colnames(ggdomains) <- c("Resolution", "Species", "count")
+ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Interspecies TAD Domain Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
+#FIGS4A
+
+#This method was likely the most robust way to define domain conservation, particularly with nested domains.
+
+###Interspecies Domain Conservation using bedtools -c###
+#The nested nature means that a bedtools merge analytic paradigm like that used at some points for boundaries above would definitely not be appropriate, so here, I also test what happens when using a reciprocal bedtools -c approach of the domains. I also utilized -f 0.9 -r in the bedtools -c call, meaning that a domain will only be called as found in the other file if 90% of it is covered by a domain in the other file, and that 90% of that domain is also covered in the original file. This function works on the output of mega.domains.bedtoolsc.sh
+domain.conserved.c <- function(resolution, species="H"){
+  if(species=="H"){
+    dataframe.H <- fread(paste("data/TADs/overlaps/", resolution, ".HC.bedtoolsc.hg38", sep=""))
+    dataframe.C <- fread(paste("data/TADs/overlaps/", resolution, ".CH.bedtoolsc.hg38", sep=""))
+  }
+  if(species=="C"){
+    dataframe.H <- fread(paste("data/TADs/overlaps/", resolution, ".HC.bedtoolsc.panTro5", sep=""))
+    dataframe.C <- fread(paste("data/TADs/overlaps/", resolution, ".CH.bedtoolsc.panTro5", sep=""))
+  }
+  h.only <- sum(dataframe.H$V5==0)
+  c.only <- sum(dataframe.C$V5==0)
+  shared <- max((nrow(dataframe.H)-h.only), (nrow(dataframe.C)-c.only)) #Take the max to inflate conservation
+  myvec <- c(shared, h.only, c.only, resolution)
+  names(myvec) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+  return(myvec)
+}
+
+domains.5 <- domain.conserved.c(5000)
+domains.10 <- domain.conserved.c(10000)
+domains.25 <- domain.conserved.c(25000)
+domains.50 <- domain.conserved.c(50000)
+domains.100 <- domain.conserved.c(100000)
+domains.250 <- domain.conserved.c(250000)
+domains.500 <- domain.conserved.c(500000)
+
+mydomains <- as.data.frame(rbind(domains.10, domains.25, domains.50, domains.100, domains.250, domains.500))
+colnames(mydomains) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+mydomains$Resolution <- (mydomains$Resolution)/1000
+mydomains$Resolution <- paste(mydomains$Resolution, "kb", sep="")
+mydomains$totals <- mydomains$Shared + mydomains$Human + mydomains$Chimpanzee
+mydomains$shared.perc <- mydomains$Shared/mydomains$totals
+mydomains$human.perc <- mydomains$Human/mydomains$totals
+mydomains$chimp.perc <- mydomains$Chimpanzee/mydomains$totals
+ggdomains <- melt(mydomains[,1:4])
+ggdomains$Resolution <- factor(ggdomains$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+colnames(ggdomains) <- c("Resolution", "Species", "count")
+ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Interspecies TAD domain Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
+#FIG4A
+```
+
+```{r Boundary Conservation with Individual Level Arrowhead Inferences}
+###Intraspecies Variance in TAD Boundaries###
+#First, I look at within-sepcies variance of TAD boundaries, both on the full set of boundaries and on the set that could be orthologously lifted over between species. This is done by taking the boundary files from both these situations across all individuals within a species, adding a column to identify the individual it came from, appending these files onto one another, and then using bedtools merge and collapsing on the identifier column to assess how many unique boundaries are found and how many individuals each is found in.
+
+#Define a function to give back how many boundaries are found in X# individuals within a species, for the orthologously mappable TADs' boundaries.
+intra.ortho.assess <- function(resolution, species){
+  if(species=="H"){
+    df <- fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/h.final.allmerge.ortho.hg38", sep=""), data.table=F, header=F)
+    df$F <- df$E <- df$B <- df$A <- 0
+    df$A[grep("A", df$V4)] <- 1
+    df$B[grep("B", df$V4)] <- 1
+    df$E[grep("E", df$V4)] <- 1
+    df$F[grep("F", df$V4)] <- 1
+  }
+  if(species=="C"){
+    df <- fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/c.final.allmerge.ortho.hg38", sep=""), data.table=F, header=F)
+    df$H <- df$G <- df$D <- df$C <- 0
+    df$H[grep("H", df$V4)] <- 1
+    df$G[grep("G", df$V4)] <- 1
+    df$D[grep("D", df$V4)] <- 1
+    df$C[grep("C", df$V4)] <- 1
+  }
+  df$indi.found <- rowSums(df[,5:8])
+  mydf <- as.data.frame(melt(table(df$indi.found)))
+  mydf$resolution <- paste(resolution/1000, "kb", sep="")
+  colnames(mydf) <- c("Individuals", "Count", "Resolution")
+  return(list(mydf, df))
+}
+
+#Same function as above, but for the boundaries inferred within species w/out orthology filtering:
+intra.full.assess <- function(resolution, species){
+  if(species=="H"){
+    df <- fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/h.final.allmerge.hg38", sep=""), data.table=F, header=F)
+    df$F <- df$E <- df$B <- df$A <- 0
+    df$A[grep("A", df$V4)] <- 1
+    df$B[grep("B", df$V4)] <- 1
+    df$E[grep("E", df$V4)] <- 1
+    df$F[grep("F", df$V4)] <- 1
+  }
+  if(species=="C"){
+    df <- fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/c.final.allmerge.panTro5", sep=""), data.table=F, header=F)
+    df$H <- df$G <- df$D <- df$C <- 0
+    df$H[grep("H", df$V4)] <- 1
+    df$G[grep("G", df$V4)] <- 1
+    df$D[grep("D", df$V4)] <- 1
+    df$C[grep("C", df$V4)] <- 1
+  }
+  df$indi.found <- rowSums(df[,5:8])
+  mydf <- as.data.frame(melt(table(df$indi.found)))
+  mydf$resolution <- paste(resolution/1000, "kb", sep="")
+  colnames(mydf) <- c("Individuals", "Count", "Resolution")
+  return(list(mydf, df))
+}
+
+#For plotting stats on orthologous boundaries.
+intra.ortho.plotter <- function(species){
+  bounds.10 <- intra.ortho.assess(10000, species)[[1]]
+  bounds.25 <- intra.ortho.assess(25000, species)[[1]]
+  bounds.50 <- intra.ortho.assess(50000, species)[[1]]
+  bounds.100 <- intra.ortho.assess(100000, species)[[1]]
+  bounds.250 <- intra.ortho.assess(250000, species)[[1]]
+  bounds.500 <- intra.ortho.assess(500000, species)[[1]]
+  ggbounds <- rbind(bounds.10, bounds.25, bounds.50, bounds.100, bounds.250, bounds.500)
+  ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+  
+  if(species=="H"){
+    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("TAD Orth. Boundary Conservation, Humans") +xlab("Resolution of Analysis") + ylab("Boundary Count")
+  }
+   if(species=="C"){
+    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("TAD Orth. Boundary Conservation, Chimps") +xlab("Resolution of Analysis") + ylab("Boundary Count")
+   }
+  print(myplot)
+}
+
+#Same as above, but for the set of boundaries without orthology filtering.
+intra.full.plotter <- function(species){
+  bounds.10 <- intra.full.assess(10000, species)[[1]]
+  bounds.25 <- intra.full.assess(25000, species)[[1]]
+  bounds.50 <- intra.full.assess(50000, species)[[1]]
+  bounds.100 <- intra.full.assess(100000, species)[[1]]
+  bounds.250 <- intra.full.assess(250000, species)[[1]]
+  bounds.500 <- intra.full.assess(500000, species)[[1]]
+  ggbounds <- rbind(bounds.10, bounds.25, bounds.50, bounds.100, bounds.250, bounds.500)
+  ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+  
+  if(species=="H"){
+    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("TAD Boundary Conservation, Humans") +xlab("Resolution of Analysis") + ylab("Boundary Count")
+  }
+   if(species=="C"){
+    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("TAD Boundary Conservation, Chimps") +xlab("Resolution of Analysis") + ylab("Boundary Count")
+   }
+  print(myplot)
+}
+options(scipen=999)
+intra.ortho.plotter("H")
+intra.ortho.plotter("C")
+intra.full.plotter("H")
+intra.full.plotter("C")
+
+##Secondary method for assessing intraspecies variance in TAD boundaries, Jaccard index.###
+jac.intra.full <- function(resolution, species){
+  if(species=="H"){
+    AB <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.AB.full", sep=""))[1,3])
+    AE <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.AE.full", sep=""))[1,3])
+    AF <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.AF.full", sep=""))[1,3])
+    BE <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.BE.full", sep=""))[1,3])
+    BF <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.BF.full", sep=""))[1,3])
+    EF <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.EF.full", sep=""))[1,3])
+    jaccard <- data.frame(A=c(1, AB, AE, AF), B=c(AB, 1, BE, BF), E=c(AE, BE, 1, EF), F=c(AF, BF, EF, 1))
+    rownames(jaccard) <- colnames(jaccard)
+  }
+  if(species=="C"){
+    CD <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.CD.full", sep=""))[1,3])
+    CG <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.CG.full", sep=""))[1,3])
+    CH <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.CH.full", sep=""))[1,3])
+    DG <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.DG.full", sep=""))[1,3])
+    DH <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.DH.full", sep=""))[1,3])
+    GH <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.GH.full", sep=""))[1,3])
+    jaccard <- data.frame(C=c(1, CD, CG, CH), D=c(CD, 1, DG, DH), G=c(CG, DG, 1, GH), H=c(CH, DH, GH, 1))
+    rownames(jaccard) <- colnames(jaccard) 
+  }
+  return(jaccard)
+}
+
+#Same as the above function, but only on orthologous TAD boundaries:
+jac.intra.ortho <- function(resolution, species){
+  if(species=="H"){
+    AB <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.AB.ortho", sep=""))[1,3])
+    AE <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.AE.ortho", sep=""))[1,3])
+    AF <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.AF.ortho", sep=""))[1,3])
+    BE <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.BE.ortho", sep=""))[1,3])
+    BF <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.BF.ortho", sep=""))[1,3])
+    EF <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.EF.ortho", sep=""))[1,3])
+    jaccard <- data.frame(A=c(1, AB, AE, AF), B=c(AB, 1, BE, BF), E=c(AE, BE, 1, EF), F=c(AF, BF, EF, 1))
+    rownames(jaccard) <- colnames(jaccard)
+  }
+  if(species=="C"){
+    CD <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.CD.ortho", sep=""))[1,3])
+    CG <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.CG.ortho", sep=""))[1,3])
+    CH <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.CH.ortho", sep=""))[1,3])
+    DG <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.DG.ortho", sep=""))[1,3])
+    DH <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.DH.ortho", sep=""))[1,3])
+    GH <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.GH.ortho", sep=""))[1,3])
+    jaccard <- data.frame(C=c(1, CD, CG, CH), D=c(CD, 1, DG, DH), G=c(CG, DG, 1, GH), H=c(CH, DH, GH, 1))
+    rownames(jaccard) <- colnames(jaccard) 
+  }
+  return(jaccard)
+}
+
+#Can be clustered upon later.
+jac.intra.full(10000, "H")
+jac.intra.ortho(10000, "H")
+jac.intra.full(10000, "C")
+jac.intra.ortho(10000, "C")
+
+###Interspecies Conservation of TAD Boundaries###
+#This is performed in much the same manner as above, but this time, combining the file across species.
+#Once again, checked, and merging before/after individual file merging makes no difference.
+inter.bound.cons <- function(resolution, clust=F){
+  df <- fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/final.merged.combined.each.merge.ortho.hg38", sep=""), data.table=F, header=F)
+  df$H <- df$G <- df$F <- df$E <- df$D <- df$C <- df$B <- df$A <- 0
+  df$A[grep("A", df$V4)] <- 1
+  df$B[grep("B", df$V4)] <- 1
+  df$C[grep("C", df$V4)] <- 1
+  df$D[grep("D", df$V4)] <- 1
+  df$E[grep("E", df$V4)] <- 1
+  df$F[grep("F", df$V4)] <- 1
+  df$G[grep("G", df$V4)] <- 1
+  df$H[grep("H", df$V4)] <- 1
+  df$found_in_H <- rowSums(df[,c(5:6, 9:10)])
+  df$found_in_C <- rowSums(df[,c(7:8, 11:12)])
+  df.2 <- filter(df, found_in_H>=2|found_in_C>=2)
+  df.3 <- filter(df, found_in_H>=3|found_in_C>=3)
+  df.4 <- filter(df, found_in_H>=4|found_in_C>=4)
+  cons.1 <- ifelse(df$found_in_H>=1&df$found_in_C>=1, "Shared", ifelse(df$found_in_H>=1, "Human", "Chimpanzee"))
+  cons.2 <- ifelse(df.2$found_in_H>=1&df.2$found_in_C>=1, "Shared", ifelse(df.2$found_in_H>=1, "Human", "Chimpanzee"))
+  cons.3 <- ifelse(df.3$found_in_H>=1&df.3$found_in_C>=1, "Shared", ifelse(df.3$found_in_H>=1, "Human", "Chimpanzee"))
+  cons.4 <- ifelse(df.4$found_in_H>=1&df.4$found_in_C>=1, "Shared", ifelse(df.4$found_in_H>=1, "Human", "Chimpanzee"))
+  cons.table <- as.data.frame(rbind(table(factor(cons.1, levels=c("Shared", "Human", "Chimpanzee"))), table(factor(cons.2, levels=c("Shared", "Human", "Chimpanzee"))), table(factor(cons.3, levels=c("Shared", "Human", "Chimpanzee"))), table(factor(cons.4, levels=c("Shared", "Human", "Chimpanzee")))))
+  cons.table$stringency <- 1:4
+  cons.table$resolution <- paste(resolution/1000, "kb", sep="")
+  if(clust==FALSE){
+  return(cons.table)}
+  if(clust==TRUE){
+    return(df)
+  }
+}
+
+#######Interspecies clustering on individual-level boundary element inferences######
+#Function to calculate percentages:
+percentage.table.calc <- function(df){
+  colnames(df) <- c("A", "B", "C", "D", "E", "F", "G", "H")
+  A.vec <- c(sum(df$A==1&df$A==1), sum(df$A==1&df$B==1), sum(df$A==1&df$C==1), sum(df$A==1&df$D==1), sum(df$A==1&df$E==1), sum(df$A==1&df$F==1), sum(df$A==1&df$G==1),  sum(df$A==1&df$H==1))
+  B.vec <- c(sum(df$B==1&df$A==1), sum(df$B==1&df$B==1), sum(df$B==1&df$C==1), sum(df$B==1&df$D==1), sum(df$B==1&df$E==1), sum(df$B==1&df$F==1), sum(df$B==1&df$G==1),  sum(df$B==1&df$H==1))
+  C.vec <- c(sum(df$C==1&df$A==1), sum(df$C==1&df$B==1), sum(df$C==1&df$C==1), sum(df$C==1&df$D==1), sum(df$C==1&df$E==1), sum(df$C==1&df$F==1), sum(df$C==1&df$G==1),  sum(df$C==1&df$H==1))
+  D.vec <- c(sum(df$D==1&df$A==1), sum(df$D==1&df$B==1), sum(df$D==1&df$C==1), sum(df$D==1&df$D==1), sum(df$D==1&df$E==1), sum(df$D==1&df$F==1), sum(df$D==1&df$G==1),  sum(df$D==1&df$H==1))
+  E.vec <- c(sum(df$E==1&df$A==1), sum(df$E==1&df$B==1), sum(df$E==1&df$C==1), sum(df$E==1&df$D==1), sum(df$E==1&df$E==1), sum(df$E==1&df$F==1), sum(df$E==1&df$G==1),  sum(df$E==1&df$H==1))
+  F.vec <- c(sum(df$F==1&df$A==1), sum(df$F==1&df$B==1), sum(df$F==1&df$C==1), sum(df$F==1&df$D==1), sum(df$F==1&df$E==1), sum(df$F==1&df$F==1), sum(df$F==1&df$G==1),  sum(df$F==1&df$H==1))
+  G.vec <- c(sum(df$G==1&df$A==1), sum(df$G==1&df$B==1), sum(df$G==1&df$C==1), sum(df$G==1&df$D==1), sum(df$G==1&df$E==1), sum(df$G==1&df$F==1), sum(df$G==1&df$G==1),  sum(df$G==1&df$H==1))
+  H.vec <- c(sum(df$H==1&df$A==1), sum(df$H==1&df$B==1), sum(df$H==1&df$C==1), sum(df$H==1&df$D==1), sum(df$H==1&df$E==1), sum(df$H==1&df$F==1), sum(df$H==1&df$G==1),  sum(df$H==1&df$H==1))
+  A.vec <- A.vec/A.vec[1]
+  B.vec <- B.vec/B.vec[2]
+  C.vec <- C.vec/C.vec[3]
+  D.vec <- D.vec/D.vec[4]
+  E.vec <- E.vec/E.vec[5]
+  F.vec <- F.vec/F.vec[6]
+  G.vec <- G.vec/G.vec[7]
+  H.vec <- H.vec/H.vec[8]
+  
+  mydata <- cbind(A.vec, B.vec, C.vec, D.vec, E.vec, F.vec, G.vec, H.vec)
+  rownames(mydata) <- colnames(mydata) <- c("A", "B", "C", "D", "E", "F", "G", "H")
+  return(mydata)
+}
+
+cor.table.calc <- function(df){
+  colnames(df) <- c("A", "B", "C", "D", "E", "F", "G", "H")
+  A.vec <- c(cor(df$A, df$A), cor(df$A, df$B), cor(df$A, df$C), cor(df$A, df$D), cor(df$A, df$E), cor(df$A, df$F), cor(df$A, df$G),  cor(df$A, df$H))
+  B.vec <- c(cor(df$B, df$A), cor(df$B, df$B), cor(df$B, df$C), cor(df$B, df$D), cor(df$B, df$E), cor(df$B, df$F), cor(df$B, df$G),  cor(df$B, df$H))
+  C.vec <- c(cor(df$C, df$A), cor(df$C, df$B), cor(df$C, df$C), cor(df$C, df$D), cor(df$C, df$E), cor(df$C, df$F), cor(df$C, df$G),  cor(df$C, df$H))
+  D.vec <- c(cor(df$D, df$A), cor(df$D, df$B), cor(df$D, df$C), cor(df$D, df$D), cor(df$D, df$E), cor(df$D, df$F), cor(df$D, df$G),  cor(df$D, df$H))
+  E.vec <- c(cor(df$E, df$A), cor(df$E, df$B), cor(df$E, df$C), cor(df$E, df$D), cor(df$E, df$E), cor(df$E, df$F), cor(df$E, df$G),  cor(df$E, df$H))
+  F.vec <- c(cor(df$F, df$A), cor(df$F, df$B), cor(df$F, df$C), cor(df$F, df$D), cor(df$F, df$E), cor(df$F, df$F), cor(df$F, df$G),  cor(df$F, df$H))
+  G.vec <- c(cor(df$G, df$A), cor(df$G, df$B), cor(df$G, df$C), cor(df$G, df$D), cor(df$G, df$E), cor(df$G, df$F), cor(df$G, df$G),  cor(df$G, df$H))
+  H.vec <- c(cor(df$H, df$A), cor(df$H, df$B), cor(df$H, df$C), cor(df$H, df$D), cor(df$H, df$E), cor(df$H, df$F), cor(df$H, df$G),  cor(df$H, df$H))
+  
+  mydata <- cbind(A.vec, B.vec, C.vec, D.vec, E.vec, F.vec, G.vec, H.vec)
+  rownames(mydata) <- colnames(mydata) <- c("A", "B", "C", "D", "E", "F", "G", "H")
+  return(mydata)
+}
+
+bounds.10 <- inter.bound.cons(10000, clust=TRUE)
+
+test <- percentage.table.calc(bounds.10[,5:12])
+test2 <- cor.table.calc(bounds.10[,5:12])
+
+colnames(test) <- colnames(test2) <-  c("H_F1", "H_M1", "C_M1", "C_F1", "H_M2", "H_F2", "C_M2", "C_F2") #Better for presentation
+rownames(test) <- rownames(test2) <-  colnames(test)
+
+#Similar to figure 1B, but done on the whole set of data, without subsetting down to hits found significant in at least 4 individuals (regardless of species).
+heatmaply(test, main="Pairwise Proportions of Shared TAD Boundaries @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
+#heatmaply(test2, main="TAD Boundary Pairwise Pearson Correlations @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
+#FIG4D
+####
+
+
+boundary.inter.plot <- function(){
+  bounds.10 <- inter.bound.cons(10000)
+  bounds.25 <- inter.bound.cons(25000)
+  bounds.50 <- inter.bound.cons(50000)
+  bounds.100 <- inter.bound.cons(100000)
+  bounds.250 <- inter.bound.cons(250000)
+  bounds.500 <- inter.bound.cons(500000)
+  ggbounds <- rbind(bounds.10, bounds.25, bounds.50, bounds.100, bounds.250, bounds.500)
+  ggbounds$H.perc <- ggbounds$Human/rowSums(ggbounds[,1:3])
+  ggbounds$C.perc <- ggbounds$Human/rowSums(ggbounds[,1:3])
+  ggbounds$shared.perc <- ggbounds$Shared/rowSums(ggbounds[,1:3])
+  ggbounds$resolution <- factor(ggbounds$resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+  ggbounds.1 <- filter(ggbounds, stringency==1) %>% select(., Human, Chimpanzee, Shared, resolution) %>% melt(., by="resolution")
+  ggbounds.2 <- filter(ggbounds, stringency==2) %>% select(., Human, Chimpanzee, Shared, resolution) %>% melt(., by="resolution")
+  ggbounds.3 <- filter(ggbounds, stringency==3) %>% select(., Human, Chimpanzee, Shared, resolution) %>% melt(., by="resolution")
+  ggbounds.4 <- filter(ggbounds, stringency==4) %>% select(., Human, Chimpanzee, Shared, resolution) %>% melt(., by="resolution")
+  plot.1 <- ggplot(data=ggbounds.1, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=1") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3))  #+ scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
+  plot.2 <- ggplot(data=ggbounds.2, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=2") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3)) #+ scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
+  plot.3 <- ggplot(data=ggbounds.3, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=3") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3)) #+ scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
+  plot.4 <- ggplot(data=ggbounds.4, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=4") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#619CFF","#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared"))
+  print(plot.1)
+  print(plot.2)
+  print(plot.3)
+  print(plot.4)
+}
+boundary.inter.plot()
+
+#Now, Jaccard indices for interspecies variation in TAD boundaries#
+jac.inter <- function(resolution){
+  AB <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.AB.ortho", sep=""))[1,3])
+  AC <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.AC.ortho", sep=""))[1,3])
+  AD <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.AD.ortho", sep=""))[1,3])
+  AE <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.AE.ortho", sep=""))[1,3])
+  AF <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.AF.ortho", sep=""))[1,3])
+  AG <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.AG.ortho", sep=""))[1,3])
+  AH <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.AH.ortho", sep=""))[1,3])
+  BC <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.BC.ortho", sep=""))[1,3])
+  BD <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.BD.ortho", sep=""))[1,3])
+  BE <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.BE.ortho", sep=""))[1,3])
+  BF <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.BF.ortho", sep=""))[1,3])
+  BG <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.BG.ortho", sep=""))[1,3])
+  BH <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.BH.ortho", sep=""))[1,3])
+  CD <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.CD.ortho", sep=""))[1,3])
+  CG <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.CG.ortho", sep=""))[1,3])
+  CH <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.CH.ortho", sep=""))[1,3])
+  DG <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.DG.ortho", sep=""))[1,3])
+  DH <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.DH.ortho", sep=""))[1,3])
+  EC <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.EC.ortho", sep=""))[1,3])
+  ED <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.ED.ortho", sep=""))[1,3])
+  EF <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.EF.ortho", sep=""))[1,3])
+  EG <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.EG.ortho", sep=""))[1,3])
+  EH <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.EH.ortho", sep=""))[1,3])
+  FC <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.FC.ortho", sep=""))[1,3])
+  FD <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.FD.ortho", sep=""))[1,3])
+  FG <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.FG.ortho", sep=""))[1,3])
+  FH <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.FH.ortho", sep=""))[1,3])
+  GH <- as.numeric(fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/jac.GH.ortho", sep=""))[1,3])
+  jaccard <- data.frame(A=c(1, AB, AC, AD, AE, AF, AG, AH), B=c(AB, 1, BC, BD, BE, BF, BG, BH), C=c(AC, BC, 1, CD, EC, FC, CG, CH), D=c(AD, BD, CD, 1, ED, FD, DG, DH), E=c(AE, BE, EC, ED, 1, EF, EG, EH), F=c(AF, BF, FC, FD, EF, 1, FG, FH), G=c(AG, BG, CG, DG, EG, FG, 1, GH), H=c(AH, BH, CH, DH, EH, FH, GH, 1))
+  rownames(jaccard) <- colnames(jaccard)
+  return(jaccard)
+}
+jacs.10 <- jac.inter(10000) #Can be clustered upon later.
+
+colnames(jacs.10) <- c("HF1", "HM1", "CM1", "CF1", "HM2", "HF2", "CM2", "CF2") #Better for presentation
+rownames(jacs.10) <- colnames(jacs.10)
+
+#Similar to figure 1B, but done on the whole set of data, without subsetting down to hits found significant in at least 4 individuals (regardless of species).
+heatmaply(jacs.10, main="Pairwise Jaccard Index @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
+```
+
+```{r Domain Conservation with Individual Level Arrowhead Inferences}
+#Domains are considerably more complex to analyze, primarily due to the fact that the Arrowhead domain output can be nested. As a result, this analysis is a bit more coarse-grained. By this I mean to say that the nested TADs cannot simply be merged across all individuals to determine which are shared, so this must be done on an individual-by-individual basis to infer specific relationships while maintaining the number of discoveries of TADs for each individual. Thus, the average of many statistics across individuals is taken here.
+#Function to get a given individual's statistics on TAD conservation, intra and inter species.
+domain.compare <- function(resolution, letter, species, type, clust=F){
+  df <- fread(paste("data/TADs/Arrowhead_individuals/", resolution, "_compare/inter.", letter, ".", type, sep=""))
+  df$ID <- paste(df$V1, df$V2, df$V3, sep="-")
+  if(type=="rao"){
+  df$size <- df$V3-df$V2
+  df$dist_max <- ifelse((df$size*.2)<=50000, df$size*.2, 50000) #Use 0.2, not 0.5, these are closely related species.
+  df$conserved <- ifelse((((df$V2-df$V7)^2+(df$V3-df$V8)^2)^0.5)<df$dist_max, "yes", "no")
+  merged.df <- as.data.frame(group_by(df, ID) %>% summarise(individuals=paste(V5[which(conserved=="yes")], collapse=",")))}
+  if(type=="loj"){
+    merged.df <- as.data.frame(group_by(df, ID) %>% summarise(individuals=paste(V5, collapse=",")))
+  }
+  merged.df$H <- merged.df$G <- merged.df$F <- merged.df$E <- merged.df$D <- merged.df$C <- merged.df$B <- merged.df$A <- 0
+  merged.df$A[grep("A", merged.df$individuals)] <- 1
+  merged.df$B[grep("B", merged.df$individuals)] <- 1
+  merged.df$E[grep("E", merged.df$individuals)] <- 1
+  merged.df$F[grep("F", merged.df$individuals)] <- 1
+  merged.df$C[grep("C", merged.df$individuals)] <- 1
+  merged.df$D[grep("D", merged.df$individuals)] <- 1
+  merged.df$G[grep("G", merged.df$individuals)] <- 1
+  merged.df$H[grep("H", merged.df$individuals)] <- 1
+  merged.df$found_in_H <- rowSums(merged.df[,c(3, 4, 7, 8)])
+  merged.df$found_in_C <- rowSums(merged.df[,c(5, 6, 9, 10)])
+  merged.df$cons <- ifelse(merged.df$found_in_C>=1&merged.df$found_in_H>=1, "Shared", ifelse(merged.df$found_in_C==0, "Human", "Chimpanzee"))
+  
+  if(species=="H"){
+    intra.stat <- table(merged.df$found_in_H)
+    inter.1.stat <- table(factor(merged.df$cons, levels=c("Human", "Shared")))
+    inter.2.stat <- table(factor(filter(merged.df, found_in_H>=2|found_in_C>=2)$cons, levels=c("Human", "Shared")))
+    inter.3.stat <- table(factor(filter(merged.df, found_in_H>=3|found_in_C>=3)$cons, levels=c("Human", "Shared")))
+    inter.4.stat <- table(factor(filter(merged.df, found_in_H>=4|found_in_C>=4)$cons, levels=c("Human", "Shared")))}
+  if(species=="C"){
+    intra.stat <- table(merged.df$found_in_C)
+    inter.1.stat <- table(factor(merged.df$cons, levels=c("Chimpanzee", "Shared")))
+    inter.2.stat <- table(factor(filter(merged.df, found_in_H>=2|found_in_C>=2)$cons, levels=c("Chimpanzee", "Shared")))
+    inter.3.stat <- table(factor(filter(merged.df, found_in_H>=3|found_in_C>=3)$cons, levels=c("Chimpanzee", "Shared")))
+    inter.4.stat <- table(factor(filter(merged.df, found_in_H>=4|found_in_C>=4)$cons, levels=c("Chimpanzee", "Shared")))}
+  
+  conservation <- as.data.frame(rbind(inter.1.stat, inter.2.stat, inter.3.stat, inter.4.stat))
+  conservation$resolution <- paste(resolution/1000, "kb", sep="")
+  conservation$stringency <- 1:4
+  if(clust==F){
+  return(list(intra.stat, conservation))}
+  if(clust==TRUE){
+    perc.table <- percentage.table.calc(merged.df[,3:10])
+    return(perc.table[,letter]) #Not returning just that column, for some reason...
+  }
+}
+
+###Interspecies individual level TAD clustering###
+A.domain <- domain.compare(10000, "A", "H", "loj", clust=TRUE)
+B.domain <- domain.compare(10000, "B", "H", "loj", clust=TRUE)
+C.domain <- domain.compare(10000, "C", "C", "loj", clust=TRUE)
+D.domain <- domain.compare(10000, "D", "C", "loj", clust=TRUE)
+E.domain <- domain.compare(10000, "E", "H", "loj", clust=TRUE)
+F.domain <- domain.compare(10000, "F", "H", "loj", clust=TRUE)
+G.domain <- domain.compare(10000, "G", "C", "loj", clust=TRUE)
+H.domain <- domain.compare(10000, "H", "C", "loj", clust=TRUE)
+
+#Taking the mean of each pairwise comparison. Kind of complex, prefer to just use the individual vectors as below:
+domainclust <- data.frame(A=c(1, mean(A.domain[2], B.domain[1]), mean(A.domain[3], C.domain[1]), mean(A.domain[4], D.domain[1]), mean(A.domain[5], E.domain[1]), mean(A.domain[6], F.domain[1]), mean(A.domain[7], G.domain["A"]), mean(A.domain["H"], H.domain["A"])), B=c(mean(B.domain["A"], A.domain["B"]), 1, mean(B.domain["C"], C.domain["B"]), mean(B.domain["D"], D.domain["B"]), mean(B.domain["E"], E.domain["B"]), mean(B.domain["F"], F.domain["B"]), mean(B.domain["G"], G.domain["B"]), mean(B.domain["H"], H.domain["B"])), C=c(mean(C.domain["A"], A.domain["C"]), mean(C.domain["B"], B.domain["C"]), 1, mean(C.domain["D"], D.domain["C"]), mean(C.domain["E"], E.domain["C"]), mean(C.domain["F"], F.domain["C"]), mean(C.domain["G"], G.domain["C"]), mean(C.domain["H"], H.domain["C"])), D=c(mean(D.domain["A"], A.domain["D"]), mean(D.domain["B"], B.domain["D"]), mean(D.domain["C"], C.domain["D"]), 1, mean(D.domain["E"], E.domain["D"]), mean(D.domain["F"], F.domain["D"]), mean(D.domain["G"], G.domain["D"]), mean(D.domain["H"], H.domain["D"])), E=c(mean(E.domain["A"], A.domain["E"]), mean(E.domain["B"], B.domain["E"]), mean(E.domain["C"], C.domain["E"]), mean(E.domain["D"], D.domain["E"]), 1, mean(E.domain["F"], F.domain["E"]), mean(E.domain["G"], G.domain["E"]), mean(E.domain["H"], H.domain["E"])), F=c(mean(F.domain["A"], A.domain["F"]), mean(F.domain["B"], B.domain["F"]), mean(F.domain["C"], C.domain["F"]), mean(F.domain["D"], D.domain["F"]), mean(F.domain["E"], E.domain["F"]), 1, mean(F.domain["G"], G.domain["F"]), mean(F.domain["H"], H.domain["F"])), G=c(mean(G.domain["A"], A.domain["G"]), mean(G.domain["B"], B.domain["G"]), mean(G.domain["C"], C.domain["G"]), mean(G.domain["D"], D.domain["G"]), mean(G.domain["E"], E.domain["G"]), mean(G.domain["F"], F.domain["G"]), 1, mean(G.domain["H"], H.domain["G"])), H=c(mean(H.domain["A"], A.domain["H"]), mean(H.domain["B"], B.domain["H"]), mean(H.domain["C"], C.domain["H"]), mean(H.domain["D"], D.domain["H"]), mean(H.domain["E"], E.domain["H"]), mean(H.domain["F"], F.domain["H"]), mean(H.domain["G"], G.domain["H"]), 1))
+
+clust2 <- rbind(A.domain, B.domain, C.domain, D.domain, E.domain, F.domain, G.domain, H.domain)
+
+colnames(domainclust) <- colnames(clust2) <-  c("H_F1", "H_M1", "C_M1", "C_F1", "H_M2", "H_F2", "C_M2", "C_F2") #Better for presentation
+rownames(domainclust) <- rownames(clust2) <- colnames(domainclust)
+
+heatmaply(domainclust, main="Pairwise Proportions of Shared TADs @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
+heatmaply(clust2, main="Pairwise Proportions of Shared TADs @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
+#FIG4C; 2nd one more easily explainable.
+
+concatenator <- function(resolution, type) {
+  A <- domain.compare(resolution, "A", "H", type)
+  B <- domain.compare(resolution, "B", "H", type)
+  E <- domain.compare(resolution, "E", "H", type)
+  F <- domain.compare(resolution, "F", "H", type)
+    intra.H <- data.frame(indi.found=1:4, count=c(sum(A[[1]][1], B[[1]][1], E[[1]][1], F[[1]][1]), mean(A[[1]][2], B[[1]][2], E[[1]][2], F[[1]][2]), mean(A[[1]][3], B[[1]][3], E[[1]][3], F[[1]][3]), mean(A[[1]][4], B[[1]][4], E[[1]][4], F[[1]][4])))
+    intra.H$perc <- intra.H$count/sum(intra.H$count)
+  
+  C <- domain.compare(resolution, "C", "C", type)
+  D <- domain.compare(resolution, "D", "C", type)
+  G <- domain.compare(resolution, "G", "C", type)
+  H <- domain.compare(resolution, "H", "C", type)
+    intra.C <- data.frame(indi.found=1:4, count=c(sum(C[[1]][1], D[[1]][1], G[[1]][1], H[[1]][1]), mean(C[[1]][2], D[[1]][2], G[[1]][2], H[[1]][2]), mean(C[[1]][3], D[[1]][3], G[[1]][3], H[[1]][3]), mean(C[[1]][4], D[[1]][4], G[[1]][4], H[[1]][4])))
+    intra.C$perc <- intra.C$count/sum(intra.C$count)
+  intra.H$resolution <-intra.C$resolution <- paste(resolution/1000, "kb", sep="")
+  inter.c <- ((C[[2]][,1:2] + D[[2]][,1:2] + G[[2]][,1:2] + H[[2]][,1:2])/4)
+  inter.h <- ((A[[2]][,1:2] + B[[2]][,1:2] + E[[2]][,1:2] + F[[2]][,1:2])/4)
+  inter <- as.data.frame(cbind(round(inter.c[,1]), round(inter.h[,1]), round((inter.c[,2]+inter.h[,2])/2)))
+  colnames(inter) <- c("Chimpanzee", "Human", "Shared")
+  inter$resoultion <- paste(resolution/1000, "kb", sep="")
+  inter$stringency <- 1:4
+  return(list(intra.H, intra.C, inter))
+}
+
+domain.plotter <- function(type, intra.ymax=8000, inter.ymax=8200){
+    intra.10 <- concatenator(10000, type)
+    intra.25 <- concatenator(25000, type)
+    intra.50 <- concatenator(50000, type)
+    intra.100 <- concatenator(100000, type)
+    intra.250 <- concatenator(250000, type)
+    intra.500 <- concatenator(500000, type)
+    
+    intra.h <- rbind(intra.10[[1]], intra.25[[1]], intra.50[[1]], intra.100[[1]], intra.250[[1]], intra.500[[1]])
+    intra.h$resolution <- factor(intra.h$resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+    print(intra.h)
+    intra.h.plot <- ggplot(data=intra.h, aes(x=resolution, group=resolution, y=count, fill=as.factor(indi.found))) + geom_bar(stat="identity") + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Intraspecies TAD Variance, Humans") + guides(fill=guide_legend(title="# Individuals w/ TAD")) + theme(plot.title=element_text(hjust=0.3)) + coord_cartesian(ylim=c(0, intra.ymax))
+    
+    intra.c <- rbind(intra.10[[2]], intra.25[[2]], intra.50[[2]], intra.100[[2]], intra.250[[2]], intra.500[[2]])
+    intra.c$resolution <- factor(intra.c$resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+    print(intra.c)
+    intra.c.plot <- ggplot(data=intra.c, aes(x=resolution, group=resolution, y=count, fill=as.factor(indi.found))) + geom_bar(stat="identity") + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Intraspecies TAD Variance, Chimpanzees") + guides(fill=guide_legend(title="# Individuals w/ TAD")) + theme(plot.title=element_text(hjust=0.3)) + coord_cartesian(ylim=c(0, intra.ymax))
+    
+    inter <- rbind(intra.10[[3]], intra.25[[3]], intra.50[[3]], intra.100[[3]], intra.250[[3]], intra.500[[3]])
+    inter$perc.shared <- inter$Shared/rowSums(inter[,1:3])
+    inter$perc.h <- inter$Human/rowSums(inter[,1:3])
+    inter$perc.c <- inter$Chimpanzee/rowSums(inter[,1:3])
+    print(inter)
+    inter <- inter[,-6:-8]
+    inter.1 <- filter(inter, stringency==1)[,-5] %>% melt(., by="resolution")
+    inter.1$resolution <- factor(inter.1$resoultion, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+    inter.2 <- filter(inter, stringency==2)[,-5] %>% melt(., by="resolution")
+    inter.2$resolution <- factor(inter.2$resoultion, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+    inter.3 <- filter(inter, stringency==3)[,-5] %>% melt(., by="resolution")
+    inter.3$resolution <- factor(inter.3$resoultion, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+    inter.4 <- filter(inter, stringency==4)[,-5] %>% melt(., by="resolution")
+    inter.4$resolution <- factor(inter.4$resoultion, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+    
+    plot.1 <- ggplot(data=inter.1, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, Arrowhead, Stringency=1") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
+    plot.2 <- ggplot(data=inter.2, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, Arrowhead, Stringency=2") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
+    plot.3 <- ggplot(data=inter.3, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, Arrowhead, Stringency=3") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
+    plot.4 <- ggplot(data=inter.4, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, Arrowhead, Stringency=4") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
+    print(intra.h.plot)
+    print(intra.c.plot)
+    print(plot.1)
+    print(plot.2)
+    print(plot.3)
+    print(plot.4)
+}
+
+domain.plotter("rao", intra.ymax = 11000, inter.ymax = 8200)
+domain.plotter("loj", intra.ymax= 11000, inter.ymax=8200)
+```
+
+```{r Boundary Inferences using Individual TopDom Data}
+###Intraspecies Variance in TAD Boundaries###
+#First, I look at within-sepcies variance of TAD boundaries, both on the full set of boundaries and on the set that could be orthologously lifted over between species. This is done by taking the boundary files from both these situations across all individuals within a species, adding a column to identify the individual it came from, appending these files onto one another, and then using bedtools merge and collapsing on the identifier column to assess how many unique boundaries are found and how many individuals each is found in.
+
+#Define a function to give back how many boundaries are found in X# individuals within a species, for the orthologously mappable TADs' boundaries.
+intra.ortho.assess <- function(resolution, species){
+  if(species=="H"){
+    df <- fread(paste("data/TADs/TopDom/", resolution, "_compare/h.final.allmerge.ortho.hg38", sep=""), data.table=F)
+    df$F <- df$E <- df$B <- df$A <- 0
+    df$A[grep("A", df$V4)] <- 1
+    df$B[grep("B", df$V4)] <- 1
+    df$E[grep("E", df$V4)] <- 1
+    df$F[grep("F", df$V4)] <- 1
+  }
+  if(species=="C"){
+    df <- fread(paste("data/TADs/TopDom/", resolution, "_compare/c.final.allmerge.ortho.hg38", sep=""), data.table=F)
+    df$H <- df$G <- df$D <- df$C <- 0
+    df$H[grep("H", df$V4)] <- 1
+    df$G[grep("G", df$V4)] <- 1
+    df$D[grep("D", df$V4)] <- 1
+    df$C[grep("C", df$V4)] <- 1
+  }
+  df$indi.found <- rowSums(df[,5:8])
+  mydf <- as.data.frame(melt(table(df$indi.found)))
+  mydf$resolution <- paste(resolution/1000, "kb", sep="")
+  colnames(mydf) <- c("Individuals", "Count", "Resolution")
+  return(list(mydf, df))
+}
+
+#Same function as above, but for the boundaries inferred within species w/out orthology filtering:
+intra.full.assess <- function(resolution, species){
+  if(species=="H"){
+    df <- fread(paste("data/TADs/TopDom/", resolution, "_compare/h.final.allmerge.hg38", sep=""), data.table=F)
+    df$F <- df$E <- df$B <- df$A <- 0
+    df$A[grep("A", df$V4)] <- 1
+    df$B[grep("B", df$V4)] <- 1
+    df$E[grep("E", df$V4)] <- 1
+    df$F[grep("F", df$V4)] <- 1
+  }
+  if(species=="C"){
+    df <- fread(paste("data/TADs/TopDom/", resolution, "_compare/c.final.allmerge.panTro5", sep=""), data.table=F)
+    df$H <- df$G <- df$D <- df$C <- 0
+    df$H[grep("H", df$V4)] <- 1
+    df$G[grep("G", df$V4)] <- 1
+    df$D[grep("D", df$V4)] <- 1
+    df$C[grep("C", df$V4)] <- 1
+  }
+  df$indi.found <- rowSums(df[,5:8])
+  mydf <- as.data.frame(melt(table(df$indi.found)))
+  mydf$resolution <- paste(resolution/1000, "kb", sep="")
+  colnames(mydf) <- c("Individuals", "Count", "Resolution")
+  return(list(mydf, df))
+}
+
+#For plotting stats on orthologous boundaries.
+intra.ortho.plotter <- function(species){
+  bounds.10 <- intra.ortho.assess(10000, species)[[1]]
+  bounds.25 <- intra.ortho.assess(25000, species)[[1]]
+  bounds.50 <- intra.ortho.assess(50000, species)[[1]]
+  bounds.100 <- intra.ortho.assess(100000, species)[[1]]
+  bounds.250 <- intra.ortho.assess(250000, species)[[1]]
+  bounds.500 <- intra.ortho.assess(500000, species)[[1]]
+  ggbounds <- rbind(bounds.10, bounds.25, bounds.50, bounds.100, bounds.250, bounds.500)
+  ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+  
+  if(species=="H"){
+    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("Intraspecies TAD Boundary Variance, Humans") +xlab("Resolution of Analysis") + ylab("Boundary Count") + guides(fill=guide_legend(title="# Individuals")) + coord_cartesian(ylim=c(0, 2250))
+  }
+   if(species=="C"){
+    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("Intraspecies TAD Boundary Variance, Chimpanzees") +xlab("Resolution of Analysis") + ylab("Boundary Count") + guides(fill=guide_legend(title="# Individuals")) + coord_cartesian(ylim=c(0, 2250))
+   }
+  print(myplot)
+}
+
+#Same as above, but for the set of boundaries without orthology filtering.
+intra.full.plotter <- function(species){
+  bounds.10 <- intra.full.assess(10000, species)[[1]]
+  bounds.25 <- intra.full.assess(25000, species)[[1]]
+  bounds.50 <- intra.full.assess(50000, species)[[1]]
+  bounds.100 <- intra.full.assess(100000, species)[[1]]
+  bounds.250 <- intra.full.assess(250000, species)[[1]]
+  bounds.500 <- intra.full.assess(500000, species)[[1]]
+  ggbounds <- rbind(bounds.10, bounds.25, bounds.50, bounds.100, bounds.250, bounds.500)
+  ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+  
+  if(species=="H"){
+    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("Intraspecies TAD Boundary Variance, Humans") +xlab("Resolution of Analysis") + ylab("Boundary Count")
+  }
+   if(species=="C"){
+    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("Intraspecies TAD Boundary Variance, Chimps") +xlab("Resolution of Analysis") + ylab("Boundary Count")
+   }
+  print(myplot)
+}
+
+intra.ortho.plotter("H") #FIGS5E
+intra.ortho.plotter("C") #FIGS5F
+#intra.full.plotter("H")
+#intra.full.plotter("C")
+
+##Secondary method for assessing intraspecies variance in TAD boundaries, Jaccard index.###
+jac.intra.full <- function(resolution, species){
+  if(species=="H"){
+    AB <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.AB.full", sep=""))[1,3])
+    AE <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.AE.full", sep=""))[1,3])
+    AF <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.AF.full", sep=""))[1,3])
+    BE <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.BE.full", sep=""))[1,3])
+    BF <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.BF.full", sep=""))[1,3])
+    EF <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.EF.full", sep=""))[1,3])
+    jaccard <- data.frame(A=c(1, AB, AE, AF), B=c(AB, 1, BE, BF), E=c(AE, BE, 1, EF), F=c(AF, BF, EF, 1))
+    rownames(jaccard) <- colnames(jaccard)
+  }
+  if(species=="C"){
+    CD <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.CD.full", sep=""))[1,3])
+    CG <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.CG.full", sep=""))[1,3])
+    CH <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.CH.full", sep=""))[1,3])
+    DG <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.DG.full", sep=""))[1,3])
+    DH <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.DH.full", sep=""))[1,3])
+    GH <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.GH.full", sep=""))[1,3])
+    jaccard <- data.frame(C=c(1, CD, CG, CH), D=c(CD, 1, DG, DH), G=c(CG, DG, 1, GH), H=c(CH, DH, GH, 1))
+    rownames(jaccard) <- colnames(jaccard) 
+  }
+  return(jaccard)
+}
+
+#Same as the above function, but only on orthologous TAD boundaries:
+jac.intra.ortho <- function(resolution, species){
+  if(species=="H"){
+    AB <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.AB.ortho", sep=""))[1,3])
+    AE <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.AE.ortho", sep=""))[1,3])
+    AF <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.AF.ortho", sep=""))[1,3])
+    BE <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.BE.ortho", sep=""))[1,3])
+    BF <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.BF.ortho", sep=""))[1,3])
+    EF <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.EF.ortho", sep=""))[1,3])
+    jaccard <- data.frame(A=c(1, AB, AE, AF), B=c(AB, 1, BE, BF), E=c(AE, BE, 1, EF), F=c(AF, BF, EF, 1))
+    rownames(jaccard) <- colnames(jaccard)
+  }
+  if(species=="C"){
+    CD <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.CD.ortho", sep=""))[1,3])
+    CG <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.CG.ortho", sep=""))[1,3])
+    CH <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.CH.ortho", sep=""))[1,3])
+    DG <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.DG.ortho", sep=""))[1,3])
+    DH <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.DH.ortho", sep=""))[1,3])
+    GH <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.GH.ortho", sep=""))[1,3])
+    jaccard <- data.frame(C=c(1, CD, CG, CH), D=c(CD, 1, DG, DH), G=c(CG, DG, 1, GH), H=c(CH, DH, GH, 1))
+    rownames(jaccard) <- colnames(jaccard) 
+  }
+  return(jaccard)
+}
+
+#Can be clustered upon later.
+jac.intra.full(10000, "H")
+jac.intra.ortho(10000, "H")
+jac.intra.full(10000, "C")
+jac.intra.ortho(10000, "C")
+
+###Interspecies Conservation of TAD Boundaries###
+#This is performed in much the same manner as above, but this time, combining the file across species.
+#Once again, checked, and merging before/after individual file merging makes no difference.
+inter.bound.cons <- function(resolution){
+  df <- fread(paste("data/TADs/TopDom/", resolution, "_compare/final.merged.combined.each.merge.ortho.hg38", sep=""), data.table=F)
+  df$H <- df$G <- df$F <- df$E <- df$D <- df$C <- df$B <- df$A <- 0
+  df$A[grep("A", df$V4)] <- 1
+  df$B[grep("B", df$V4)] <- 1
+  df$C[grep("C", df$V4)] <- 1
+  df$D[grep("D", df$V4)] <- 1
+  df$E[grep("E", df$V4)] <- 1
+  df$F[grep("F", df$V4)] <- 1
+  df$G[grep("G", df$V4)] <- 1
+  df$H[grep("H", df$V4)] <- 1
+  df$found_in_H <- rowSums(df[,c(5:6, 9:10)])
+  df$found_in_C <- rowSums(df[,c(7:8, 11:12)])
+  df.2 <- filter(df, found_in_H>=2|found_in_C>=2)
+  df.3 <- filter(df, found_in_H>=3|found_in_C>=3)
+  df.4 <- filter(df, found_in_H>=4|found_in_C>=4)
+  cons.1 <- ifelse(df$found_in_H>=1&df$found_in_C>=1, "Shared", ifelse(df$found_in_H>=1, "Human", "Chimpanzee"))
+  cons.2 <- ifelse(df.2$found_in_H>=1&df.2$found_in_C>=1, "Shared", ifelse(df.2$found_in_H>=1, "Human", "Chimpanzee"))
+  cons.3 <- ifelse(df.3$found_in_H>=1&df.3$found_in_C>=1, "Shared", ifelse(df.3$found_in_H>=1, "Human", "Chimpanzee"))
+  cons.4 <- ifelse(df.4$found_in_H>=1&df.4$found_in_C>=1, "Shared", ifelse(df.4$found_in_H>=1, "Human", "Chimpanzee"))
+  cons.table <- as.data.frame(rbind(table(factor(cons.1, levels=c("Shared", "Human", "Chimpanzee"))), table(factor(cons.2, levels=c("Shared", "Human", "Chimpanzee"))), table(factor(cons.3, levels=c("Shared", "Human", "Chimpanzee"))), table(factor(cons.4, levels=c("Shared", "Human", "Chimpanzee")))))
+  cons.table$stringency <- 1:4
+  cons.table$resolution <- paste(resolution/1000, "kb", sep="")
+  return(cons.table)
+}
+
+boundary.inter.plot <- function(){
+  bounds.10 <- inter.bound.cons(10000)
+  bounds.25 <- inter.bound.cons(25000)
+  bounds.50 <- inter.bound.cons(50000)
+  bounds.100 <- inter.bound.cons(100000)
+  bounds.250 <- inter.bound.cons(250000)
+  bounds.500 <- inter.bound.cons(500000)
+  ggbounds <- rbind(bounds.10, bounds.25, bounds.50, bounds.100, bounds.250, bounds.500)
+  ggbounds$H.perc <- ggbounds$Human/rowSums(ggbounds[,1:3])
+  ggbounds$C.perc <- ggbounds$Human/rowSums(ggbounds[,1:3])
+  ggbounds$shared.perc <- ggbounds$Shared/rowSums(ggbounds[,1:3])
+  ggbounds$resolution <- factor(ggbounds$resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+  ggbounds.1 <- filter(ggbounds, stringency==1) %>% select(., Human, Chimpanzee, Shared, resolution) %>% melt(., by="resolution")
+  ggbounds.2 <- filter(ggbounds, stringency==2) %>% select(., Human, Chimpanzee, Shared, resolution) %>% melt(., by="resolution")
+  ggbounds.3 <- filter(ggbounds, stringency==3) %>% select(., Human, Chimpanzee, Shared, resolution) %>% melt(., by="resolution")
+  ggbounds.4 <- filter(ggbounds, stringency==4) %>% select(., Human, Chimpanzee, Shared, resolution) %>% melt(., by="resolution")
+  plot.1 <- ggplot(data=ggbounds.1, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=1") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#619CFF", "#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared"))
+  plot.2 <- ggplot(data=ggbounds.2, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=2") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#619CFF", "#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared"))
+  plot.3 <- ggplot(data=ggbounds.3, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=3") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#619CFF", "#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared"))
+  plot.4 <- ggplot(data=ggbounds.4, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=4") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#619CFF", "#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared"))
+  print(plot.1)
+  print(plot.2)
+  print(plot.3)
+  print(plot.4)
+}
+boundary.inter.plot() #FIGS6G-H
+
+#Now, Jaccard indices for interspecies variation in TAD boundaries#
+jac.inter <- function(resolution){
+  AB <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.AB.ortho", sep=""))[1,3])
+  AC <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.AC.ortho", sep=""))[1,3])
+  AD <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.AD.ortho", sep=""))[1,3])
+  AE <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.AE.ortho", sep=""))[1,3])
+  AF <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.AF.ortho", sep=""))[1,3])
+  AG <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.AG.ortho", sep=""))[1,3])
+  AH <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.AH.ortho", sep=""))[1,3])
+  BC <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.BC.ortho", sep=""))[1,3])
+  BD <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.BD.ortho", sep=""))[1,3])
+  BE <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.BE.ortho", sep=""))[1,3])
+  BF <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.BF.ortho", sep=""))[1,3])
+  BG <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.BG.ortho", sep=""))[1,3])
+  BH <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.BH.ortho", sep=""))[1,3])
+  CD <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.CD.ortho", sep=""))[1,3])
+  CG <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.CG.ortho", sep=""))[1,3])
+  CH <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.CH.ortho", sep=""))[1,3])
+  DG <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.DG.ortho", sep=""))[1,3])
+  DH <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.DH.ortho", sep=""))[1,3])
+  EC <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.EC.ortho", sep=""))[1,3])
+  ED <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.ED.ortho", sep=""))[1,3])
+  EF <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.EF.ortho", sep=""))[1,3])
+  EG <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.EG.ortho", sep=""))[1,3])
+  EH <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.EH.ortho", sep=""))[1,3])
+  FC <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.FC.ortho", sep=""))[1,3])
+  FD <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.FD.ortho", sep=""))[1,3])
+  FG <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.FG.ortho", sep=""))[1,3])
+  FH <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.FH.ortho", sep=""))[1,3])
+  GH <- as.numeric(fread(paste("data/TADs/TopDom/", resolution, "_compare/jac.GH.ortho", sep=""))[1,3])
+  jaccard <- data.frame(A=c(1, AB, AC, AD, AE, AF, AG, AH), B=c(AB, 1, BC, BD, BE, BF, BG, BH), C=c(AC, BC, 1, CD, EC, FC, CG, CH), D=c(AD, BD, CD, 1, ED, FD, DG, DH), E=c(AE, BE, EC, ED, 1, EF, EG, EH), F=c(AF, BF, FC, FD, EF, 1, FG, FH), G=c(AG, BG, CG, DG, EG, FG, 1, GH), H=c(AH, BH, CH, DH, EH, FH, GH, 1))
+  rownames(jaccard) <- colnames(jaccard)
+  return(jaccard)
+}
+jac.inter(10000) #Can be clustered upon later.
+```
+
+```{r Domain Inferences Using Individual TopDom Data}
+domain.compare <- function(resolution, letter, species, type){
+  df <- fread(paste("data/TADs/TopDom/", resolution, "_compare/inter.", letter, ".", type, sep=""))
+  df$ID <- paste(df$V1, df$V2, df$V3, sep="-")
+  if(type=="rao"){
+  df$size <- df$V3-df$V2
+  df$dist_max <- ifelse((df$size*.2)<=50000, df$size*.2, 50000) #Use 0.2, not 0.5, these are closely related species.
+  df$conserved <- ifelse((((df$V2-df$V6)^2+(df$V3-df$V7)^2)^0.5)<df$dist_max, "yes", "no")
+  merged.df <- as.data.frame(group_by(df, ID) %>% summarise(individuals=paste(V4[which(conserved=="yes")], collapse=",")))}
+  if(type=="loj"){
+    merged.df <- as.data.frame(group_by(df, ID) %>% summarise(individuals=paste(V4, collapse=",")))
+  }
+  merged.df$H <- merged.df$G <- merged.df$F <- merged.df$E <- merged.df$D <- merged.df$C <- merged.df$B <- merged.df$A <- 0
+  merged.df$A[grep("A", merged.df$individuals)] <- 1
+  merged.df$B[grep("B", merged.df$individuals)] <- 1
+  merged.df$E[grep("E", merged.df$individuals)] <- 1
+  merged.df$F[grep("F", merged.df$individuals)] <- 1
+  merged.df$C[grep("C", merged.df$individuals)] <- 1
+  merged.df$D[grep("D", merged.df$individuals)] <- 1
+  merged.df$G[grep("G", merged.df$individuals)] <- 1
+  merged.df$H[grep("H", merged.df$individuals)] <- 1
+  merged.df$found_in_H <- rowSums(merged.df[,c(3, 4, 7, 8)])
+  merged.df$found_in_C <- rowSums(merged.df[,c(5, 6, 9, 10)])
+  merged.df$cons <- ifelse(merged.df$found_in_C>=1&merged.df$found_in_H>=1, "Shared", ifelse(merged.df$found_in_C==0, "Human", "Chimpanzee"))
+  
+  if(species=="H"){
+    intra.stat <- table(merged.df$found_in_H)
+    inter.1.stat <- table(factor(merged.df$cons, levels=c("Human", "Shared")))
+    inter.2.stat <- table(factor(filter(merged.df, found_in_H>=2|found_in_C>=2)$cons, levels=c("Human", "Shared")))
+    inter.3.stat <- table(factor(filter(merged.df, found_in_H>=3|found_in_C>=3)$cons, levels=c("Human", "Shared")))
+    inter.4.stat <- table(factor(filter(merged.df, found_in_H>=4|found_in_C>=4)$cons, levels=c("Human", "Shared")))}
+  if(species=="C"){
+    intra.stat <- table(merged.df$found_in_C)
+    inter.1.stat <- table(factor(merged.df$cons, levels=c("Chimpanzee", "Shared")))
+    inter.2.stat <- table(factor(filter(merged.df, found_in_H>=2|found_in_C>=2)$cons, levels=c("Chimpanzee", "Shared")))
+    inter.3.stat <- table(factor(filter(merged.df, found_in_H>=3|found_in_C>=3)$cons, levels=c("Chimpanzee", "Shared")))
+    inter.4.stat <- table(factor(filter(merged.df, found_in_H>=4|found_in_C>=4)$cons, levels=c("Chimpanzee", "Shared")))}
+  
+  conservation <- as.data.frame(rbind(inter.1.stat, inter.2.stat, inter.3.stat, inter.4.stat))
+  conservation$resolution <- paste(resolution/1000, "kb", sep="")
+  conservation$stringency <- 1:4
+  return(list(intra.stat, conservation))
+}
+
+concatenator <- function(resolution, type) {
+  A <- domain.compare(resolution, "A", "H", type)
+  B <- domain.compare(resolution, "B", "H", type)
+  E <- domain.compare(resolution, "E", "H", type)
+  F <- domain.compare(resolution, "F", "H", type)
+    intra.H <- data.frame(indi.found=1:4, count=c(sum(A[[1]][1], B[[1]][1], E[[1]][1], F[[1]][1]), mean(A[[1]][2], B[[1]][2], E[[1]][2], F[[1]][2]), mean(A[[1]][3], B[[1]][3], E[[1]][3], F[[1]][3]), mean(A[[1]][4], B[[1]][4], E[[1]][4], F[[1]][4])))
+  
+  C <- domain.compare(resolution, "C", "C", type)
+  D <- domain.compare(resolution, "D", "C", type)
+  G <- domain.compare(resolution, "G", "C", type)
+  H <- domain.compare(resolution, "H", "C", type)
+    intra.C <- data.frame(indi.found=1:4, count=c(sum(C[[1]][1], D[[1]][1], G[[1]][1], H[[1]][1]), mean(C[[1]][2], D[[1]][2], G[[1]][2], H[[1]][2]), mean(C[[1]][3], D[[1]][3], G[[1]][3], H[[1]][3]), mean(C[[1]][4], D[[1]][4], G[[1]][4], H[[1]][4])))
+  intra.H$resolution <-intra.C$resolution <- paste(resolution/1000, "kb", sep="")
+  inter.c <- ((C[[2]][,1:2] + D[[2]][,1:2] + G[[2]][,1:2] + H[[2]][,1:2])/4)
+  inter.h <- ((A[[2]][,1:2] + B[[2]][,1:2] + E[[2]][,1:2] + F[[2]][,1:2])/4)
+  inter <- as.data.frame(cbind(round(inter.c[,1]), round(inter.h[,1]), round((inter.c[,2]+inter.h[,2])/2)))
+  colnames(inter) <- c("Chimpanzee", "Human", "Shared")
+  inter$resoultion <- paste(resolution/1000, "kb", sep="")
+  inter$stringency <- 1:4
+  return(list(intra.H, intra.C, inter))
+}
+
+domain.plotter <- function(type, inter.ymax, intra.ymax){
+    intra.10 <- concatenator(10000, type)
+    intra.25 <- concatenator(25000, type)
+    intra.50 <- concatenator(50000, type)
+    intra.100 <- concatenator(100000, type)
+    intra.250 <- concatenator(250000, type)
+    intra.500 <- concatenator(500000, type)
+    
+    intra.h <- rbind(intra.10[[1]], intra.25[[1]], intra.50[[1]], intra.100[[1]], intra.250[[1]], intra.500[[1]])
+    intra.h$resolution <- factor(intra.h$resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+    intra.h.plot <- ggplot(data=intra.h, aes(x=resolution, group=resolution, y=count, fill=as.factor(indi.found))) + geom_bar(stat="identity") + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Intraspecies TAD Variance, Humans") + guides(fill=guide_legend(title="# Individuals")) + theme(plot.title=element_text(hjust=0.3)) + coord_cartesian(ylim=c(0, intra.ymax))
+    
+    intra.c <- rbind(intra.10[[2]], intra.25[[2]], intra.50[[2]], intra.100[[2]], intra.250[[2]], intra.500[[2]])
+    intra.c$resolution <- factor(intra.c$resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+    intra.c.plot <- ggplot(data=intra.c, aes(x=resolution, group=resolution, y=count, fill=as.factor(indi.found))) + geom_bar(stat="identity") + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Intraspecies TAD Variance, Chimpanzees") + guides(fill=guide_legend(title="# Individuals")) + theme(plot.title=element_text(hjust=0.3)) + coord_cartesian(ylim=c(0, intra.ymax))
+    
+    inter <- rbind(intra.10[[3]], intra.25[[3]], intra.50[[3]], intra.100[[3]], intra.250[[3]], intra.500[[3]])
+    inter$perc.shared <- inter$Shared/rowSums(inter[,1:3])
+    inter$perc.h <- inter$Human/rowSums(inter[,1:3])
+    inter$perc.c <- inter$Chimpanzee/rowSums(inter[,1:3])
+    print(inter)
+    inter <- inter[,-6:-8]
+    inter.1 <- filter(inter, stringency==1)[,-5] %>% melt(., by="resolution")
+    inter.1$resolution <- factor(inter.1$resoultion, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+    inter.2 <- filter(inter, stringency==2)[,-5] %>% melt(., by="resolution")
+    inter.2$resolution <- factor(inter.2$resoultion, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+    inter.3 <- filter(inter, stringency==3)[,-5] %>% melt(., by="resolution")
+    inter.3$resolution <- factor(inter.3$resoultion, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+    inter.4 <- filter(inter, stringency==4)[,-5] %>% melt(., by="resolution")
+    inter.4$resolution <- factor(inter.4$resoultion, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+    
+    plot.1 <- ggplot(data=inter.1, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, TopDom, Stringency=1") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
+    plot.2 <- ggplot(data=inter.2, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, TopDom, Stringency=2") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
+    plot.3 <- ggplot(data=inter.3, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, TopDom, Stringency=3") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
+    plot.4 <- ggplot(data=inter.4, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, TopDom, Stringency=4") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
+    print(intra.h.plot)
+    print(intra.c.plot)
+    print(plot.1)
+    print(plot.2)
+    print(plot.3)
+    print(plot.4)
+}
+
+domain.plotter("rao", intra.ymax=12000, inter.ymax=12000) 
+domain.plotter("loj", intra.ymax=12000, inter.ymax=12000) #I like these results better. And it makes more intuitive sense to me.
+```
+
+```{r Comparisons of Rao data}
+#####First, a comparison using the hypergeometric distribution.
+humans <- fread("data/TADs/Rao/GM12878.domains.bed", header=F, data.table=FALSE)
+mice <- fread("data/TADs/Rao/mouse.domains.ortho.hg19.bed", header=F, data.table=FALSE)
+mice.nonortho <- fread("data/TADs/Rao/Mouse.domains.bed")
+humans$size <- humans$V3-humans$V2
+mice$size <- mice$V3-mice$V2
+mice.nonortho$size <- mice.nonortho$V3-mice.nonortho$V2
+humans$species <- "human"
+mice$species <- "mice.ortho"
+mice.nonortho$species <- "mice"
+median(humans$size)
+median(mice$size)
+median(mice.nonortho$size)
+sizes <- rbind(humans, mice, mice.nonortho)
+ggplot(data=sizes) + geom_boxplot(aes(x=species, group=species, y=size)) + coord_cartesian(ylim=c(0, 2500000))
+ggplot(data=sizes) + geom_density(aes(color=species, y=..scaled.., x=size)) + coord_cartesian(xlim=c(0, 2500000))
+
+#Now, to get the actual probability of overlap given chance alone, assume a hypergeometric distribution. This is perhaps not appropriate, but here are the results regardless. First, need to calculate background as total possible TADs on human genome (assuming they're all 185kb):
+#Parameter assignment, with human as the "population" (since more TADs discovered there) and mouse as the "sample".
+m <- 9274 #Total number of TADs discovered in humans in the data
+n <- round(3257347282/185000)-m #Possible numver of TADs found in population (human, total possible in genome based on genome length and median TAD size), minus the number actually found in humans. #Total human genome size from https://www.ncbi.nlm.nih.gov/grc/human/data; divided by median TAD size empirically from data
+x <- 1309 #Actual observed overlap between humans and mice.
+q <- x
+k <- 2927#Number of TADs found in the sample being considered (here, mice).
+
+phyper(q, m, n, k)
+dhyper(1:1309, 9274, 17607-9274, 2927)
+plot(dhyper(1:2309, 9274, 17607-9274, 2927))
+max(dhyper(1:1309, 9274, 17607-9274, 2927))
+which(grepl(max(dhyper(1:1800, m, n, k)), dhyper(1:1800, m, n, k))) #Indicates, based on hypergeometric, that expected overlap is actually higher than the observed! 1542 vs. 1309...
+
+
+####Now, something more reasonable that shuffles the locations of the TADs around the genome instead. This utilizes the method for domain conservation outlined in Rao et al 2014; define functions first:
+#A function for calculating the overlap (finding the conserved domains) as per Rao et al 2014.
+rao.overlapper <- function(filepath, mega=TRUE){
+  df <- fread(filepath, data.table=F, header=F)
+  df$mousesize <- df$V3-df$V2
+  df$dist_max <- ifelse((df$mousesize*.5)<=50000, df$mousesize*.5, 50000)
+  if(mega==FALSE){
+    df$conserved <- ifelse((((df$V2-df$V5)^2+(df$V3-df$V6)^2)^0.5)<=df$dist_max, "yes", "no")}
+  if(mega==TRUE){
+    df$conserved <- ifelse((((df$V2-df$V6)^2+(df$V3-df$V7)^2)^0.5)<=df$dist_max, "yes", "no")
+  }
+  df$ID <- paste(df$V1, df$V2, df$V3, sep="_")
+  cons.total <- length(unique(filter(df, conserved=="yes")$ID))
+  return(as.numeric(cons.total))
+}
+rao.overlapper("data/TADs/HC.10kb.closest.hg38") #Of 10145 total
+rao.overlapper("data/TADs/CH.10kb.closest.panTro5") #Of 9382 total
+#Check how many of my domains are conserved.
+
+####Subset my chimp domains to a smaller number and observe how many are conserved with rao overlapping stringency.
+chimp.domains <- fread("data/TADs/Chimp_inter_30_KR_contact_domains/10000.domains.ortho.hg38", data.table=F, header=F)
+chimp.domains.order <- chimp.domains[order(chimp.domains$V4, decreasing=TRUE),]
+chimp.10 <- chimp.domains.order[1:938,]
+chimp.20 <- chimp.domains.order[1:(938*2),]
+chimp.30 <- chimp.domains.order[1:(938*3),]
+fwrite(chimp.10, "data/TADs/Rao/chimps.10kb.10percent.domains.hg38", quote=FALSE, sep="\t", col.names=F)
+fwrite(chimp.20, "data/TADs/Rao/chimps.10kb.20percent.domains.hg38", quote=FALSE, sep="\t", col.names = F)
+fwrite(chimp.30, "data/TADs/Rao/chimps.10kb.30percent.domains.hg38", quote=FALSE, sep="\t", col.names=F)
+
+#Check how many of the domains from these subsamples are conserved.
+rao.overlapper("data/TADs/overlaps_rao_style/10kb.10percent.CH.closest.hg38") #~85%
+rao.overlapper("data/TADs/overlaps_rao_style/10kb.20percent.CH.closest.hg38") #~83%
+rao.overlapper("data/TADs/overlaps_rao_style/10kb.30percent.CH.closest.hg38") #~81%
+```
+
+```{r Juicer_mega hg38 v PT6 interspecies comparison}
+#First, examine boundaries between hg38 and PT6 mega maps:
+bounder <- function(resolution, species="H"){
+  if(species=="H"){
+  variable <- fread(paste("data/TADs/overlaps/", resolution, ".hg38.pt6.final.merged", sep=""), header=FALSE, data.table=FALSE)}
+  if(species=="C"){
+  variable <- fread(paste("data/TADs/overlaps/", resolution, ".panTro6.final.merged", sep=""), header=FALSE, data.table=FALSE)
+  }
+  h.only <- sum(variable$V4=="Human")
+  c.only <- sum(variable$V4=="Chimp")
+  shared <- nrow(variable) - h.only - c.only
+  weird <- sum(variable$V4!="Human"&variable$V4!="Chimp"&variable$V4!="Human,Chimp"&variable$V4!="Chimp,Human") #Just checking to get a sense of how many of these cases there are, where boundaries overlapping each other will end up being extended due to merging and overlapping across multiple boundaries. These are still counted as conserved in this analysis though, since I calculated shared above merely by subtracting the number of human-only and chimp-only boundaries.
+  print(weird) #Just print them out for edification.
+  myvec <- c(shared, h.only, c.only, resolution, weird)
+  return(myvec)
+}
+options(scipen=999)
+bounds.5 <- bounder(5000)
+bounds.10 <- bounder(10000)
+bounds.25 <- bounder(25000)
+bounds.50 <- bounder(50000)
+bounds.100 <- bounder(100000)
+bounds.250 <- bounder(250000)
+bounds.500 <- bounder(500000)
+
+mybounds <- as.data.frame(rbind(bounds.10, bounds.25, bounds.50, bounds.100, bounds.250, bounds.500))
+colnames(mybounds) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+mybounds$Resolution <- (mybounds$Resolution)/1000
+mybounds$Resolution <- paste(mybounds$Resolution, "kb", sep="")
+mybounds$totals <- mybounds$Shared + mybounds$Human + mybounds$Chimpanzee
+mybounds$shared.perc <- mybounds$Shared/mybounds$totals
+mybounds$human.perc <- mybounds$Human/mybounds$totals
+mybounds$chimp.perc <- mybounds$Chimpanzee/mybounds$totals
+ggbounds <- melt(mybounds[,1:4])
+ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+colnames(ggbounds) <- c("Resolution", "Species", "count")
+ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee")) #+ geom_text()#Need to add percentages here
+#FIGS4D
+
+###Interspecies TAD boundary overlap with bedtools -c###
+
+#Now, I also show an analysis where I do not do any merging of the boundaries at all, for the sake of robustness. Here, instead of merging boundary files, I reciprocally use bedtools intersect -c on each file. The resultant files will list all the boundaries found as orthologously mappable across species in the first several columns, with the number of boundaries it overlapped (by any amount) in the other file in the 5th column. This counts each individual TAD's boundaries as unique, even if they have overlap. In this case, the number of "shared" boundaries may be different between the files output from each species, since I am checking different sets' overlaps against each other and one set may contain many adjacent/overlapping boundaries that overlap one boundary in the other. Hence, I merely chose whichever "shared" number is larger between the two species, to try to be conservative towards calling conservation. This is done on the output of the mega.bounds.intersect.c.sh file.
+#Function to assess the output properly.
+bounder.c <- function(resolution, species="H"){
+  if(species=="H"){
+    dataframe.H <- fread(paste("data/TADs/overlaps/", resolution, ".boundaries.overlap.H2C.hg38.pt6", sep=""))
+    dataframe.C <- fread(paste("data/TADs/overlaps/", resolution, ".boundaries.overlap.C2H.hg38.pt6", sep=""))
+  }
+  if(species=="C"){
+    dataframe.H <- fread(paste("data/TADs/overlaps/", resolution, ".boundaries.overlap.H2C.panTro6", sep=""))
+    dataframe.C <- fread(paste("data/TADs/overlaps/", resolution, ".boundaries.overlap.C2H.panTro6", sep=""))
+  }
+  h.only <- sum(dataframe.H$V5==0)
+  c.only <- sum(dataframe.C$V5==0)
+  shared <- max((nrow(dataframe.H)-h.only), (nrow(dataframe.C)-c.only))
+  myvec <- c(shared, h.only, c.only, resolution)
+  names(myvec) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+  return(myvec)
+}
+
+options(scipen=999)
+bounds.5 <- bounder.c(5000)
+bounds.10 <- bounder.c(10000)
+bounds.25 <- bounder.c(25000)
+bounds.50 <- bounder.c(50000)
+bounds.100 <- bounder.c(100000)
+bounds.250 <- bounder.c(250000)
+bounds.500 <- bounder.c(500000)
+
+mybounds <- as.data.frame(rbind(bounds.10, bounds.25, bounds.50, bounds.100, bounds.250, bounds.500))
+colnames(mybounds) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+mybounds$Resolution <- (mybounds$Resolution)/1000
+mybounds$Resolution <- paste(mybounds$Resolution, "kb", sep="")
+mybounds$totals <- mybounds$Shared + mybounds$Human + mybounds$Chimpanzee
+mybounds$shared.perc <- mybounds$Shared/mybounds$totals
+mybounds$human.perc <- mybounds$Human/mybounds$totals
+mybounds$chimp.perc <- mybounds$Chimpanzee/mybounds$totals
+ggbounds <- melt(mybounds[,1:4])
+ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+colnames(ggbounds) <- c("Resolution", "Species", "count")
+ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
+#FIGS4G
+
+###Interspecies TAD boundary Rao Style Overlaps###
+
+#Now, for one last check on boundaries, do it with the Rao overlap style for assessment of domain conservation.
+#Rao-style overlapper for boundaries instead of domains (50kb is too large). The boundary elements are set to 15kb in size, and 50kb was used for median domain sizes of 185kb, so an appropriate approximate similar leniency would be 4 kb here. We'll try rounding to 5 and include a parameter for changing it to see how it affects it. The reality is that this shows much lower conservation than my other boundary conservation metrics because it is built for domain conservation and requires a certain amount of overlap for the boundaries to be considered conserved (whereas my prior analyses called any overlap as conserved). This function works on the output of the mega.bounds.rao.sh processing file.
+rao.bounds.overlapper <- function(resolution, leniency=5000, mega=TRUE, species="H"){
+  if(species=="H"){
+  df.h <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".boundaries.HC.closest.hg38.pt6", sep=""), data.table=F, header=F)
+  df.c <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".boundaries.CH.closest.hg38.pt6", sep=""), data.table=F, header=F)
+  }
+  if(species=="C"){
+    df.h <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".boundaries.HC.closest.panTro6", sep=""), data.table=F, header=F)
+  df.c <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".boundaries.CH.closest.panTro6", sep=""), data.table=F, header=F)
+  }
+  df.h$size <- df.h$V3-df.h$V2
+  df.c$size <- df.c$V3-df.c$V2
+  df.h$dist_max <- ifelse((df.h$size*.5)<=leniency, df.h$size*.5, leniency)
+  df.c$dist_max <- ifelse((df.c$size*.5)<=leniency, df.c$size*.5, leniency)
+  if(mega==FALSE){
+    df.h$conserved <- ifelse((((df.h$V2-df.h$V5)^2+(df.h$V3-df.h$V6)^2)^0.5)<=df.h$dist_max, "yes", "no")
+    df.c$conserved <- ifelse((((df.c$V2-df.c$V5)^2+(df.c$V3-df.c$V6)^2)^0.5)<=df.c$dist_max, "yes", "no")}
+  if(mega==TRUE){
+    df.h$conserved <- ifelse((((df.h$V2-df.h$V6)^2+(df.h$V3-df.h$V7)^2)^0.5)<=df.h$dist_max, "yes", "no")
+    df.c$conserved <- ifelse((((df.c$V2-df.c$V6)^2+(df.c$V3-df.c$V7)^2)^0.5)<=df.c$dist_max, "yes", "no")
+  }
+  df.h$ID <- paste(df.h$V1, df.h$V2, df.h$V3, sep="_")
+  df.c$ID <- paste(df.c$V1, df.c$V2, df.c$V3, sep="_")
+  cons.total.h <- length(unique(filter(df.h, conserved=="yes")$ID))
+  cons.total.c <- length(unique(filter(df.c, conserved=="yes")$ID))
+  ourcons <- max(as.numeric(cons.total.h), as.numeric(cons.total.c))
+  myvec <- c(ourcons, length(unique(df.h$ID))-ourcons, length(unique(df.c$ID))-ourcons, resolution)
+  names(myvec) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+  return(myvec)
+}
+
+options(scipen=999)
+bounds.5 <- rao.bounds.overlapper(5000) #This is the only case where cons.H!=cons.C, just go with cons.H to inflate proportion conserved (it's more)
+bounds.10 <- rao.bounds.overlapper(10000)
+bounds.25 <- rao.bounds.overlapper(25000)
+bounds.50 <- rao.bounds.overlapper(50000)
+bounds.100 <- rao.bounds.overlapper(100000)
+bounds.250 <- rao.bounds.overlapper(250000)
+bounds.500 <- rao.bounds.overlapper(500000)
+#Boundaries closest to failed for chimp coords on 100kb and 250kb...
+
+mybounds <- as.data.frame(rbind(bounds.10, bounds.25, bounds.50, bounds.100, bounds.250, bounds.500))
+colnames(mybounds) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+mybounds$Resolution <- (mybounds$Resolution)/1000
+mybounds$Resolution <- paste(mybounds$Resolution, "kb", sep="")
+mybounds$totals <- mybounds$Shared + mybounds$Human + mybounds$Chimpanzee
+mybounds$shared.perc <- mybounds$Shared/mybounds$totals
+mybounds$human.perc <- mybounds$Human/mybounds$totals
+mybounds$chimp.perc <- mybounds$Chimpanzee/mybounds$totals
+ggbounds <- melt(mybounds[,1:4])
+ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+colnames(ggbounds) <- c("Resolution", "Species", "count")
+ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
+#FIG S4I
+
+###Interspecies Domain Conservation using Rao et al. Method###
+#First, define a function to call domain conservation as was performed in Rao et al. 2014.
+#50kb is the leniency used by Rao et al for interspecies comparisons of domains, 0.5*|i-j| was also used for interspecies comparison (as opposed to 0.2*|i-j| for the cell types within human comparison), under the reasoning that we should be somewhat more permissive with flexibility of calling conservation allowing for errors in liftOver. This function works on the output of the files processed by mega.domains.rao.sh
+rao.domain.overlapper <- function(resolution, mega=TRUE, species="H", leniency=50000){
+  if(species=="H"){
+  df.h <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".HC.closest.hg38.pt6", sep=""), data.table=F, header=F)
+  df.c <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".CH.closest.hg38.pt6", sep=""), data.table=F, header=F)
+  }
+  if(species=="C"){
+    df.h <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".HC.closest.panTro6", sep=""), data.table=F, header=F)
+  df.c <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".CH.closest.panTro6", sep=""), data.table=F, header=F)
+  }
+  df.h$size <- df.h$V3-df.h$V2
+  df.c$size <- df.c$V3-df.c$V2
+  df.h$dist_max <- ifelse((df.h$size*.5)<=leniency, df.h$size*.5, leniency)
+  df.c$dist_max <- ifelse((df.c$size*.5)<=leniency, df.c$size*.5, leniency)
+  if(mega==FALSE){
+    df.h$conserved <- ifelse((((df.h$V2-df.h$V5)^2+(df.h$V3-df.h$V6)^2)^0.5)<=df.h$dist_max, "yes", "no")
+    df.c$conserved <- ifelse((((df.c$V2-df.c$V5)^2+(df.c$V3-df.c$V6)^2)^0.5)<=df.c$dist_max, "yes", "no")}
+  if(mega==TRUE){
+    df.h$conserved <- ifelse((((df.h$V2-df.h$V6)^2+(df.h$V3-df.h$V7)^2)^0.5)<=df.h$dist_max, "yes", "no")
+    df.c$conserved <- ifelse((((df.c$V2-df.c$V6)^2+(df.c$V3-df.c$V7)^2)^0.5)<=df.c$dist_max, "yes", "no")
+  }
+  df.h$ID <- paste(df.h$V1, df.h$V2, df.h$V3, sep="_")
+  df.c$ID <- paste(df.c$V1, df.c$V2, df.c$V3, sep="_")
+  cons.total.h <- length(unique(filter(df.h, conserved=="yes")$ID))
+  cons.total.c <- length(unique(filter(df.c, conserved=="yes")$ID))
+  if(cons.total.h!=cons.total.c){print(paste("conservation estimates different b/t species, human=", cons.total.h, " chimp=", cons.total.c, sep=""))}
+  ourcons <- max(as.numeric(cons.total.h), as.numeric(cons.total.c))
+  myvec <- c(ourcons, length(unique(df.h$ID))-ourcons, length(unique(df.c$ID))-ourcons, resolution)
+  names(myvec) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+  return(myvec)
+}
+
+domains.5 <- rao.domain.overlapper(5000)
+domains.10 <- rao.domain.overlapper(10000)
+domains.25 <- rao.domain.overlapper(25000)
+domains.50 <- rao.domain.overlapper(50000)
+domains.100 <- rao.domain.overlapper(100000)
+domains.250 <- rao.domain.overlapper(250000)
+domains.500 <- rao.domain.overlapper(500000)
+
+mydomains <- as.data.frame(rbind(domains.10, domains.25, domains.50, domains.100, domains.250, domains.500))
+colnames(mydomains) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+mydomains$Resolution <- (mydomains$Resolution)/1000
+mydomains$Resolution <- paste(mydomains$Resolution, "kb", sep="")
+mydomains$totals <- mydomains$Shared + mydomains$Human + mydomains$Chimpanzee
+mydomains$shared.perc <- mydomains$Shared/mydomains$totals
+mydomains$human.perc <- mydomains$Human/mydomains$totals
+mydomains$chimp.perc <- mydomains$Chimpanzee/mydomains$totals
+ggdomains <- melt(mydomains[,1:4])
+ggdomains$Resolution <- factor(ggdomains$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+colnames(ggdomains) <- c("Resolution", "Species", "count")
+ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Interspecies TAD Domain Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
+#FIGS4C
+
+#This method was likely the most robust way to define domain conservation, particularly with nested domains.
+
+###Interspecies Domain Conservation using bedtools -c###
+#The nested nature means that a bedtools merge analytic paradigm like that used at some points for boundaries above would definitely not be appropriate, so here, I also test what happens when using a reciprocal bedtools -c approach of the domains. I also utilized -f 0.9 -r in the bedtools -c call, meaning that a domain will only be called as found in the other file if 90% of it is covered by a domain in the other file, and that 90% of that domain is also covered in the original file. This function works on the output of mega.domains.bedtoolsc.sh
+domain.conserved.c <- function(resolution, species="H"){
+  if(species=="H"){
+    dataframe.H <- fread(paste("data/TADs/overlaps/", resolution, ".HC.bedtoolsc.hg38.pt6", sep=""))
+    dataframe.C <- fread(paste("data/TADs/overlaps/", resolution, ".CH.bedtoolsc.hg38.pt6", sep=""))
+  }
+  if(species=="C"){
+    dataframe.H <- fread(paste("data/TADs/overlaps/", resolution, ".HC.bedtoolsc.panTro6", sep=""))
+    dataframe.C <- fread(paste("data/TADs/overlaps/", resolution, ".CH.bedtoolsc.panTro6", sep=""))
+  }
+  h.only <- sum(dataframe.H$V5==0)
+  c.only <- sum(dataframe.C$V5==0)
+  shared <- max((nrow(dataframe.H)-h.only), (nrow(dataframe.C)-c.only)) #Take the max to inflate conservation
+  myvec <- c(shared, h.only, c.only, resolution)
+  names(myvec) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+  return(myvec)
+}
+
+domains.5 <- domain.conserved.c(5000)
+domains.10 <- domain.conserved.c(10000)
+domains.25 <- domain.conserved.c(25000)
+domains.50 <- domain.conserved.c(50000)
+domains.100 <- domain.conserved.c(100000)
+domains.250 <- domain.conserved.c(250000)
+domains.500 <- domain.conserved.c(500000)
+
+mydomains <- as.data.frame(rbind(domains.10, domains.25, domains.50, domains.100, domains.250, domains.500))
+colnames(mydomains) <- c("Shared", "Human", "Chimpanzee", "Resolution")
+mydomains$Resolution <- (mydomains$Resolution)/1000
+mydomains$Resolution <- paste(mydomains$Resolution, "kb", sep="")
+mydomains$totals <- mydomains$Shared + mydomains$Human + mydomains$Chimpanzee
+mydomains$shared.perc <- mydomains$Shared/mydomains$totals
+mydomains$human.perc <- mydomains$Human/mydomains$totals
+mydomains$chimp.perc <- mydomains$Chimpanzee/mydomains$totals
+ggdomains <- melt(mydomains[,1:4])
+ggdomains$Resolution <- factor(ggdomains$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
+colnames(ggdomains) <- c("Resolution", "Species", "count")
+ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Interspecies TAD domain Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
+#FIGS4E
+```
+
+<!-- #```{r Juicer MEGA on robust boundaries to figure out what may separate them from non-robust boundaries} -->
+<!-- #First and arguably easiest task is to see if the boundaries conserved across resolutions within each species (altho, really, humans) are more enriched for CTCF binding sites... -->
+<!-- hbounds <- fread("data/TADs/overlaps/human.multires.bounds.final.bed", header=F, data.table=F) -->
+<!-- #hbounds <- fread("data/TADs/test3.bed", header=F, data.table=F) #V16 is CTCF peak overlap! -->
+<!-- hbounds$size <- hbounds$V3-hbounds$V2 -->
+<!-- hbounds$'10kb' <- hbounds$'25kb' <- hbounds$'50kb' <- hbounds$'100kb' <- hbounds$'250kb' <- 0 -->
+<!-- hbounds$'500kb' <- 1 -->
+<!-- hbounds$'10kb'[grep("10kb", hbounds$V5)] <- 1 -->
+<!-- hbounds$'25kb'[grep("25kb", hbounds$V5)] <- 1 -->
+<!-- hbounds$'50kb'[grep("50kb", hbounds$V5)] <- 1 -->
+<!-- hbounds$'100kb'[grep("100kb", hbounds$V5)] <- 1 -->
+<!-- hbounds$'250kb'[grep("250kb", hbounds$V5)] <- 1 -->
+
+<!-- upset(hbounds, sets=c("500kb", "250kb", "100kb", "50kb", "25kb", "10kb"), order.by="freq", point.size=2.5, line.size=1.5, mainbar.y.label="Boundaries Shared", sets.x.label="Boundaries per Resolution") -->
+
+<!-- hbounds$shared <- ifelse(hbounds$V5==".", "500kb_only", "Shared") -->
+
+<!-- ggplot(hbounds) + geom_density(aes(y=..scaled.., x=V16, fill=shared), alpha=0.4) -->
+<!-- ggplot(hbounds) + geom_boxplot(aes(y=V16, x=shared, color=shared)) -->
+<!-- t.test(filter(hbounds, shared=="500kb_only")$V16, filter(hbounds, shared=="Shared")$V16) -->
+
+
+<!-- #Function to look at degree of CTCF overlap, across resolutions within humans. -->
+<!-- CTCF.plotter <- function(file.path, setres, compres1, compres2, compres3, compres4, compres5){ -->
+<!--   df <- fread(file.path, header=F, data.table=F) -->
+<!--   df$size <- df$V3-df$V2 -->
+<!--   df[,compres1] <- df[,compres2] <- df[,compres3] <- df[,compres4] <- df[,compres5] <- 0 -->
+<!--   df[,setres] <- 1 -->
+<!--   df[,compres1][grep(compres1, df$V5)] <- 1 -->
+<!--   df[,compres2][grep(compres2, df$V5)] <- 1 -->
+<!--   df[,compres3][grep(compres3, df$V5)] <- 1 -->
+<!--   df[,compres4][grep(compres4, df$V5)] <- 1 -->
+<!--   df[,compres5][grep(compres5, df$V5)] <- 1 -->
+<!--   df$shared <- ifelse(df$V5==".", paste(setres, "_only", sep=""), "shared") -->
+<!--   df$sharedwith <- rowSums(df[,18:23])-1 -->
+<!--   p.val <- t.test(filter(df, shared==paste(setres, "_only", sep=""))$V16, filter(df, shared=="shared")$V16)$p.val -->
+<!--   print(t.test(filter(df, shared==paste(setres, "_only", sep=""))$V16, filter(df, shared=="shared")$V16)) -->
+<!--   density <- ggplot(df) + geom_density(aes(y=..scaled.., x=V16, fill=shared), alpha=0.4) + ggtitle(paste(setres, " CTCF Overlaps", sep="")) + xlab("Base Pair Overlap with CTCF Peaks") + ylab("Density") -->
+<!--   boxplot <- ggplot(df) + geom_boxplot(aes(y=V16, x=shared, color=shared)) + ggtitle(paste(setres, "CTCF Overlaps")) + xlab("Robustness of Boundary") + ylab("CTCF Base Pair Overlap") + annotate("text", label=signif(p.val,2), size=4, x=1.5, y=250) -->
+
+<!--   boxplot2 <- ggplot(df) + geom_boxplot(aes(y=V16, group=sharedwith, x=sharedwith, fill=factor(sharedwith))) + ggtitle(paste(setres, "CTCF Overlaps")) + xlab("Robustness of Boundary") + ylab("CTCF Base Pair Overlap") + guides(fill=guide_legend(title="# Resolutions")) -->
+<!--   density2 <- ggplot(df) + geom_density(aes(y=..scaled.., x=V16, color=factor(sharedwith))) + ggtitle(paste(setres, "CTCF Overlaps")) + xlab("Base Pair Overlap with CTCF Peaks") + ylab("Density") + guides(color=guide_legend(title="# Resolutions")) -->
+
+<!--   print(density) -->
+<!--   print(boxplot) -->
+<!--   print(boxplot2) -->
+<!--   print(density2) -->
+
+<!--   upset(df, sets=c("500kb", "250kb", "100kb", "50kb", "25kb", "10kb"), order.by="freq", point.size=2.5, line.size=1.5, mainbar.y.label="Boundaries Shared", sets.x.label=paste("Boundaries overlapping", setres, sep=" ")) -->
+
+<!-- } -->
+<!-- options(scipen=0) -->
+<!-- CTCF.plotter("data/TADs/CTCF/500kb.human.CTCF.compare.bed", '500kb', '10kb', '25kb', '50kb', '100kb', '250kb') -->
+<!-- CTCF.plotter("data/TADs/CTCF/250kb.human.CTCF.compare.bed", '250kb', '10kb', '25kb', '50kb', '100kb', '500kb') -->
+<!-- CTCF.plotter("data/TADs/CTCF/100kb.human.CTCF.compare.bed", '100kb', '10kb', '25kb', '50kb', '500kb', '250kb') -->
+<!-- CTCF.plotter("data/TADs/CTCF/50kb.human.CTCF.compare.bed", '50kb', '10kb', '25kb', '500kb', '100kb', '250kb') -->
+<!-- CTCF.plotter("data/TADs/CTCF/25kb.human.CTCF.compare.bed", '25kb', '10kb', '500kb', '50kb', '100kb', '250kb') -->
+<!-- CTCF.plotter("data/TADs/CTCF/10kb.human.CTCF.compare.bed", '10kb', '500kb', '25kb', '50kb', '100kb', '250kb') -->
+
+<!-- #Examine degree of CTCF overlap in shared vs. non-shared boundaries across species: -->
+<!-- interspecies.CTCF <- fread("data/TADs/test3.bed", header=F, data.table=F) -->
+<!-- interspecies.CTCF$shared <- ifelse(interspecies.CTCF$V4==".", "Human specific", "Shared") -->
+<!-- ggplot(interspecies.CTCF) + geom_density(aes(y=..scaled.., x=V5, fill=shared), alpha=0.4) -->
+<!-- ggplot(interspecies.CTCF) + geom_boxplot(aes(y=V5, x=shared, color=shared)) + annotate("text", label=sum(interspecies.CTCF$V4=="."), size=4, x=1, y=600) + annotate("text", label=sum(interspecies.CTCF$V4!="."), size=4, x=2, y=600) -->
+
+<!-- CTCF.inter.plotter <- function(file.path, setres){ -->
+<!--   df <- fread(file.path, header=F, data.table=F) -->
+<!--   df$shared <- ifelse(df$V4==".", "Human Specific", "Shared") -->
+<!--   denseplot <- ggplot(df) + geom_density(aes(y=..scaled.., x=V5, fill=shared), alpha=0.4) + ggtitle(paste("CTCF Overlap Distributions | Conservation @ ", setres, sep="")) + xlab("Base Pair Overlap w/ CTCF Peaks") + ylab("Density") -->
+<!--   boxplot <- ggplot(df) + geom_boxplot(aes(y=V5, x=shared, color=shared)) + annotate("text", label=sum(df$V4=="."), size=4, x=1, y=600) + annotate("text", label=sum(df$V4!="."), size=4, x=2, y=600) + annotate("text", x=1.5, y=400, label=signif(t.test(filter(df, shared=="Shared")$V5, filter(df, shared=="Human Specific")$V5)$p.val), 2) + xlab("Interspecies Conservation") + ylab("Base Pair Overlap w/ CTCF Peaks") + ggtitle(paste("CTCF Overlap Distributions | Conservation @ ", setres, sep="")) -->
+<!--   print(denseplot) -->
+<!--   print(boxplot) -->
+<!-- } -->
+
+<!-- CTCF.inter.plotter("data/TADs/CTCF/500000.interspecies.CTCF.final.bed", "500kb") -->
+<!-- CTCF.inter.plotter("data/TADs/CTCF/250000.interspecies.CTCF.final.bed", "250kb") -->
+<!-- CTCF.inter.plotter("data/TADs/CTCF/100000.interspecies.CTCF.final.bed", "100kb") -->
+<!-- CTCF.inter.plotter("data/TADs/CTCF/50000.interspecies.CTCF.final.bed", "50kb") -->
+<!-- CTCF.inter.plotter("data/TADs/CTCF/25000.interspecies.CTCF.final.bed", "25kb") -->
+<!-- CTCF.inter.plotter("data/TADs/CTCF/10000.interspecies.CTCF.final.bed", "10kb") -->
+
+<!-- myboxplot <- function(mydata, x){ -->
+<!--   #mydata$group <- ifelse(mydata$'500kb'==1&mydata$'250kb'==1&mydata$'100kb'==1&mydata$'50kb'==1&mydata$'25kb'==1&mydata$'10kb'==1, "Query4", ifelse(mydata$'250kb'==1&mydata$'100kb'==1&mydata$'50kb'==1&mydata$'25kb'==1&mydata$'10kb'==1, "Query3", ifelse(mydata$'100kb'==1&mydata$'50kb'==1&mydata$'25kb'==1&mydata$'10kb'==1, "Query2", ifelse(mydata$'50kb'==1&mydata$'25kb'==1&mydata$'10kb'==1, "Query1", "unqueried")))) -->
+<!--   mydata$group=="unqueried" -->
+<!--   mydata$group[which(mydata$'500kb'==1&mydata$'250kb'==1&mydata$'100kb'==1&mydata$'50kb'==1&mydata$'25kb'==1&mydata$'10kb'==1)] <- "Query4" -->
+<!--   mydata$group[which(mydata$'500kb'==0&mydata$'250kb'==1&mydata$'100kb'==1&mydata$'50kb'==1&mydata$'25kb'==1&mydata$'10kb'==1)] <- "Query3" -->
+<!--   mydata$group[which(mydata$'500kb'==0&mydata$'250kb'==0&mydata$'100kb'==1&mydata$'50kb'==1&mydata$'25kb'==1&mydata$'10kb'==1)] <- "Query2" -->
+<!--   mydata$group[which(mydata$'500kb'==0&mydata$'250kb'==0&mydata$'100kb'==0&mydata$'50kb'==1&mydata$'25kb'==1&mydata$'10kb'==1)] <- "Query1" -->
+<!--   plot <- ggplot(data=mydata, aes_string(x=x)) + geom_density(aes(fill=factor(group), alpha=0.4)) + theme(plot.margin = unit(c(0, 0, 0, 0), "cm")) -->
+<!-- } -->
+
+<!-- hbounds$group <- "500kb" -->
+<!-- hbounds$group[which(hbounds$'500kb'==1&hbounds$'250kb'==1&hbounds$'100kb'==1&hbounds$'50kb'==1&hbounds$'25kb'==1&hbounds$'10kb'==1)] <- "Shared_all" -->
+<!-- hbounds$group[which(hbounds$'500kb'==1&hbounds$'250kb'==0&hbounds$'100kb'==0&hbounds$'50kb'==0&hbounds$'25kb'==0&hbounds$'10kb'==1)] <- "Shared_10kb" -->
+<!-- hbounds$group[which(hbounds$'500kb'==0&hbounds$'250kb'==0&hbounds$'100kb'==1&hbounds$'50kb'==1&hbounds$'25kb'==1&hbounds$'10kb'==1)] <- "Query2" -->
+<!-- hbounds$group[which(hbounds$'500kb'==0&hbounds$'250kb'==0&hbounds$'100kb'==0&hbounds$'50kb'==1&hbounds$'25kb'==1&hbounds$'10kb'==1)] <- "Query1" -->
+<!-- ggplot(hbounds) + geom_density(aes(fill=group, x=V6), alpha=0.4) -->
+<!-- ggplot(hbounds) + geom_boxplot(aes(x=group, y=V6)) -->
+<!-- t.test(filter(hbounds, group=="Query1")$V6, filter(hbounds, group=="Query2")$V6) -->
+<!-- t.test(filter(hbounds, group=="Query1")$V6, filter(hbounds, group=="Query3")$V6) -->
+<!-- t.test(filter(hbounds, group=="Query1")$V6, filter(hbounds, group=="Query4")$V6) -->
+<!-- t.test(filter(hbounds, group=="Query2")$V6, filter(hbounds, group=="Query3")$V6) -->
+<!-- t.test(filter(hbounds, group=="Query2")$V6, filter(hbounds, group=="Query3")$V6) -->
+
+<!-- mydata$group <- ifelse(mydata$'50kb'==1&mydata$'25kb'==1&mydata$'10kb'==1, "Query1", ifelse(mydata$'100kb'==1&mydata$'50kb'==1&mydata$'25kb'==1&mydata$'10kb'==1, "Query2", ifelse(mydata$'250kb'==1&mydata$'100kb'==1&mydata$'100kb'==1&mydata$'50kb'==1&mydata$'25kb'==1&mydata$'10kb'==1, "Query3", ifelse(mydata$'500kb'==1&mydata$'250kb'==1&mydata$'100kb'==1&mydata$'50kb'==1&mydata$'25kb'==1&mydata$'10kb'==1, "Query4", "unqueried")))) -->
+
+<!-- upset(hbounds, main.bar.color="black", sets=c("500kb", "250kb", "100kb", "50kb", "25kb", "10kb"), order.by="freq", point.size=2.5, line.size=1.5, mainbar.y.label="Boundaries Shared", sets.x.label="Boundaries per Resolution", queries=list(list(query=intersects, params=list("10kb", "25kb", "50kb"), color="red", active=T), list(query=intersects, params=list("10kb", "25kb", "50kb", "100kb"), color="blue", active=T), list(query=intersects, params=list("10kb", "25kb", "50kb", "100kb", "250kb"), color="purple", active=T), list(query=intersects, params=list("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"), color="orange", active=T)),  attribute.plots = list(gridrows = 45, plots = list(list(plot=scatter_plot, x = "V4", y = "size", queries = T, alpha=0.1)), ncols = 1), query.legend = "bottom")#, attribute.plots=list(plots=list(plot=myboxplot, y="size", queries=TRUE), ncols=1), query.legend="bottom") #Couldn't get to work: =myboxplot, x="size", queries=F)), ncols=1), query.legend="bottom")#plot=  -->
+<!-- #``` -->
+
