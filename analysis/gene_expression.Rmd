@@ -905,19 +905,34 @@ design <- model.matrix(~meta.data$SP)
 exprs <- select(hmin, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes) #Should be done on just DE genes, filter with adj.P.Val<=0.05
 hic <- select(hmin,"A_21792_HIC", "B_28126_HIC", "C_3649_HIC", "D_40300_HIC", "E_28815_HIC", "F_28834_HIC", "G_3624_HIC", "H_3651_HIC")
 present <- sapply(1:nrow(hic), function(i) !any(is.na(hic[i,])))
+
+#Also test with log2 CPM instead of RPKM:
+exprs.2 <- as.data.frame(lcpms)
+exprs.2$genes <- rownames(exprs.2)
+exprs.2 <- exprs.2[,c(8, 6, 1, 4, 7, 5, 2, 3, 9)]
+exprs.2 <- exprs.2[(which(exprs.2$genes %in% exprs$genes)),]
+
 genes <- exprs$genes
+genes2 <- exprs.2$genes
 DEgenes <- filter(hmin, adj.P.Val<=0.05) %>% select(., genes)
 myDEindices <- which(genes %in% DEgenes[,1])
+myDEindices.2 <- which(genes2 %in% DEgenes[,1])
 exprs <- exprs[,-9]
+exprs.2 <- exprs.2[,-9]
 exprs <- data.matrix(exprs[present,])
+exprs.2 <- data.matrix(exprs.2[present,])
 hic <- data.matrix(hic[present,])
 designy <- as.factor(c("human", "human", "chimp", "chimp", "human", "human", "chimp", "chimp"))
-colnames(hic) <- colnames(exprs)
+colnames(hic) <- colnames(exprs) <- colnames(exprs.2)
 hic <- as.data.table(hic)
 exprs <- as.data.table(exprs)
+exprs.2 <- as.data.table(exprs.2)
+
+
 
 #For further specifics on the function used for the mediation below, please see: https://github.com/jhsiao999/mediation/blob/master/pkg/R/mediate.test.regressing.R
 test <- mediate.test.regressing(exprs, designy, hic)
+#test <- mediate.test.regressing(exprs.2, designy, hic) Gives extremely similar results, 222/1401 genes significantly mediated (16%), and still 0 of non-DE genes.
 
 #Shrink dat variance!
 vshrDE <- vash(test$d_se[myDEindices], df=5)
@@ -941,7 +956,7 @@ plot(ash_reg$result$betahat, -log10(ash_reg$result$svalue))
 
 #Now on non-DE genes
 ash_reg_nonDE <- ash(as.vector(nonDEtest$d), as.vector(vshrnonDE$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
-summary(ash_reg_nonDE$result$svalue<=0.05) #Incredible result, looks too good to be true.
+summary(ash_reg_nonDE$result$svalue<=0.05)
 ind_sig <- (ash_reg_nonDE$result$svalue < 0.05)
 ind_sig[ind_sig == TRUE] <- "red"
 ind_sig[ind_sig == FALSE] <- "black"

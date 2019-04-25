@@ -1,0 +1,173 @@
+---
+title: "alt_mediation"
+author: "Ittai Eres"
+date: "2019-04-24"
+output: workflowr::wflow_html
+---
+
+## Introduction
+An alternative mediation analysis examining the possibility of a species:frequency interaction term effect, as proposed by Reviewer 3.
+```{r Alternative Mediation}
+# This script contains functions for fitting
+# a linear model under the limma framework
+# where the sample covariate value is differnet for each gene
+# in this case, and includes and interaction term of condition and linear covariate
+# note that the dimension of the expression matrix
+# is the same as the dimension of the covariate matrix
+
+library(limma)
+library(assertthat)
+
+library(data.table)
+lmFit_varying <- function(object, group_vector = NULL, cov_matrix = NULL,
+#                   ndups = 1, spacing = 1, block = NULL, 
+                   weights = NULL, method = "ls", ...) 
+{
+  # match dimension of design matrix and covariate matrix
+  # the function will stop executing if their dimensions are not the same
+  assertthat::assert_that(are_equal(dim(object),dim(cov_matrix)))
+
+  fit <- lm.series_varying(M=object, cov_matrix=cov_matrix,
+                           group_vector = group_vector, 
+                           weights = weights)
+    
+  fit$genes <- rownames(object)
+  fit$Amean <- rowMeans(object, na.rm = TRUE)
+  fit$method <- method
+  fit$design <- design
+  new("MArrayLM", fit)
+}
+
+#' modified lm.series for interaction analysis
+#' 
+#' @description main worker inside lmFit for our model of interest
+#' 
+#' @param object matrix of log-expression
+#' @param design a vector of sample labels. use model.matrix to make design matrix.
+#' @param cov_matrix matrix of covariate values. should be the same dimension
+#'         as object.
+#'         
+#' @author Joyce Hsiao
+lm.series_varying <- function (M, cov_matrix,
+    group_vector = NULL, weights = NULL)
+{
+  
+  M <- as.matrix(M)
+  narrays <- ncol(M)
+  
+  # make design matrix (not including covariates)
+  design <- model.matrix(~group_vector)
+  
+  # compute the number of regression coefs. to be estimated
+  nbeta <- ncol(design) + 2
+  
+  # make coeffcient names
+  coef.names <- c(colnames(design), "HiC", "interact")
+  if (is.null(colnames(design))){
+    coef.names <- c(paste("x", 1:ncol(design), sep = ""), "HiC", "interact")
+  }
+
+  # for every gene, affirm that the expression weights are
+  # finite and non-zero
+  if (!is.null(weights)) {
+    weights <- asMatrixWeights(weights, dim(M))
+    weights[weights <= 0] <- NA
+    M[!is.finite(weights)] <- NA
+  }
+  
+  ngenes <- nrow(M)
+  stdev.unscaled <- beta <- matrix(NA, ngenes, nbeta, dimnames = list(rownames(M), 
+                                                                      coef.names))
+  
+
+  # start estimating beta coefficients here
+  beta <- stdev.unscaled
+  sigma <- rep(NA, ngenes)
+  df.residual <- rep(0, ngenes)
+  for (i in 1:ngenes) {
+#    print(i)
+    cc <- as.vector(unlist(cov_matrix[i,]))
+    design_gene <- model.matrix(~group_vector+cc+cc*group_vector)
+    colnames(design_gene) <- coef.names
+    y <- as.vector(M[i, ])
+    obs <- is.finite(y)
+    if (sum(obs) > 0) {
+      X <- design_gene[obs, , drop = FALSE]
+      y <- y[obs]
+      if (is.null(weights)) 
+        out <- lm.fit(X, y)
+      else {
+        w <- as.vector(weights[i, obs])
+        out <- lm.wfit(X, y, w)
+      }
+      est <- !is.na(out$coef)
+      beta[i, ] <- out$coef
+      stdev.unscaled[i, est] <- sqrt(diag(chol2inv(out$qr$qr, 
+                                                   size = out$rank)))
+      df.residual[i] <- out$df.residual
+      if (df.residual[i] > 0) 
+        sigma[i] <- sqrt(mean(out$effects[-(1:out$rank)]^2))
+    }
+  }
+  QR <- qr(design_gene)
+  cov.coef <- chol2inv(QR$qr, size = QR$rank)
+  est <- QR$pivot[1:QR$rank]
+  dimnames(cov.coef) <- list(coef.names[est], coef.names[est])
+  list(coefficients = beta, stdev.unscaled = stdev.unscaled, 
+       sigma = sigma, df.residual = df.residual, cov.coefficients = cov.coef, 
+       pivot = QR$pivot, rank = QR$rank)
+}
+
+
+df <- fread("~/Desktop/Hi-C/joyce_mediation/HiC.data")
+
+df_hic <- df[,c(1,9:16)]
+head(df_hic)
+
+df_counts <- readRDS("~/Desktop/Hi-C/joyce_mediation/count.data.RDS")
+df_counts <- data.frame(df_counts)
+df_counts$genes <- rownames(df_counts)
+
+library(tidyverse)
+# merge count data with the HiC dataframe
+df_combo <- left_join(df_hic, df_counts)
+
+# Hi-C
+cov_matrix <- df_combo[,2:9]
+counts <- df_combo[,10:17]
+rownames(counts) <- df_combo$genes
+rownames(cov_matrix) <- df_combo$genes
+species <- factor(c(1,1,2,2,1,1,2,2))
+design <- model.matrix(~species)
+
+# compute weights
+v <- voom(counts,design=model.matrix(~species), plot=T)
+
+weights <- v$weights
+log2cpm <- v$E
+
+fit <- lmFit_varying(object=log2cpm, group_vector=species, cov_matrix=cov_matrix,
+                     weights=weights)
+
+fit <- eBayes(fit, robust=TRUE)
+myintergenes <- topTable(fit, coef=4, number=Inf)
+sum(myintergenes$adj.P.Val<=0.05) #With multiple testing correction, none are significant.
+sum(myintergenes$P.Value<=0.05)
+
+#sum(mygenes %in% filter(myintergenes, adj.P.Val<=0.8)$ID)
+
+colors <- c(rep("black", 2), rep("red", 2), rep("black", 2), rep("red", 2))
+plot(log2cpm[rownames(log2cpm)=="ENSG00000170561",], cov_matrix[rownames(log2cpm)=="ENSG00000170561",], col=colors)
+plot(log2cpm[rownames(log2cpm)=="ENSG00000280143",], cov_matrix[rownames(log2cpm)=="ENSG00000280143",], col=colors)
+plot(log2cpm[rownames(log2cpm)=="ENSG00000124486",], cov_matrix[rownames(log2cpm)=="ENSG00000124486",], col=colors)
+plot(log2cpm[rownames(log2cpm)=="ENSG00000100167",], cov_matrix[rownames(log2cpm)=="ENSG00000100167",], col=colors)
+plot(log2cpm[rownames(log2cpm)=="ENSG00000188070",], cov_matrix[rownames(log2cpm)=="ENSG00000188070",], col=colors)
+plot(log2cpm[rownames(log2cpm)=="ENSG00000169442",], cov_matrix[rownames(log2cpm)=="ENSG00000169442",], col=colors)
+plot(log2cpm[rownames(log2cpm)=="ENSG00000170775",], cov_matrix[rownames(log2cpm)=="ENSG00000170775",], col=colors)
+plot(log2cpm[rownames(log2cpm)=="ENSG00000267886",], cov_matrix[rownames(log2cpm)=="ENSG00000267886",], col=colors)
+plot(log2cpm[rownames(log2cpm)=="ENSG00000228709",], cov_matrix[rownames(log2cpm)=="ENSG00000228709",], col=colors)
+plot(log2cpm[rownames(log2cpm)=="ENSG00000178718",], cov_matrix[rownames(log2cpm)=="ENSG00000178718",], col=colors)
+plot(log2cpm[rownames(log2cpm)=="ENSG00000133636",], cov_matrix[rownames(log2cpm)=="ENSG00000133636",], col=colors)
+plot(log2cpm[rownames(log2cpm)=="ENSG00000204252",], cov_matrix[rownames(log2cpm)=="ENSG00000204252",], col=colors)
+```
+

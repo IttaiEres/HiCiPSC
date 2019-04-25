@@ -22,5 +22,8 @@ This website details computational analyses done for the paper "Reorganization o
 *  [Orthogonal analysis with gene expression data collected from the same cell lines](juicer_gene_expression.html)
 *  [Enrichment analyses on the linear-modeling significant Hi-C hits](juicer_enrichment.html)
 
-###TAD Analyses
+#### TAD Analyses
 *  [TAD Analyses](TADs.html)
+
+#### Mediation Concerns
+*  [Alternative Mediation](alt_mediation.html)

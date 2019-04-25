@@ -676,7 +676,7 @@ ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xl
 
 ```{r Boundary Conservation with Individual Level Arrowhead Inferences}
 ###Intraspecies Variance in TAD Boundaries###
-#First, I look at within-sepcies variance of TAD boundaries, both on the full set of boundaries and on the set that could be orthologously lifted over between species. This is done by taking the boundary files from both these situations across all individuals within a species, adding a column to identify the individual it came from, appending these files onto one another, and then using bedtools merge and collapsing on the identifier column to assess how many unique boundaries are found and how many individuals each is found in.
+#First, I look at within-species variance of TAD boundaries, both on the full set of boundaries and on the set that could be orthologously lifted over between species. This is done by taking the boundary files from both these situations across all individuals within a species, adding a column to identify the individual it came from, appending these files onto one another, and then using bedtools merge and collapsing on the identifier column to assess how many unique boundaries are found and how many individuals each is found in.
 
 #Define a function to give back how many boundaries are found in X# individuals within a species, for the orthologously mappable TADs' boundaries.
 intra.ortho.assess <- function(resolution, species){
@@ -740,10 +740,10 @@ intra.ortho.plotter <- function(species){
   ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
   
   if(species=="H"){
-    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("TAD Orth. Boundary Conservation, Humans") +xlab("Resolution of Analysis") + ylab("Boundary Count")
+    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("Intraspecies TAD Boundary Variance, Humans") +xlab("Resolution of Analysis") + ylab("Boundary Count") + guides(fill=guide_legend(title="# Individuals"))
   }
    if(species=="C"){
-    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("TAD Orth. Boundary Conservation, Chimps") +xlab("Resolution of Analysis") + ylab("Boundary Count")
+    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("Intraspecies TAD Boundary Variance, Chimps") +xlab("Resolution of Analysis") + ylab("Boundary Count")+ guides(fill=guide_legend(title="# Individuals"))
    }
   print(myplot)
 }
@@ -760,16 +760,16 @@ intra.full.plotter <- function(species){
   ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
   
   if(species=="H"){
-    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("TAD Boundary Conservation, Humans") +xlab("Resolution of Analysis") + ylab("Boundary Count")
+    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("Intraspecies TAD Boundary Variance, Humans") +xlab("Resolution of Analysis") + ylab("Boundary Count")+ guides(fill=guide_legend(title="# Individuals"))
   }
    if(species=="C"){
-    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("TAD Boundary Conservation, Chimps") +xlab("Resolution of Analysis") + ylab("Boundary Count")
+    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("Intraspecies TAD Boundary Variance, Chimps") +xlab("Resolution of Analysis") + ylab("Boundary Count")+ guides(fill=guide_legend(title="# Individuals"))
    }
   print(myplot)
 }
 options(scipen=999)
-intra.ortho.plotter("H")
-intra.ortho.plotter("C")
+intra.ortho.plotter("H") #Fig S5E
+intra.ortho.plotter("C") #Fig S5F
 intra.full.plotter("H")
 intra.full.plotter("C")
 
@@ -919,7 +919,7 @@ heatmaply(test, main="Pairwise Proportions of Shared TAD Boundaries @ 10kb", k_r
 ####
 
 
-boundary.inter.plot <- function(){
+boundary.inter.plot <- function(y.max=20000){
   bounds.10 <- inter.bound.cons(10000)
   bounds.25 <- inter.bound.cons(25000)
   bounds.50 <- inter.bound.cons(50000)
@@ -935,14 +935,15 @@ boundary.inter.plot <- function(){
   ggbounds.2 <- filter(ggbounds, stringency==2) %>% select(., Human, Chimpanzee, Shared, resolution) %>% melt(., by="resolution")
   ggbounds.3 <- filter(ggbounds, stringency==3) %>% select(., Human, Chimpanzee, Shared, resolution) %>% melt(., by="resolution")
   ggbounds.4 <- filter(ggbounds, stringency==4) %>% select(., Human, Chimpanzee, Shared, resolution) %>% melt(., by="resolution")
-  plot.1 <- ggplot(data=ggbounds.1, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=1") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3))  #+ scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
-  plot.2 <- ggplot(data=ggbounds.2, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=2") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3)) #+ scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
-  plot.3 <- ggplot(data=ggbounds.3, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=3") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3)) #+ scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
-  plot.4 <- ggplot(data=ggbounds.4, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=4") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#619CFF","#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared"))
+  plot.1 <- ggplot(data=ggbounds.1, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=1") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3))+ scale_fill_manual(name="Species of Discovery", values=c("#619CFF","#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared"))  + coord_cartesian(ylim=c(0, y.max))#+ scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
+  plot.2 <- ggplot(data=ggbounds.2, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=2") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3))+ scale_fill_manual(name="Species of Discovery", values=c("#619CFF","#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared")) + coord_cartesian(ylim=c(0, y.max))#+ scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
+  plot.3 <- ggplot(data=ggbounds.3, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=3") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Species of Discovery", values=c("#619CFF","#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared")) + coord_cartesian(ylim=c(0, y.max))#+ scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
+  plot.4 <- ggplot(data=ggbounds.4, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=4") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Species of Discovery", values=c("#619CFF","#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared")) + coord_cartesian(ylim=c(0, y.max))
   print(plot.1)
   print(plot.2)
   print(plot.3)
   print(plot.4)
+  print(ggbounds.4)
 }
 boundary.inter.plot()
 
@@ -1119,10 +1120,10 @@ domain.plotter <- function(type, intra.ymax=8000, inter.ymax=8200){
     inter.4 <- filter(inter, stringency==4)[,-5] %>% melt(., by="resolution")
     inter.4$resolution <- factor(inter.4$resoultion, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
     
-    plot.1 <- ggplot(data=inter.1, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, Arrowhead, Stringency=1") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
-    plot.2 <- ggplot(data=inter.2, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, Arrowhead, Stringency=2") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
-    plot.3 <- ggplot(data=inter.3, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, Arrowhead, Stringency=3") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
-    plot.4 <- ggplot(data=inter.4, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, Arrowhead, Stringency=4") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
+    plot.1 <- ggplot(data=inter.1, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, Stringency=1") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
+    plot.2 <- ggplot(data=inter.2, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, Stringency=2") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
+    plot.3 <- ggplot(data=inter.3, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, Stringency=3") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
+    plot.4 <- ggplot(data=inter.4, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, Stringency=4") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
     print(intra.h.plot)
     print(intra.c.plot)
     print(plot.1)
@@ -1131,7 +1132,7 @@ domain.plotter <- function(type, intra.ymax=8000, inter.ymax=8200){
     print(plot.4)
 }
 
-domain.plotter("rao", intra.ymax = 11000, inter.ymax = 8200)
+domain.plotter("rao", intra.ymax = 10000, inter.ymax = 8200) #Fig S5
 domain.plotter("loj", intra.ymax= 11000, inter.ymax=8200)
 ```
 
@@ -1190,7 +1191,7 @@ intra.full.assess <- function(resolution, species){
 }
 
 #For plotting stats on orthologous boundaries.
-intra.ortho.plotter <- function(species){
+intra.ortho.plotter <- function(species, y.max){
   bounds.10 <- intra.ortho.assess(10000, species)[[1]]
   bounds.25 <- intra.ortho.assess(25000, species)[[1]]
   bounds.50 <- intra.ortho.assess(50000, species)[[1]]
@@ -1199,12 +1200,12 @@ intra.ortho.plotter <- function(species){
   bounds.500 <- intra.ortho.assess(500000, species)[[1]]
   ggbounds <- rbind(bounds.10, bounds.25, bounds.50, bounds.100, bounds.250, bounds.500)
   ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
-  
+  print(ggbounds)
   if(species=="H"){
-    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("Intraspecies TAD Boundary Variance, Humans") +xlab("Resolution of Analysis") + ylab("Boundary Count") + guides(fill=guide_legend(title="# Individuals")) + coord_cartesian(ylim=c(0, 2250))
+    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("Intraspecies TAD Boundary Variance, Humans") +xlab("Resolution of Analysis") + ylab("Boundary Count") + guides(fill=guide_legend(title="# Individuals")) + coord_cartesian(ylim=c(0, y.max)) + guides(fill=guide_legend(title="# Individuals"))
   }
    if(species=="C"){
-    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("Intraspecies TAD Boundary Variance, Chimpanzees") +xlab("Resolution of Analysis") + ylab("Boundary Count") + guides(fill=guide_legend(title="# Individuals")) + coord_cartesian(ylim=c(0, 2250))
+    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("Intraspecies TAD Boundary Variance, Chimpanzees") +xlab("Resolution of Analysis") + ylab("Boundary Count") + guides(fill=guide_legend(title="# Individuals")) + coord_cartesian(ylim=c(0, y.max)) + guides(fill=guide_legend(title="# Individuals"))
    }
   print(myplot)
 }
@@ -1221,16 +1222,16 @@ intra.full.plotter <- function(species){
   ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
   
   if(species=="H"){
-    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("Intraspecies TAD Boundary Variance, Humans") +xlab("Resolution of Analysis") + ylab("Boundary Count")
+    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("Intraspecies TAD Boundary Variance, Humans") +xlab("Resolution of Analysis") + ylab("Boundary Count")+ guides(fill=guide_legend(title="# Individuals"))
   }
    if(species=="C"){
-    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("Intraspecies TAD Boundary Variance, Chimps") +xlab("Resolution of Analysis") + ylab("Boundary Count")
+    myplot <- ggplot(data=ggbounds, aes(x=Resolution, group=Resolution, y=Count, fill=as.factor(Individuals))) + geom_bar(stat="identity") + ggtitle("Intraspecies TAD Boundary Variance, Chimps") +xlab("Resolution of Analysis") + ylab("Boundary Count")+ guides(fill=guide_legend(title="# Individuals"))
    }
   print(myplot)
 }
 
-intra.ortho.plotter("H") #FIGS5E
-intra.ortho.plotter("C") #FIGS5F
+intra.ortho.plotter("H", 2100) #FIGS6E
+intra.ortho.plotter("C", 2100) #FIGS6F
 #intra.full.plotter("H")
 #intra.full.plotter("C")
 
@@ -1319,7 +1320,7 @@ inter.bound.cons <- function(resolution){
   return(cons.table)
 }
 
-boundary.inter.plot <- function(){
+boundary.inter.plot <- function(y.max){
   bounds.10 <- inter.bound.cons(10000)
   bounds.25 <- inter.bound.cons(25000)
   bounds.50 <- inter.bound.cons(50000)
@@ -1330,21 +1331,22 @@ boundary.inter.plot <- function(){
   ggbounds$H.perc <- ggbounds$Human/rowSums(ggbounds[,1:3])
   ggbounds$C.perc <- ggbounds$Human/rowSums(ggbounds[,1:3])
   ggbounds$shared.perc <- ggbounds$Shared/rowSums(ggbounds[,1:3])
+  print(ggbounds)
   ggbounds$resolution <- factor(ggbounds$resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
   ggbounds.1 <- filter(ggbounds, stringency==1) %>% select(., Human, Chimpanzee, Shared, resolution) %>% melt(., by="resolution")
   ggbounds.2 <- filter(ggbounds, stringency==2) %>% select(., Human, Chimpanzee, Shared, resolution) %>% melt(., by="resolution")
   ggbounds.3 <- filter(ggbounds, stringency==3) %>% select(., Human, Chimpanzee, Shared, resolution) %>% melt(., by="resolution")
   ggbounds.4 <- filter(ggbounds, stringency==4) %>% select(., Human, Chimpanzee, Shared, resolution) %>% melt(., by="resolution")
-  plot.1 <- ggplot(data=ggbounds.1, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=1") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#619CFF", "#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared"))
-  plot.2 <- ggplot(data=ggbounds.2, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=2") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#619CFF", "#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared"))
-  plot.3 <- ggplot(data=ggbounds.3, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=3") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#619CFF", "#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared"))
-  plot.4 <- ggplot(data=ggbounds.4, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=4") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#619CFF", "#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared"))
+  plot.1 <- ggplot(data=ggbounds.1, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=1") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#619CFF", "#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared"))+ coord_cartesian(ylim=c(0, y.max))
+  plot.2 <- ggplot(data=ggbounds.2, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=2") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#619CFF", "#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared"))+ coord_cartesian(ylim=c(0, y.max))
+  plot.3 <- ggplot(data=ggbounds.3, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=3") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery"))+ theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#619CFF", "#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared"))+ coord_cartesian(ylim=c(0, y.max))
+  plot.4 <- ggplot(data=ggbounds.4, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies TAD Boundary Conservation, Stringency=4") + xlab("Resolution of Analysis") + ylab("TAD Boundary Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#619CFF", "#00BA38", "#F8766D"), labels=c("Human", "Chimpanzee", "Shared")) + coord_cartesian(ylim=c(0, y.max))
   print(plot.1)
   print(plot.2)
   print(plot.3)
   print(plot.4)
 }
-boundary.inter.plot() #FIGS6G-H
+boundary.inter.plot(3100) #FIGS6G-H
 
 #Now, Jaccard indices for interspecies variation in TAD boundaries#
 jac.inter <- function(resolution){
@@ -1460,10 +1462,12 @@ domain.plotter <- function(type, inter.ymax, intra.ymax){
     intra.h <- rbind(intra.10[[1]], intra.25[[1]], intra.50[[1]], intra.100[[1]], intra.250[[1]], intra.500[[1]])
     intra.h$resolution <- factor(intra.h$resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
     intra.h.plot <- ggplot(data=intra.h, aes(x=resolution, group=resolution, y=count, fill=as.factor(indi.found))) + geom_bar(stat="identity") + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Intraspecies TAD Variance, Humans") + guides(fill=guide_legend(title="# Individuals")) + theme(plot.title=element_text(hjust=0.3)) + coord_cartesian(ylim=c(0, intra.ymax))
+    print(intra.h)
     
     intra.c <- rbind(intra.10[[2]], intra.25[[2]], intra.50[[2]], intra.100[[2]], intra.250[[2]], intra.500[[2]])
     intra.c$resolution <- factor(intra.c$resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
     intra.c.plot <- ggplot(data=intra.c, aes(x=resolution, group=resolution, y=count, fill=as.factor(indi.found))) + geom_bar(stat="identity") + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Intraspecies TAD Variance, Chimpanzees") + guides(fill=guide_legend(title="# Individuals")) + theme(plot.title=element_text(hjust=0.3)) + coord_cartesian(ylim=c(0, intra.ymax))
+    print(intra.c)
     
     inter <- rbind(intra.10[[3]], intra.25[[3]], intra.50[[3]], intra.100[[3]], intra.250[[3]], intra.500[[3]])
     inter$perc.shared <- inter$Shared/rowSums(inter[,1:3])
@@ -1480,10 +1484,10 @@ domain.plotter <- function(type, inter.ymax, intra.ymax){
     inter.4 <- filter(inter, stringency==4)[,-5] %>% melt(., by="resolution")
     inter.4$resolution <- factor(inter.4$resoultion, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
     
-    plot.1 <- ggplot(data=inter.1, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, TopDom, Stringency=1") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
-    plot.2 <- ggplot(data=inter.2, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, TopDom, Stringency=2") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
-    plot.3 <- ggplot(data=inter.3, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, TopDom, Stringency=3") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
-    plot.4 <- ggplot(data=inter.4, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, TopDom, Stringency=4") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
+    plot.1 <- ggplot(data=inter.1, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, Stringency=1") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
+    plot.2 <- ggplot(data=inter.2, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, Stringency=2") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
+    plot.3 <- ggplot(data=inter.3, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, Stringency=3") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
+    plot.4 <- ggplot(data=inter.4, aes(x=resolution, group=resolution, y=value, fill=variable)) + geom_bar(stat="identity") + ggtitle("Interspecies Domain Conservation, Stringency=4") + xlab("Resolution of Analysis") + ylab("Domain Count") + guides(fill=guide_legend(title="Species of Discovery")) + theme(plot.title=element_text(hjust=0.3)) + scale_fill_manual(name="Conservation", values=c("#00BA38",  "#619CFF", "#F8766D"), labels=c("Chimpanzee", "Human", "Shared")) + coord_cartesian(ylim=c(0, inter.ymax))
     print(intra.h.plot)
     print(intra.c.plot)
     print(plot.1)
@@ -1492,8 +1496,8 @@ domain.plotter <- function(type, inter.ymax, intra.ymax){
     print(plot.4)
 }
 
-domain.plotter("rao", intra.ymax=12000, inter.ymax=12000) 
-domain.plotter("loj", intra.ymax=12000, inter.ymax=12000) #I like these results better. And it makes more intuitive sense to me.
+domain.plotter("rao", intra.ymax=12000, inter.ymax=12000) #FIGS6A-D
+domain.plotter("loj", intra.ymax=12000, inter.ymax=12000) 
 ```
 
 ```{r Comparisons of Rao data}
