@@ -918,6 +918,20 @@ heatmaply(test, main="Pairwise Proportions of Shared TAD Boundaries @ 10kb", k_r
 #FIG4D
 ####
 
+bounds.indi.clust <- function(resolution){
+  bounds <- inter.bound.cons(resolution, clust=TRUE)
+  heat <- percentage.table.calc(bounds[,5:12])
+  colnames(heat) <- rownames(heat) <- c("H_F1", "H_M1", "C_M1", "C_F1", "H_M2", "H_F2", "C_M2", "C_F2")
+  heatmaply(heat, main=paste("Pairwise Proportions of Shared TAD Boundaries @ ", resolution/1000, "kb", sep=""), k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
+}
+
+#Alt FIGS5/6, boundary clustering on individual basis with Arrowhead inferences
+bounds.indi.clust(10000)
+bounds.indi.clust(25000)
+bounds.indi.clust(50000)
+bounds.indi.clust(100000)
+bounds.indi.clust(250000)
+bounds.indi.clust(500000)
 
 boundary.inter.plot <- function(y.max=20000){
   bounds.10 <- inter.bound.cons(10000)
@@ -1051,7 +1065,7 @@ F.domain <- domain.compare(10000, "F", "H", "loj", clust=TRUE)
 G.domain <- domain.compare(10000, "G", "C", "loj", clust=TRUE)
 H.domain <- domain.compare(10000, "H", "C", "loj", clust=TRUE)
 
-#Taking the mean of each pairwise comparison. Kind of complex, prefer to just use the individual vectors as below:
+#Taking the mean of each pairwise comparison. Kind of complex, prefer to just use the individual vectors as below. But this is for if we want to make sure the heatmap is symmetrical.
 domainclust <- data.frame(A=c(1, mean(A.domain[2], B.domain[1]), mean(A.domain[3], C.domain[1]), mean(A.domain[4], D.domain[1]), mean(A.domain[5], E.domain[1]), mean(A.domain[6], F.domain[1]), mean(A.domain[7], G.domain["A"]), mean(A.domain["H"], H.domain["A"])), B=c(mean(B.domain["A"], A.domain["B"]), 1, mean(B.domain["C"], C.domain["B"]), mean(B.domain["D"], D.domain["B"]), mean(B.domain["E"], E.domain["B"]), mean(B.domain["F"], F.domain["B"]), mean(B.domain["G"], G.domain["B"]), mean(B.domain["H"], H.domain["B"])), C=c(mean(C.domain["A"], A.domain["C"]), mean(C.domain["B"], B.domain["C"]), 1, mean(C.domain["D"], D.domain["C"]), mean(C.domain["E"], E.domain["C"]), mean(C.domain["F"], F.domain["C"]), mean(C.domain["G"], G.domain["C"]), mean(C.domain["H"], H.domain["C"])), D=c(mean(D.domain["A"], A.domain["D"]), mean(D.domain["B"], B.domain["D"]), mean(D.domain["C"], C.domain["D"]), 1, mean(D.domain["E"], E.domain["D"]), mean(D.domain["F"], F.domain["D"]), mean(D.domain["G"], G.domain["D"]), mean(D.domain["H"], H.domain["D"])), E=c(mean(E.domain["A"], A.domain["E"]), mean(E.domain["B"], B.domain["E"]), mean(E.domain["C"], C.domain["E"]), mean(E.domain["D"], D.domain["E"]), 1, mean(E.domain["F"], F.domain["E"]), mean(E.domain["G"], G.domain["E"]), mean(E.domain["H"], H.domain["E"])), F=c(mean(F.domain["A"], A.domain["F"]), mean(F.domain["B"], B.domain["F"]), mean(F.domain["C"], C.domain["F"]), mean(F.domain["D"], D.domain["F"]), mean(F.domain["E"], E.domain["F"]), 1, mean(F.domain["G"], G.domain["F"]), mean(F.domain["H"], H.domain["F"])), G=c(mean(G.domain["A"], A.domain["G"]), mean(G.domain["B"], B.domain["G"]), mean(G.domain["C"], C.domain["G"]), mean(G.domain["D"], D.domain["G"]), mean(G.domain["E"], E.domain["G"]), mean(G.domain["F"], F.domain["G"]), 1, mean(G.domain["H"], H.domain["G"])), H=c(mean(H.domain["A"], A.domain["H"]), mean(H.domain["B"], B.domain["H"]), mean(H.domain["C"], C.domain["H"]), mean(H.domain["D"], D.domain["H"]), mean(H.domain["E"], E.domain["H"]), mean(H.domain["F"], F.domain["H"]), mean(H.domain["G"], G.domain["H"]), 1))
 
 clust2 <- rbind(A.domain, B.domain, C.domain, D.domain, E.domain, F.domain, G.domain, H.domain)
@@ -1062,6 +1076,31 @@ rownames(domainclust) <- rownames(clust2) <- colnames(domainclust)
 heatmaply(domainclust, main="Pairwise Proportions of Shared TADs @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
 heatmaply(clust2, main="Pairwise Proportions of Shared TADs @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
 #FIG4C; 2nd one more easily explainable.
+
+
+
+indi.TAD.clust <- function(type, resolution){
+  A.domain <- domain.compare(resolution, "A", "H", type, clust=TRUE)
+  B.domain <- domain.compare(resolution, "B", "H", type, clust=TRUE)
+  C.domain <- domain.compare(resolution, "C", "C", type, clust=TRUE)
+  D.domain <- domain.compare(resolution, "D", "C", type, clust=TRUE)
+  E.domain <- domain.compare(resolution, "E", "H", type, clust=TRUE)
+  F.domain <- domain.compare(resolution, "F", "H", type, clust=TRUE)
+  G.domain <- domain.compare(resolution, "G", "C", type, clust=TRUE)
+  H.domain <- domain.compare(resolution, "H", "C", type, clust=TRUE)
+  indi.TAD.df <- rbind(A.domain, B.domain, C.domain, D.domain, E.domain, F.domain, G.domain, H.domain)
+  colnames(indi.TAD.df) <- rownames(indi.TAD.df) <- c("H_F1", "H_M1", "C_M1", "C_F1", "H_M2", "H_F2", "C_M2", "C_F2")
+  heatmaply(indi.TAD.df, main=paste("Pairwise Proportions of Shared TADs @ ", resolution/1000, "kb", sep=""), k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
+}
+
+#Alt FIGS5, TAD clustering on individual basis!
+options(scipen=999)
+indi.TAD.clust("loj", 10000)
+indi.TAD.clust("loj", 25000)
+indi.TAD.clust("loj", 50000)
+indi.TAD.clust("loj", 100000)
+indi.TAD.clust("loj", 250000)
+indi.TAD.clust("loj", 500000)
 
 concatenator <- function(resolution, type) {
   A <- domain.compare(resolution, "A", "H", type)
@@ -1132,7 +1171,7 @@ domain.plotter <- function(type, intra.ymax=8000, inter.ymax=8200){
     print(plot.4)
 }
 
-domain.plotter("rao", intra.ymax = 10000, inter.ymax = 8200) #Fig S5
+domain.plotter("rao", intra.ymax = 10000, inter.ymax = 8200) #Fig S11A&B
 domain.plotter("loj", intra.ymax= 11000, inter.ymax=8200)
 ```
 

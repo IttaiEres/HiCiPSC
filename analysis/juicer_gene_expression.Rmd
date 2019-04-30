@@ -908,48 +908,48 @@ ind_sig <- (ash_reg$result$svalue < 0.05)
 ind_sig[ind_sig == TRUE] <- "red"
 ind_sig[ind_sig == FALSE] <- "black"
 plot(x=ash_reg$result$betahat, y=ash_reg$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in effect size from 2 lms, KR", main="Difference of effect size (DE genes)", pch=16, cex=0.6, col=ind_sig)#, xlim=c(-2.5, 2.5), ylim=c(0, 1.3))
-legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
-ash_reg_nonDE <- ash(as.vector(nonDEtest$d), as.vector(vshrnonDE$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
-summary(ash_reg_nonDE$result$svalue<=0.05) #Incredible result, looks too good to be true.
+legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8) #FIGS6A
+ash_reg_nonDE <- ash(as.vector(nonDEtest$d), as.vector(vshrnonDE$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)?
+summary(ash_reg_nonDE$result$svalue<=0.05)
 ind_sig <- (ash_reg_nonDE$result$svalue < 0.05)
 ind_sig[ind_sig == TRUE] <- "red"
 ind_sig[ind_sig == FALSE] <- "black"
 plot(x=ash_reg_nonDE$result$betahat, y=ash_reg_nonDE$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in effect size from 2 lms, KR", main="Difference of effect size (non-DE genes)", pch=16, cex=0.6, col=ind_sig)#, xlim=c(-2.5, 2.5), ylim=c(0, 1.3))
-legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
+legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8) #FIGS6B
 
-exprs <- select(hmin.VC, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes) #Should be done on just DE genes, filter with adj.P.Val<=0.05
-hic <- select(hmin.VC,"A_21792_HIC", "B_28126_HIC", "C_3649_HIC", "D_40300_HIC", "E_28815_HIC", "F_28834_HIC", "G_3624_HIC", "H_3651_HIC")
-present <- sapply(1:nrow(hic), function(i) !any(is.na(hic[i,])))
-genes <- exprs$genes
-DEgenes <- filter(hmin.KR, adj.P.Val<=0.05) %>% select(., genes)
-myDEindices <- which(genes %in% DEgenes[,1])
-exprs <- exprs[,-9]
-exprs <- data.matrix(exprs[present,])
-hic <- data.matrix(hic[present,])
-designy <- as.factor(c("human", "human", "chimp", "chimp", "human", "human", "chimp", "chimp"))
-colnames(hic) <- colnames(exprs)
-hic <- as.data.table(hic)
-exprs <- as.data.table(exprs)
-test <- mediate.test.regressing(exprs, designy, hic)
-vshrDE <- vash(test$d_se[myDEindices], df=6)
-vshrnonDE <- vash(test$d_se[-myDEindices], df=6)
-vshrink <- vash(test$d_se, df=6)
-DEtest <- test[myDEindices,]
-nonDEtest <- test[-myDEindices,]
-ash_reg <- ash(as.vector(DEtest$d), as.vector(vshrDE$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
-summary(ash_reg$result$svalue<=0.05) #Incredible result, looks too good to be true.
-ind_sig <- (ash_reg$result$svalue < 0.05)
-ind_sig[ind_sig == TRUE] <- "red"
-ind_sig[ind_sig == FALSE] <- "black"
-plot(x=ash_reg$result$betahat, y=ash_reg$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in Effect Size from 2 Linear Models, VC-Norm", main="Difference of Effect Size in DE Genes", pch=16, cex=0.6, col=ind_sig, xlim=c(-2.5, 2.5), ylim=c(0, 2.5)) #FIGS15A
-legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
-ash_reg_nonDE <- ash(as.vector(nonDEtest$d), as.vector(vshrnonDE$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
-summary(ash_reg_nonDE$result$svalue<=0.05) #Incredible result, looks too good to be true.
-ind_sig <- (ash_reg_nonDE$result$svalue < 0.05)
-ind_sig[ind_sig == TRUE] <- "red"
-ind_sig[ind_sig == FALSE] <- "black"
-plot(x=ash_reg_nonDE$result$betahat, y=ash_reg_nonDE$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in Effect Size from 2 Linear Models, VC-Norm", main="Difference of Effect Size in non-DE Genes", pch=16, cex=0.6, col=ind_sig, xlim=c(-2.5, 2.5), ylim=c(0, 2.5))
-legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8) #FIGS15B
+# exprs <- select(hmin.VC, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes) #Should be done on just DE genes, filter with adj.P.Val<=0.05
+# hic <- select(hmin.VC,"A_21792_HIC", "B_28126_HIC", "C_3649_HIC", "D_40300_HIC", "E_28815_HIC", "F_28834_HIC", "G_3624_HIC", "H_3651_HIC")
+# present <- sapply(1:nrow(hic), function(i) !any(is.na(hic[i,])))
+# genes <- exprs$genes
+# DEgenes <- filter(hmin.KR, adj.P.Val<=0.05) %>% select(., genes)
+# myDEindices <- which(genes %in% DEgenes[,1])
+# exprs <- exprs[,-9]
+# exprs <- data.matrix(exprs[present,])
+# hic <- data.matrix(hic[present,])
+# designy <- as.factor(c("human", "human", "chimp", "chimp", "human", "human", "chimp", "chimp"))
+# colnames(hic) <- colnames(exprs)
+# hic <- as.data.table(hic)
+# exprs <- as.data.table(exprs)
+# test <- mediate.test.regressing(exprs, designy, hic)
+# vshrDE <- vash(test$d_se[myDEindices], df=6)
+# vshrnonDE <- vash(test$d_se[-myDEindices], df=6)
+# vshrink <- vash(test$d_se, df=6)
+# DEtest <- test[myDEindices,]
+# nonDEtest <- test[-myDEindices,]
+# ash_reg <- ash(as.vector(DEtest$d), as.vector(vshrDE$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
+# summary(ash_reg$result$svalue<=0.05) #Incredible result, looks too good to be true.
+# ind_sig <- (ash_reg$result$svalue < 0.05)
+# ind_sig[ind_sig == TRUE] <- "red"
+# ind_sig[ind_sig == FALSE] <- "black"
+# plot(x=ash_reg$result$betahat, y=ash_reg$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in Effect Size from 2 Linear Models, VC-Norm", main="Difference of Effect Size in DE Genes", pch=16, cex=0.6, col=ind_sig, xlim=c(-2.5, 2.5), ylim=c(0, 2.5)) #FIGS15A
+# legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
+# ash_reg_nonDE <- ash(as.vector(nonDEtest$d), as.vector(vshrnonDE$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
+# summary(ash_reg_nonDE$result$svalue<=0.05) #Incredible result, looks too good to be true.
+# ind_sig <- (ash_reg_nonDE$result$svalue < 0.05)
+# ind_sig[ind_sig == TRUE] <- "red"
+# ind_sig[ind_sig == FALSE] <- "black"
+# plot(x=ash_reg_nonDE$result$betahat, y=ash_reg_nonDE$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in Effect Size from 2 Linear Models, VC-Norm", main="Difference of Effect Size in non-DE Genes", pch=16, cex=0.6, col=ind_sig, xlim=c(-2.5, 2.5), ylim=c(0, 2.5))
+# legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8) #FIGS15B
 ```
 
 

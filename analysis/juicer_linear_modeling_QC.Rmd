@@ -375,6 +375,9 @@ save_plot("~/Desktop/FIGS2.png", FIGS2, ncol=2, nrow=1, base_aspect_ratio=1.3)
 
 #Write out the data with the new columns added on!
 fwrite(filt.KR, "output/juicer.filt.KR.final", quote = TRUE, sep = "\t", row.names = FALSE, col.names = TRUE, na="NA", showProgress = FALSE)
+
+#Need to switch VC human chromosome names back to normal for the rest of the downstream functions:
+filt.VC$Hchr <- gsub("Chr. ", "chr", filt.VC$Hchr)
 fwrite(filt.VC, "output/juicer.filt.VC.final", quote = TRUE, sep = "\t", row.names = FALSE, col.names = TRUE, na="NA", showProgress = FALSE)
 ```
 From this analysis we have dealt with some quality control issues, and filtered down the data to a final set of biologically significant Hi-C interaction frequencies, many of which appear species-specific. There are clearly strong differences between the species that make their 3D regulatory landscapes divergent. Now, I move to orthogonal gene expression analyses.

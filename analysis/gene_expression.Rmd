@@ -901,7 +901,7 @@ The permutations reveal that the observed data does appear pretty significant: i
 #Differences in effect size/sign changes
 This next section would be to look at differences in effect size and sign changes when doing the two separate lms (one before and one after regressing out Hi-C data from RPKM expression). Unfortunately the ash results I get have all their svalues as 1 so this is boring/not interesting right now. Hence it is not included. But let's give it another go!
 ```{r Differences in Effect Sizes}
-design <- model.matrix(~meta.data$SP)
+design <- model.matrix(~meta.data$SP+meta.data$SX)
 exprs <- select(hmin, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes) #Should be done on just DE genes, filter with adj.P.Val<=0.05
 hic <- select(hmin,"A_21792_HIC", "B_28126_HIC", "C_3649_HIC", "D_40300_HIC", "E_28815_HIC", "F_28834_HIC", "G_3624_HIC", "H_3651_HIC")
 present <- sapply(1:nrow(hic), function(i) !any(is.na(hic[i,])))
@@ -922,6 +922,7 @@ exprs.2 <- exprs.2[,-9]
 exprs <- data.matrix(exprs[present,])
 exprs.2 <- data.matrix(exprs.2[present,])
 hic <- data.matrix(hic[present,])
+#designy <- rbind(as.vector(as.factor(c("human", "human", "chimp", "chimp", "human", "human", "chimp", "chimp"))), as.vector(as.factor(meta.data$SX)))
 designy <- as.factor(c("human", "human", "chimp", "chimp", "human", "human", "chimp", "chimp"))
 colnames(hic) <- colnames(exprs) <- colnames(exprs.2)
 hic <- as.data.table(hic)
@@ -931,13 +932,14 @@ exprs.2 <- as.data.table(exprs.2)
 
 
 #For further specifics on the function used for the mediation below, please see: https://github.com/jhsiao999/mediation/blob/master/pkg/R/mediate.test.regressing.R
-test <- mediate.test.regressing(exprs, designy, hic)
+source("code/mediate.test.regressing.R")
+test <- mediate.test.regressing(exprs, designy, hic, cov=as.factor(meta.data$SX))
 #test <- mediate.test.regressing(exprs.2, designy, hic) Gives extremely similar results, 222/1401 genes significantly mediated (16%), and still 0 of non-DE genes.
 
 #Shrink dat variance!
-vshrDE <- vash(test$d_se[myDEindices], df=5)
-vshrnonDE <- vash(test$d_se[-myDEindices], df=5)
-vshrink <- vash(test$d_se, df=5)
+vshrDE <- vash(test$d_se[myDEindices], df=4)
+vshrnonDE <- vash(test$d_se[-myDEindices], df=4)
+vshrink <- vash(test$d_se, df=4)
 
 #Separate out DE from non-DE genes:
 DEtest <- test[myDEindices,]
