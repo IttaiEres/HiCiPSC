@@ -1,0 +1,373 @@
+---
+title: "Hi-C Data Normalization and Initial Quality Control, Juicer"
+author: "Ittai Eres"
+date: 2018-01-23
+output: workflowr::wflow_html
+---
+
+
+
+
+
+```{r library loading, echo=FALSE, include=FALSE}
+#Load in necessary packages
+library(limma)
+library(plyr)
+library(tidyr)
+library(data.table)
+library(reshape2)
+#library(ggplot2)
+library(cowplot)
+library(plotly)
+library(dplyr)
+library(Hmisc)
+library(gplots)
+library(stringr)
+library(heatmaply)
+library(RColorBrewer)
+library(edgeR)
+library(tidyverse)
+library(compiler)
+library(bedr)
+enableJIT(3)
+```
+
+###Initial Data read-in and quality control
+First, I read in the data and normalize it with cyclic pairwise loess normalization. Then I look at histograms of the distributions of the contact frequencies on an individual-by-individual basis, to see if they are comparable. I also look at a plot of the mean vs. the variance as an additional quality control metric; this is typically done on RNA-seq count data. In that case, it's done to check if the normalized data are distributed in a particular fashion (e.g. a poisson model would have a linear mean-variance relationship). In the limma/voom pipeline, count data are log-cpm transformed and a loess trend line of variance vs. mean is then fit to create weights for individual genes to be fed into linear modeling with limma. Since this is not a QC metric typically used for Hi-C data, the only thing I hope to see is no particularly strong relationship between variance and mean.
+```{r Initial Hi-C Data Read-in and QC}
+###Read in VC and KR normalized data, normalize each with cyclic loess (pairwise), clean it from any rows that have missing values.
+full.KR <- fread("data/final.juicer.10kb.KR", header=TRUE, stringsAsFactors = FALSE, data.table=FALSE, showProgress = FALSE) #Start w/ roughly 31.5k hits here
+full.VC <- fread("data/final.juicer.10kb.VC", header=TRUE, stringsAsFactors = FALSE, data.table = FALSE, showProgress = FALSE) #~84k hits...
+
+#Note that many more hits show up as significant under the VC normalization paradigm than do under KR balancing. This is especially bad for A-21792 for some reason.
+
+#Subsetting down to only complete cases (I.E. none of the individuals have NA values goes to ~28k and ~77k hits for KR and VC, respectively. Reductions of both ~10%.)
+full.KR <- full.KR[complete.cases(full.KR[,112:119]),]
+full.VC <- full.VC[complete.cases(full.VC[,112:119]),]
+
+#Visualize both.
+boxplot(full.KR[,112:119], ylim=c(0, 30), horizontal = TRUE, main="KR Distributions")
+boxplot(full.VC[,112:119], ylim=c(0, 30), horizontal=TRUE, main="VC Distributions")
+KR.contacts <- full.KR[,112:119]
+VC.contacts <- full.VC[,112:119]
+
+###Pearson is a product moment correlation, meaning it evaluates the relationship b/t two continuous variables. Spearman is a rank-order correlation, is mainly evaluating monotonic rlationship b/t two continuous/ordinal variables (variables change together, but not necessarily at a constant rate). It's based on ranked values for each variable, rather than the raw data itself, and is thus not quite as precise IMO. Hence here I optimize my normalization schemes WRT seeing proper clustering in a Pearson correlation heatmap. OR I do it WRT a Spearman heatmap b/c Pearson is more quantitative and thus harder to fine-tune, and keeps messing up here--can't find a single normalization scheme that gives good clustering that isn't super dirty on Pearson.
+###For now, just use Spearman correlations 
+full.contacts.VC <- as.data.frame(normalizeCyclicLoess(VC.contacts, span=0.28, iterations=3, method="pairs"))#Pearson clusters properly, but correlation values are not very pretty for separation. Same situation in Spearman but slightly less ugly. #6 iterations of 0.1 aren't bad, and can also get beautiful results with method="fast" instead of pairs (but this takes loess to the average of all the data so that's why, maybe not as valid). 0.21 and 0.28 spans also worth checking? They produce nice looking boxplots but not great looking heatmaps in either case...
+
+#VC Correlations
+corheat <- cor(full.contacts.VC, use="complete.obs", method="pearson")
+corheats <- cor(full.contacts.VC, use="complete.obs", method="spearman")
+colnames(corheat) <- c("H_F1", "H_M1", "C_M1", "C_F1", "H_M2", "H_F2", "C_M2", "C_F2")
+rownames(corheat) <- colnames(corheat)
+colnames(corheats) <- colnames(corheat)
+rownames(corheats) <- colnames(corheat)
+
+#VC Clustering
+heatmaply(corheat, main="Pairwise Pearson Correlation @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30)) #Clusters well, but not super distinct. #FIGS1B
+heatmaply(corheats, main="Pairwise Spearman Correlation @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30)) #Same as above.
+
+#Can't manage to find a cyclic loess normalization here that makes samples cluster properly for both types of correlations...can get samples clustering in appropriate places but not get the dendrogram to look how I expect--just use same settings as above, in interest of consistency.
+full.contacts.KR <- as.data.frame(normalizeCyclicLoess(KR.contacts, span=0.36, iterations=3, method="pairs")) #Method="fast" doesn't give us the same awesomeness here, but that's not too surprising considering different normalization schemes. .26 and .32 may also be worth checking here.
+
+#KR Correlations
+corheat <- cor(full.contacts.KR, use="complete.obs", method="pearson") #Corheat for the full data set, and heatmap. Pearson clusters poorly.
+corheats <- cor(full.contacts.KR, use="complete.obs", method="spearman")
+colnames(corheat) <- c("A_HF", "B_HM", "C_CM", "D_CF", "E_HM", "F_HF", "G_CM", "H_CF")
+rownames(corheat) <- colnames(corheat)
+colnames(corheats) <- colnames(corheat)
+rownames(corheats) <- colnames(corheat)
+
+#KR Clustering
+heatmaply(corheat, main="Pairwise Pearson Correlation @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30)) #Clusters poorly, but at least species groups are maintained!
+heatmaply(corheats, main="Pairwise Spearman Correlation @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30)) #Clusters excellently!
+
+#FINALLY have something that works for both, and boxplots look good. One last check on them before moving to hists of dist'ns:
+boxplot(full.contacts.KR, ylim=c(0, 30), horizontal = TRUE, main="KR Distributions, Normalized")
+boxplot(full.contacts.VC, ylim=c(0, 30), horizontal=TRUE, main="VC Distributions, Normalized")
+
+
+###First, a quick look at histograms of the distributions of the significant Hi-C hits from homer, in both humans and chimps. Create the melted dfs for each first otherwise it takes an absurd amount of time/memory:
+VC.humans <- melt(full.contacts.VC[,c(1:2, 5:6)])
+VC.chimps <- melt(full.contacts.VC[,c(3:4, 7:8)])
+KR.humans <- melt(full.contacts.KR[,c(1:2, 5:6)])
+KR.chimps <- melt(full.contacts.KR[,c(3:4, 7:8)])
+
+#VC-normalized distributions:
+ggplot(data=VC.humans, aes(x=value)) + geom_histogram(binwidth=0.1, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Normalized Juicer Hi-C Contacts, Humans") + xlab("Juicer VC-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-1, 12), ylim=c(0, 3500)) #Human dist'ns
+ggplot(data=VC.chimps, aes(x=value)) + geom_histogram(binwidth=0.1, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Normalized Juicer Hi-C Contacts, Chimps") + xlab("Juicer VC-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-1, 12), ylim=c(0, 3500)) #Chimp Dist'ns
+#Both sets of distributions look fairly bimodal, with chimps in particular showing a peak around 0.
+
+###Now, the same thing for the KR-normalized interaction frequencies:
+ggplot(data=KR.humans, aes(x=value)) + geom_histogram(binwidth=0.1, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Normalized Juicer Hi-C Contacts, Humans") + xlab("Juicer KR-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-1, 12), ylim=c(0, 1500)) #Human dist'ns
+ggplot(data=KR.chimps, aes(x=value)) + geom_histogram(binwidth=0.1, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Normalized Juicer Hi-C Contacts, Chimps") + xlab("Juicer KR-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-1, 12), ylim=c(0, 1500)) #Chimp Dist'ns
+
+###########Take a look at these again, but on the raw data before normalization between samples:
+VC.humans <- melt(VC.contacts[,c(1:2, 5:6)])
+VC.chimps <- melt(VC.contacts[,c(3:4, 7:8)])
+KR.humans <- melt(KR.contacts[,c(1:2, 5:6)])
+KR.chimps <- melt(KR.contacts[,c(3:4, 7:8)])
+
+#VC-normalized distributions:
+ggplot(data=VC.humans, aes(x=value)) + geom_histogram(binwidth=0.1, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Juicer-Significant Hi-C Contacts, Humans") + xlab("Juicer VC-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-1, 12), ylim=c(0, 3500)) #Human dist'ns
+ggplot(data=VC.chimps, aes(x=value)) + geom_histogram(binwidth=0.1, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Juicer-Significant Hi-C Contacts, Chimps") + xlab("Juicer VC-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-1, 12), ylim=c(0, 3500)) #Chimp Dist'ns
+#Both sets of distributions look fairly bimodal, with chimps in particular showing a peak around 0.
+
+###Now, the same thing for the KR-normalized interaction frequencies:
+ggplot(data=KR.humans, aes(x=value)) + geom_histogram(binwidth=0.1, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Juicer-Significant Hi-C Contacts, Humans") + xlab("Juicer KR-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-1, 12), ylim=c(0, 1500)) #Human dist'ns
+ggplot(data=KR.chimps, aes(x=value)) + geom_histogram(binwidth=0.1, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Juicer-Significant Hi-C Contacts, Chimps") + xlab("Juicer KR-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-1, 12), ylim=c(0, 1500)) #Chimp Dist'ns
+
+#There is no longer a good case for not normalizing in a pairwise cyclic loess fashion, especially now that I have clustering working on both types of normalization--just use what we have from here on out.
+
+######PiCKUP HERE and see if I then slotted these pairwise cyclic loess back into the full DF in the other paradigm. I did indeed slot things into the data frame again in the other context, but here it must be two separate DFs--one for KR and one for VC, as the significant hits differ b/t these normalization schemes anyway.
+full.KR[,112:119] <- full.contacts.KR
+full.VC[,112:119] <- full.contacts.VC
+
+###As an initial quality control metric, take a look at the mean vs. variance plot for the normalized data--first for KR, then for VC. Also go ahead and add on columns for mean frequencies and variances both within and across the species, while they're being calculated here anyway:
+
+#KR:
+select(full.KR, "A-21792_KR", "B-28126_KR", "E-28815_KR", "F-28834_KR") %>% apply(., 1, mean) -> full.KR$Hmean
+select(full.KR, "C-3649_KR", "D-40300_KR", "G-3624_KR", "H-3651_KR") %>% apply(., 1, mean) -> full.KR$Cmean
+select(full.KR, "A-21792_KR", "B-28126_KR", "E-28815_KR", "F-28834_KR", "C-3649_KR", "D-40300_KR", "G-3624_KR", "H-3651_KR") %>% apply(., 1, mean) -> full.KR$ALLmean #Get means across species.
+select(full.KR, "A-21792_KR", "B-28126_KR", "E-28815_KR", "F-28834_KR") %>% apply(., 1, var) -> full.KR$Hvar #Get human variances.
+select(full.KR, "C-3649_KR", "D-40300_KR", "G-3624_KR", "H-3651_KR") %>% apply(., 1, var) -> full.KR$Cvar #Get chimp variances.
+select(full.KR, "A-21792_KR", "B-28126_KR", "E-28815_KR", "F-28834_KR", "C-3649_KR", "D-40300_KR", "G-3624_KR", "H-3651_KR") %>% apply(., 1, var) -> full.KR$ALLvar #Get variance across species.
+{plot(full.KR$ALLmean, full.KR$ALLvar, main="Mean vs. Variance in Juicer KR contact frequency", xlab="Mean Hi-C Contact Frequency", ylab="Variance in Hi-C Contact Frequency")
+  abline(lm(full.KR$ALLmean~full.KR$ALLvar), col="red")}
+#Very flat line of the regression. Solid looking.
+
+#VC:
+select(full.VC, "A-21792_VC", "B-28126_VC", "E-28815_VC", "F-28834_VC") %>% apply(., 1, mean) -> full.VC$Hmean
+select(full.VC, "C-3649_VC", "D-40300_VC", "G-3624_VC", "H-3651_VC") %>% apply(., 1, mean) -> full.VC$Cmean
+select(full.VC, "A-21792_VC", "B-28126_VC", "E-28815_VC", "F-28834_VC", "C-3649_VC", "D-40300_VC", "G-3624_VC", "H-3651_VC") %>% apply(., 1, mean) -> full.VC$ALLmean #Get means across species.
+select(full.VC, "A-21792_VC", "B-28126_VC", "E-28815_VC", "F-28834_VC") %>% apply(., 1, var) -> full.VC$Hvar #Get human variances.
+select(full.VC, "C-3649_VC", "D-40300_VC", "G-3624_VC", "H-3651_VC") %>% apply(., 1, var) -> full.VC$Cvar #Get chimp variances.
+select(full.VC, "A-21792_VC", "B-28126_VC", "E-28815_VC", "F-28834_VC", "C-3649_VC", "D-40300_VC", "G-3624_VC", "H-3651_VC") %>% apply(., 1, var) -> full.VC$ALLvar #Get variance across species.
+{plot(full.VC$ALLmean, full.VC$ALLvar, main="Mean vs. Variance in Juicer VC contact frequency", xlab="Mean Hi-C Contact Frequency", ylab="Variance in Hi-C Contact Frequency")
+  abline(lm(full.VC$ALLmean~full.VC$ALLvar), col="red")}
+#Very flat line of the regression. Solid looking.
+
+```
+On the whole, the distributions look fairly comparable across individuals and species, and the mean vs. variance plots show weak correlation at best between the two metrics. Now knowing the data are comparable in this sense, the next question would be whether they are different enough between the species to separate them from one another with unsupervised clustering and PCA methods.
+
+###Data clustering with Principal Components Analysis (PCA) and correlation heatmap clustering.
+Now I use PCA, breaking down the interaction frequency values into principal components that best represent the variability within the data. This technique uses orthogonal transformation to convert the many dimensions in variability of this dataset into a lower-dimensional picture that can be used to separate out functional groups in the data. In this case, the expectation is that the strongest principal component, representing the plurality of the variance, will separate out humans and chimps along its axis, grouping the two species independently, as we expect their interaction frequency values to cluster together. I then also compute pairwise pearson correlations between each of the individuals across all Hi-C contacts, and use unsupervised hierarchical clustering to create a heatmap that once again will group individuals based on similarity in interaction frequency values. Again, I would expect this technique to separate out the species very distinctly from one another.
+```{r Clustering w/ PCA and Heatmaps}
+###Now do principal components analysis (PCA) on these data to see how they separate:
+meta.data <- data.frame("SP"=c("H", "H", "C", "C", "H", "H", "C", "C"), "SX"=c("F", "M", "M", "F", "M", "F", "M", "F"), "Batch"=c(1, 1, 1, 1, 2, 2, 2, 2), "PE_reads"=c(1084472930, 1103077950, 1015696574, 1047650944, 980287418, 1037054332, 930089380, 964085606), "tags_per_BP"=c(0.351291, 0.357315, 0.342325, 0.353097, 0.317553, 0.335937, 0.313494, 0.324936), "inter_reads"=c(0.1825411, 0.1734168, 0.1559306, 0.2010798, 0.1711258, 0.1479523, 0.1604700, 0.1712287)) #need the metadata first to make this interesting; obtain this information from my study design
+pca <- prcomp(t(full.contacts.KR), scale=TRUE, center=TRUE)
+pca2 <- prcomp(t(full.contacts.VC), scale=TRUE, center=TRUE)
+ggplot(data=as.data.frame(pca$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title="PCA on KR normalized Hi-C Contact Frequency") + guides(color=guide_legend(order=1), size=FALSE, shape=guide_legend(order=2)) + xlab(paste("PC1 (", 100*summary(pca)$importance[2,1], "% of variance)")) + ylab((paste("PC2 (", 100*summary(pca)$importance[2,2], "% of variance)"))) + labs(color="Batch", shape="Species") + scale_shape_manual(labels=c("Chimp", "Human"), values=c(16, 17))
+barplot(summary(pca)$importance[2,], xlab="PCs", ylab="Proportion of Variance Explained", main="PCA on KR normalized Hi-C contact frequency") #Scree plot showing all the PCs and the proportion of the variance they explain.
+ggplot(data=as.data.frame(pca2$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title="PCA on VC normalized Hi-C Contact Frequency") + guides(color=guide_legend(order=1), size=FALSE, shape=guide_legend(order=2)) + xlab(paste("PC1 (", 100*summary(pca)$importance[2,1], "% of variance)")) + ylab((paste("PC2 (", 100*summary(pca)$importance[2,2], "% of variance)"))) + labs(color="Batch", shape="Species") + scale_shape_manual(labels=c("Chimp", "Human"), values=c(16, 17))
+barplot(summary(pca2)$importance[2,], xlab="PCs", ylab="Proportion of Variance Explained", main="PCA on VC normalized Hi-C contact frequency")
+#Scree plot
+
+#PC Correlations for VC PCA (pca2):
+#Actually statistically test correlation w/ PCs:
+PC1 <- pca2$x[,1]
+PC2 <- pca2$x[,2]
+PC3 <- pca2$x[,3]
+PC4 <- pca2$x[,4]
+PC5 <- pca2$x[,5]
+PC6 <- pca2$x[,6]
+PC7 <- pca2$x[,7]
+PCS <- data.frame(PC1, PC2, PC3, PC4, PC5, PC6, PC7)
+summary <- summary(pca2)
+PC_pvals <- matrix(data=NA, nrow=7, ncol=6, dimnames=list(c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7"), c("Species", "Sex", "Batch", "PE_reads", "tags_per_BP", "inter_reads")))
+PC_rsquareds <- matrix(data=NA, nrow=7, ncol=6, dimnames=list(c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7"), c("Species", "Sex", "Batch", "PE_reads", "tags_per_BP", "inter_reads")))
+for(i in 1:7){
+  #For species
+  speciesPC1 <- lm(PCS[,i] ~ as.factor(meta.data$SP))
+  fstat <- as.data.frame(summary(speciesPC1)$fstatistic)
+  p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,1] <- p_fstat
+  PC_rsquareds[i,1] <- summary(speciesPC1)$r.squared
+  
+  #For sex
+  sexPC1 <- lm(PCS[,i] ~ as.factor(meta.data$SX))
+  fstat <- as.data.frame(summary(sexPC1)$fstatistic)
+  p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,2] <- p_fstat
+  PC_rsquareds[i,2] <- summary(sexPC1)$r.squared
+  
+  #For batch
+  btcPC1 <- lm(PCS[,i] ~ as.factor(meta.data$Batch))
+  fstat <- as.data.frame(summary(btcPC1)$fstatistic)
+  p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,3] <- p_fstat
+  PC_rsquareds[i,3] <- summary(btcPC1)$r.squared
+  
+  #For PE_reads
+  PEPC1 <- lm(PCS[,i] ~ meta.data$PE_reads)
+  fstat <- as.data.frame(summary(PEPC1)$fstatistic)
+  p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,4] <- p_fstat
+  PC_rsquareds[i,4] <- summary(PEPC1)$r.squared
+  
+  #For tags
+  tagsPC1 <- lm(PCS[,i] ~ meta.data$tags_per_BP)
+  fstat <- as.data.frame(summary(tagsPC1)$fstatistic)
+  p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,5] <- p_fstat
+  PC_rsquareds[i,5] <- summary(tagsPC1)$r.squared
+  
+  #For inter
+  interPC1 <- lm(PCS[,i] ~ meta.data$inter_reads)
+  fstat <- as.data.frame(summary(interPC1)$fstatistic)
+  p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  PC_pvals[i,6] <- p_fstat
+  PC_rsquareds[i,6] <- summary(interPC1)$r.squared
+}
+PC_pvals
+PC_rsquareds
+#So PC1 correlates strongly and significantly with species, whereas PC4 has some moderate correlation with sex--but nothing else has a significant effect.
+```
+
+###Variance exploration
+Now I look at several metrics to assess variance in the data, checking which species hits were discovered as significant in and how many individuals a given hit was discovered in. I look at this to understand if there are some cutoffs that should be made to reduce the noisiness of the data and maximize the significance of further findings.
+```{r Variance QC}
+###Add columns to full.data to indicate species of discovery and number of individuals discovered in. These pieces of information are good to know about each of the hits generally, but can also be used to make decisions about filtering out certain classes of hits if variance is associated with any of these metrics.  
+humNAs <- rowSums(is.na(full.KR[,1:53])) #52 is when there is no human info. 13 NAs per individual.
+chimpNAs <- rowSums(is.na(full.KR[,54:105])) #Same as above of course.
+full.KR$found_in_H <- (4-humNAs/13) #Set a new column identifying number of humans hit was found in
+full.KR$found_in_C <- (4-chimpNAs/13) #Set a new column identifying number of chimps hit was found in
+full.KR$disc_species <- ifelse(full.KR$found_in_C>0&full.KR$found_in_H>0, "B", ifelse(full.KR$found_in_C==0, "H", "C")) #Set a column identifying which species (H, C, or Both) the hit in question was identified in. Works with nested ifelses.
+full.KR$tot_indiv_IDd <- full.KR$found_in_C+full.KR$found_in_H #Add a column specifying total number of individuals homer found the significant hit in.
+
+###Take a look at what proportion of the significant hits were discovered in either of the species (or both of them).
+sum(full.KR$disc_species=="H") #~9.5k
+sum(full.KR$disc_species=="C") #~12k
+sum(full.KR$disc_species=="B") #~7k
+#This is reassuring, as similar numbers of discoveries in both species suggests comparable power for detection.
+
+###Now I look at variance in interaction frequency as a function of the number of individuals in which a pair was independently called as significant. Essentially, I'm checking here to see if there is some kind of cutoff I should make for the significant hits--i.e., if the variance looks to drop off significantly after a hit is discovered in at least 2 individuals, this suggests possibly filtering out any hit only discovered in 1 individual.
+myplot <- data.frame(disc_species=full.KR$disc_species, found_in_H=full.KR$found_in_H, found_in_C=full.KR$found_in_C, tot_indiv_IDd=full.KR$tot_indiv_IDd, Hvar=full.KR$Hvar, Cvar=full.KR$Cvar, ALLvar=full.KR$ALLvar)
+ggplot(data=myplot, aes(group=tot_indiv_IDd, x=tot_indiv_IDd, y=ALLvar)) + geom_boxplot() + ggtitle("Number of Individuals a Hi-C Hit is Discovered in vs. Variance") + xlab("# Individuals where Hi-C contact called significant") + ylab("Variance in KR Interaction Frequency") + coord_cartesian(ylim=c(0, 10))
+ggplot(data=myplot, aes(group=tot_indiv_IDd, x=tot_indiv_IDd, y=ALLvar)) + geom_boxplot() + scale_y_continuous(limits=c(0, 1)) + ggtitle("Number of Individuals a Hi-C Hit is Discovered in vs. Variance") + xlab("# Individuals where Hi-C contact called significant") + ylab("Variance in KR Interaction Frequency")
+#There appears to be no clear trend here; simply decide to require a hit is discovered in at least 2 individuals to call it as biologically significant and not just technical nonsense? Do the same process for the VC data after this as well:
+filt.KR <- filter(full.KR, tot_indiv_IDd>=2) #Brings us down from ~13k hits to only 4k hits though...
+
+
+###EXACT same thing for VC data:
+humNAs <- rowSums(is.na(full.VC[,1:53])) #52 is when there is no human info. 13 NAs per individual.
+chimpNAs <- rowSums(is.na(full.VC[,54:105])) #Same as above of course.
+full.VC$found_in_H <- (4-humNAs/13) #Set a new column identifying number of humans hit was found in
+full.VC$found_in_C <- (4-chimpNAs/13) #Set a new column identifying number of chimps hit was found in
+full.VC$disc_species <- ifelse(full.VC$found_in_C>0&full.VC$found_in_H>0, "B", ifelse(full.VC$found_in_C==0, "H", "C")) #Set a column identifying which species (H, C, or Both) the hit in question was identified in. Works with nested ifelses.
+full.VC$tot_indiv_IDd <- full.VC$found_in_C+full.VC$found_in_H #Add a column specifying total number of individuals homer found the significant hit in.
+
+###Take a look at what proportion of the significant hits were discovered in either of the species (or both of them).
+sum(full.VC$disc_species=="H") #~56k
+sum(full.VC$disc_species=="C") #~12k
+sum(full.VC$disc_species=="B") #~9k
+#This is the opposite of reassuring, as different numbers of discoveries in both species suggests incomparable power for detection...how is the coverage normalization making such a big difference here for humans?! I need to probably go back and look at my initial subsetting and significance calling and extraction again to make sure it's all right...
+
+###Now I look at variance in interaction frequency as a function of the number of individuals in which a pair was independently called as significant. Essentially, I'm checking here to see if there is some kind of cutoff I should make for the significant hits--i.e., if the variance looks to drop off significantly after a hit is discovered in at least 2 individuals, this suggests possibly filtering out any hit only discovered in 1 individual.
+myplot <- data.frame(disc_species=full.VC$disc_species, found_in_H=full.VC$found_in_H, found_in_C=full.VC$found_in_C, tot_indiv_IDd=full.VC$tot_indiv_IDd, Hvar=full.VC$Hvar, Cvar=full.VC$Cvar, ALLvar=full.VC$ALLvar)
+ggplot(data=myplot, aes(group=tot_indiv_IDd, x=tot_indiv_IDd, y=ALLvar)) + geom_boxplot() + ggtitle("Number of Individuals a Hi-C Hit is Discovered in vs. Variance") + xlab("# Individuals where Hi-C contact called significant") + ylab("Variance in VC Interaction Frequency") + coord_cartesian(ylim=c(0, 10))
+ggplot(data=myplot, aes(group=tot_indiv_IDd, x=tot_indiv_IDd, y=ALLvar)) + geom_boxplot() + scale_y_continuous(limits=c(0, 1)) + ggtitle("Number of Individuals a Hi-C Hit is Discovered in vs. Variance") + xlab("# Individuals where Hi-C contact called significant") + ylab("Variance in VC Interaction Frequency")
+#There appears to be no clear trend here; simply decide to require a hit is discovered in at least 2 individuals to call it as biologically significant and not just technical nonsense?
+filt.VC <- filter(full.VC, tot_indiv_IDd>=2) #Brings us down from ~13k hits to only 4k hits though...
+
+
+sum(filt.VC$disc_species=="H") #~4k
+sum(filt.VC$disc_species=="C") #~2.5k
+sum(filt.VC$disc_species=="B") #~9k
+sum(filt.KR$disc_species=="H") #~56k
+sum(filt.KR$disc_species=="C") #~12k
+sum(filt.KR$disc_species=="B") #~9k
+
+###Take one last look at the new distributions after doing the filtering, just to see what they look like, and also take a look at the PCA and hierarchical clustering, just for reference (don't really think it matters at this point?):
+VC.humans <- melt(filt.VC[,c(112:113, 116:117)])
+VC.chimps <- melt(filt.VC[,c(114:115, 118:119)])
+KR.humans <- melt(filt.KR[,c(112:113, 116:117)])
+KR.chimps <- melt(filt.KR[,c(114:115, 118:119)])
+
+#VC-normalized distributions:
+ggplot(data=VC.humans, aes(x=value)) + geom_histogram(binwidth=0.1, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Juicer-Significant Hi-C Contacts, Humans") + xlab("Juicer VC-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-1, 12), ylim=c(0, 750)) #Human dist'ns
+ggplot(data=VC.chimps, aes(x=value)) + geom_histogram(binwidth=0.1, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Juicer-Significant Hi-C Contacts, Chimps") + xlab("Juicer VC-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-1, 12), ylim=c(0, 750)) #Chimp Dist'ns
+#Both sets of distributions look fairly bimodal, with chimps in particular showing a peak around 0.
+
+###Now, the same thing for the KR-normalized interaction frequencies:
+ggplot(data=KR.humans, aes(x=value)) + geom_histogram(binwidth=0.1, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Juicer-Significant Hi-C Contacts, Humans") + xlab("Juicer KR-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-1, 12), ylim=c(0, 500)) #Human dist'ns
+ggplot(data=KR.chimps, aes(x=value)) + geom_histogram(binwidth=0.1, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Juicer-Significant Hi-C Contacts, Chimps") + xlab("Juicer KR-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-1, 12), ylim=c(0, 500)) #Chimp Dist'ns
+
+####Check on clustering and PCA now:
+corheat <- cor(filt.KR[,112:119], use="complete.obs", method="pearson") #Corheat for the full data set, and heatmap. Pearson clusters poorly.
+corheats <- cor(filt.KR[,112:119], use="complete.obs", method="spearman")
+colnames(corheat) <- c("A_HF", "B_HM", "C_CM", "D_CF", "E_HM", "F_HF", "G_CM", "H_CF")
+rownames(corheat) <- colnames(corheat)
+colnames(corheats) <- colnames(corheat)
+rownames(corheats) <- colnames(corheat)
+
+#KR Clustering
+heatmaply(corheat, main="Pairwise Pearson Correlation @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30)) #Clusters poorly, but at least species groups are maintained!
+heatmaply(corheats, main="Pairwise Spearman Correlation @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30)) #Clusters excellently!
+#FOR KR, after filtering, Spearman holds up perfectly, Pearson has slight issues (dendrogram isn't right although larger groups clustered properly)
+
+##Repeat for VC before looking at PCA on both:
+corheat <- cor(filt.VC[,112:119], use="complete.obs", method="pearson") #Corheat for the full data set, and heatmap. Pearson clusters poorly.
+corheats <- cor(filt.VC[,112:119], use="complete.obs", method="spearman")
+colnames(corheat) <- c("A_HF", "B_HM", "C_CM", "D_CF", "E_HM", "F_HF", "G_CM", "H_CF")
+rownames(corheat) <- colnames(corheat)
+colnames(corheats) <- colnames(corheat)
+rownames(corheats) <- colnames(corheat)
+
+#KR Clustering
+heatmaply(corheat, main="Pairwise Pearson Correlation @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30)) #Clusters poorly, but at least species groups are maintained!
+heatmaply(corheats, main="Pairwise Spearman Correlation @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30)) #Clusters excellently!
+#FOR VC as well, after filtering, Spearman holds up perfectly, Pearson has slight issues (dendrogram isn't right although larger groups clustered properly)
+
+
+###PCA:
+pca <- prcomp(t(filt.KR[,112:119]), scale=TRUE, center=TRUE)
+pca2 <- prcomp(t(filt.VC[,112:119]), scale=TRUE, center=TRUE)
+ggplot(data=as.data.frame(pca$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title="PCA on KR normalized Hi-C Contact Frequency") + guides(color=guide_legend(order=1), size=FALSE, shape=guide_legend(order=2)) + xlab(paste("PC1 (", 100*summary(pca)$importance[2,1], "% of variance)")) + ylab((paste("PC2 (", 100*summary(pca)$importance[2,2], "% of variance)"))) + labs(color="Batch", shape="Species") + scale_shape_manual(labels=c("Chimp", "Human"), values=c(16, 17))
+barplot(summary(pca)$importance[2,], xlab="PCs", ylab="Proportion of Variance Explained", main="PCA on KR normalized Hi-C contact frequency") #Scree plot showing all the PCs and the proportion of the variance they explain.
+ggplot(data=as.data.frame(pca2$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title="PCA on VC normalized Hi-C Contact Frequency") + guides(color=guide_legend(order=1), size=FALSE, shape=guide_legend(order=2)) + xlab(paste("PC1 (", signif(100*summary(pca)$importance[2,1],2), "% of variance)")) + ylab((paste("PC2 (", signif(100*summary(pca)$importance[2,2],2), "% of variance)"))) + labs(color="Batch", shape="Species") + scale_shape_manual(labels=c("Chimp", "Human"), values=c(16, 17)) #FIGS1A
+barplot(summary(pca2)$importance[2,], xlab="PCs", ylab="Proportion of Variance Explained", main="PCA on VC normalized Hi-C contact frequency")
+#Scree plot
+
+#Ok, well nice to know. Now to write out files.
+
+fwrite(filt.KR, "output/juicer.filt.KR", quote = TRUE, sep = "\t", row.names = FALSE, col.names = TRUE, na="NA", showProgress = FALSE)
+fwrite(filt.VC, "output/juicer.filt.VC", quote=TRUE, sep="\t", row.names=FALSE, col.names=TRUE, na="NA", showProgress=FALSE)
+```
+
+
+
+```{r scratch}
+###No longer used, just notes about the normalization scheme.
+#full.contacts2 <- as.data.frame(normalizeCyclicLoess(VC.contacts, span=0.25, iterations=3, method="pairs")) #Good Spearman, poor Pearson (not even proper clustering)
+#full.contacts3 <- as.data.frame(normalizeCyclicLoess(VC.contacts, span=0.29, iterations=3, method="pairs")) #Both terrible!
+#full.contacts4 <- as.data.frame(normalizeCyclicLoess(VC.contacts, span=0.39, iterations=3, method="pairs")) #Spearman clusters properly but correlation values not great in terms of separation; Pearson just terrible and doesn't cluster right.
+#full.contacts5 <- as.data.frame(normalizeCyclicLoess(VC.contacts, span=0.35, iterations=3, method="pairs")) #Both TERRIBUL
+#full.contacts6 <- as.data.frame(normalizeCyclicLoess(VC.contacts, span=0.2, iterations=2, method="pairs")) #Gives the right clustering but not great correlations on Pearson. Same but a little better with Spearman.
+#full.contacts7 <- as.data.frame(normalizeCyclicLoess(VC.contacts, span=0.3, iterations=1, method="pairs")) #Spearman decent but Pearson terrible.
+#full.contacts8 <- as.data.frame(normalizeCyclicLoess(VC.contacts, span=0.333, iterations=5, method="pairs")) #Terrible!
+
+
+#Normalization schemes
+#KR.1 <- as.data.frame(normalizeCyclicLoess(KR.contacts, span=0.17, iterations=3, method="pairs"))
+#KR.2 <- as.data.frame(normalizeCyclicLoess(KR.contacts, span=0.31, iterations=2, method="pairs"))
+#VC.contacts <- as.data.frame(normalizeCyclicLoess(VC.contacts, span=0.31, iterations=3, method="pairs"))
+
+# Kfull.contacts2 <- as.data.frame(normalizeCyclicLoess(KR.contacts, span=1/4, iterations=3, method="pairs")) #Awful Pearson, slightly worse than above Spearman.
+# Kfull.contacts3 <- as.data.frame(normalizeCyclicLoess(KR.contacts, span=0.29, iterations=3, method="pairs")) #Terrible Pearson, middling Spearman.
+# Kfull.contacts6 <- as.data.frame(normalizeCyclicLoess(KR.contacts, span=0.3, iterations=1, method="pairs")) #Terrible Pearson, solid Spearman.
+# Kfull.contacts7 <- as.data.frame(normalizeCyclicLoess(KR.contacts, span=0.5, iterations=2, method="pairs"))
+# 
+# for(myspan in seq(0.2, 0.25, 0.01)){
+#   iteration <- 2
+#     Kcontacts <- as.data.frame(normalizeCyclicLoess(KR.contacts, span=myspan, iterations=iteration, method="pairs"))
+#     corheat <- cor(Kcontacts, use="complete.obs", method="pearson")
+#     corheats <- cor(Kcontacts, use="complete.obs", method="spearman")
+#     colnames(corheat) <- c("A_HF", "B_HM", "C_CM", "D_CF", "E_HM", "F_HF", "G_CM", "H_CF")
+#     rownames(corheat) <- colnames(corheat)
+#     colnames(corheats) <- colnames(corheat)
+#     rownames(corheats) <- colnames(corheat)
+#     print(heatmaply(corheat, main=paste("Pearson, 10kb, ", myspan, " span, ", iteration, " iterations.", sep=""), k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30)))
+#     print(heatmaply(corheats, main=paste("Spearman, 10kb, ", myspan, " span, ", iteration, " iterations.", sep=""), k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30)))
+# }
+```
