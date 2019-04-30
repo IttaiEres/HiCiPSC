@@ -526,10 +526,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree8380e8bd6c941d21f2a8d0d6a1102ce734cd6bc8targetblank8380e8ba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/8380e8bd6c941d21f2a8d0d6a1102ce734cd6bc8" target="_blank">8380e8b</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree311fad1c5c967a0d334706d7b35821b5186db882targetblank311fad1a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/311fad1c5c967a0d334706d7b35821b5186db882" target="_blank">311fad1</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree8380e8bd6c941d21f2a8d0d6a1102ce734cd6bc8targetblank8380e8ba" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree311fad1c5c967a0d334706d7b35821b5186db882targetblank311fad1a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -851,7 +851,6 @@ Untracked files:
     Untracked:  Rplot304.jpeg
     Untracked:  S2A.jpeg
     Untracked:  S2B.jpeg
-    Untracked:  analysis/juicer_enrichment.Rmd
     Untracked:  code/mediate.test.regressing.R
     Untracked:  data/Chimp_orthoexon_extended_info.txt
     Untracked:  data/Human_orthoexon_extended_info.txt
@@ -866,7 +865,6 @@ Untracked files:
     Untracked:  data/hic_gene_overlap/
     Untracked:  data/human_lengths.txt
     Untracked:  data/old_mediation_permutations/
-    Untracked:  docs/figure/juicer_initial_QC.Rmd/
     Untracked:  output/DC_regions.txt
     Untracked:  output/IEE.RPKM.RDS
     Untracked:  output/IEE_voom_object.RDS
@@ -880,15 +878,17 @@ Untracked files:
     Untracked:  output/full.data.10.init.QC
     Untracked:  output/full.data.10.lm.QC
     Untracked:  output/full.data.annotations.RDS
+    Untracked:  output/gene.hic.filt.KR.RDS
     Untracked:  output/gene.hic.filt.RDS
+    Untracked:  output/gene.hic.filt.VC.RDS
+    Untracked:  output/juicer.IEE.RPKM.RDS
+    Untracked:  output/juicer.IEE_voom_object.RDS
     Untracked:  output/juicer.filt.KR
+    Untracked:  output/juicer.filt.KR.final
     Untracked:  output/juicer.filt.KR.lm
     Untracked:  output/juicer.filt.VC
+    Untracked:  output/juicer.filt.VC.final
     Untracked:  output/juicer.filt.VC.lm
-
-Unstaged changes:
-    Modified:   analysis/TADs.Rmd
-    Modified:   analysis/gene_expression.Rmd
 
 </code></pre>
 <p>
@@ -927,6 +927,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/IttaiEres/HiCiPSC/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/juicer_linear_modeling.html" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -996,34 +1013,552 @@ filt.VC$SE &lt;- sqrt(model.VC$s2.post)*model.VC$stdev.unscaled[,2]
 ###Before moving to any actual assessment of the linear modeling, do a QC check by producing MA plots for both the full set and | 2 individuals. The MA plot here is the mean of Hi-C contact frequencies (avg_IF) on the x-axis, and the logFC (species beta, in this case) on the y-axis. What we are generally looking for is a fairly uniform cloud around 0 stretching across the x-axis.
 ggplot(data=filt.KR[,c(&#39;avg_IF&#39;,&#39;sp_beta&#39;)], aes(x=avg_IF, y=sp_beta)) + geom_point() + xlab(&quot;Means of Hi-C Contact Frequencies&quot;) + ylab(&quot;Species Beta (log ratio H/C)&quot;) + ggtitle(&quot;MA Plot, KR Data&quot;) + coord_cartesian(xlim=c(-5, 500), ylim=c(-50, 50))</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-1">
+Past versions of Linear Modeling-1.png
+</button>
+</p>
+<div id="fig-Linear Modeling-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-1.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=filt.VC[,c(&#39;avg_IF&#39;,&#39;sp_beta&#39;)], aes(x=avg_IF, y=sp_beta)) + geom_point() + xlab(&quot;Means of Hi-C Contact Frequencies&quot;) + ylab(&quot;Species Beta (log ratio H/C)&quot;) + ggtitle(&quot;MA Plot, VC Data&quot;) + coord_cartesian(xlim=c(-5, 500), ylim=c(-50, 50))</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-2">
+Past versions of Linear Modeling-2.png
+</button>
+</p>
+<div id="fig-Linear Modeling-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-2.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>###Check some of the more basic linear modeling issues: distributions of betas, p-vals, QQplot, volcano plot, etc.
 ##Check p-vals and betas for all covariates in the full model, on all the data.
 ggplot(data=filt.KR[,120:140], aes(x=sp_pval)) + geom_histogram(binwidth=0.01) + ggtitle(&quot;P-vals for Species, KR&quot;) + xlab(&quot;P-value&quot;) + coord_cartesian(ylim=c(0, 1000))</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-3">
+Past versions of Linear Modeling-3.png
+</button>
+</p>
+<div id="fig-Linear Modeling-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-3.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=filt.KR[,120:140], aes(x=sx_pval)) + geom_histogram(binwidth=0.01) + ggtitle(&quot;P-vals for Sex, KR&quot;) + xlab(&quot;P-value&quot;) + coord_cartesian(ylim=c(0, 1000))</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-4">
+Past versions of Linear Modeling-4.png
+</button>
+</p>
+<div id="fig-Linear Modeling-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-4.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=filt.KR[,120:140], aes(x=btc_pval)) + geom_histogram(binwidth=0.01) + ggtitle(&quot;P-vals for Batch, KR&quot;) + xlab(&quot;P-value&quot;) + coord_cartesian(ylim=c(0, 1000))</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-5">
+Past versions of Linear Modeling-5.png
+</button>
+</p>
+<div id="fig-Linear Modeling-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-5.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=filt.KR[,120:140], aes(x=sp_beta)) + geom_histogram(binwidth=0.01) + ggtitle(&quot;Betas for Species, KR&quot;) + xlab(&quot;Beta&quot;)  + coord_cartesian(xlim=c(-4.5, 4.5), ylim=c(0, 200))</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-6">
+Past versions of Linear Modeling-6.png
+</button>
+</p>
+<div id="fig-Linear Modeling-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-6.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=filt.KR[,120:140], aes(x=sx_beta)) + geom_histogram(binwidth=0.01) + ggtitle(&quot;Betas for Sex, KR&quot;) + xlab(&quot;Beta&quot;)  + coord_cartesian(xlim=c(-4.5, 4.5), ylim=c(0, 200))</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-7">
+Past versions of Linear Modeling-7.png
+</button>
+</p>
+<div id="fig-Linear Modeling-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-7.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=filt.KR[,120:140], aes(x=btc_beta)) + geom_histogram(binwidth=0.01) + ggtitle(&quot;Betas for Batch, KR&quot;) + xlab(&quot;Beta&quot;)  + coord_cartesian(xlim=c(-4.5, 4.5), ylim=c(0, 200))</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-8">
+Past versions of Linear Modeling-8.png
+</button>
+</p>
+<div id="fig-Linear Modeling-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-8.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=filt.VC[,120:140], aes(x=sp_pval)) + geom_histogram(binwidth=0.01) + ggtitle(&quot;P-vals for Species, VC&quot;) + xlab(&quot;P-value&quot;) + coord_cartesian(ylim=c(0, 1500))</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-9">
+Past versions of Linear Modeling-9.png
+</button>
+</p>
+<div id="fig-Linear Modeling-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-9.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=filt.VC[,120:140], aes(x=sx_pval)) + geom_histogram(binwidth=0.01) + ggtitle(&quot;P-vals for Sex, VC&quot;) + xlab(&quot;P-value&quot;) + coord_cartesian(ylim=c(0, 1500))</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-10">
+Past versions of Linear Modeling-10.png
+</button>
+</p>
+<div id="fig-Linear Modeling-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-10.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=filt.VC[,120:140], aes(x=btc_pval)) + geom_histogram(binwidth=0.01) + ggtitle(&quot;P-vals for Batch, VC&quot;) + xlab(&quot;P-value&quot;) + coord_cartesian(ylim=c(0, 1500))</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-11">
+Past versions of Linear Modeling-11.png
+</button>
+</p>
+<div id="fig-Linear Modeling-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-11.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=filt.VC[,120:140], aes(x=sp_beta)) + geom_histogram(binwidth=0.01) + ggtitle(&quot;Betas for Species, VC&quot;) + xlab(&quot;Beta&quot;)  + coord_cartesian(xlim=c(-4.5, 4.5), ylim=c(0, 210))</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-12">
+Past versions of Linear Modeling-12.png
+</button>
+</p>
+<div id="fig-Linear Modeling-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-12.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=filt.VC[,120:140], aes(x=sx_beta)) + geom_histogram(binwidth=0.01) + ggtitle(&quot;Betas for Sex, VC&quot;) + xlab(&quot;Beta&quot;)  + coord_cartesian(xlim=c(-4.5, 4.5), ylim=c(0, 210))</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-13.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-13">
+Past versions of Linear Modeling-13.png
+</button>
+</p>
+<div id="fig-Linear Modeling-13" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-13.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=filt.VC[,120:140], aes(x=btc_beta)) + geom_histogram(binwidth=0.01) + ggtitle(&quot;Betas for Batch, VC&quot;) + xlab(&quot;Beta&quot;)  + coord_cartesian(xlim=c(-4.5, 4.5), ylim=c(0, 210))</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-14">
+Past versions of Linear Modeling-14.png
+</button>
+</p>
+<div id="fig-Linear Modeling-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-14.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#These all look pretty good, with p-val distributions for sex and batch being fairly uniform, and betas all around being fairly normally distributed. We see distinct enrichment for significant p-values for the species term, which is what we were hoping for! Also of note is the fact that the beta distribution for species looks wider than those for batch and sex, reassuring us that species is a driving factor in differential Hi-C contacts.
 
 ###Now, to double-check on the p-values with some QQplots. First, I define a function for creating a qqplot easily and coloring elements of the distribution in order to understand where most of the density on the plot is:
@@ -1037,26 +1572,322 @@ newqqplot=function(pvals, quant, title){
 ##Start QQplotting some of these actual values.
 newqqplot(-log10(filt.KR$sp_pval), c(0.5, 0.75), &quot;QQ Plot, Species P-vals, KR Data&quot;)</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-15">
+Past versions of Linear Modeling-15.png
+</button>
+</p>
+<div id="fig-Linear Modeling-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-15.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>newqqplot(-log10(filt.KR$sx_pval), c(0.5, 0.75), &quot;QQ Plot, Sex P-vals, KR Data&quot;)</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-16">
+Past versions of Linear Modeling-16.png
+</button>
+</p>
+<div id="fig-Linear Modeling-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-16.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>newqqplot(-log10(filt.KR$btc_pval), c(0.5, 0.75), &quot;QQ Plot, Batch P-vals, KR Data&quot;)</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-17">
+Past versions of Linear Modeling-17.png
+</button>
+</p>
+<div id="fig-Linear Modeling-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-17.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>newqqplot(-log10(filt.VC$sp_pval), c(0.5, 0.75), &quot;QQ Plot, Species P-vals, VC Data&quot;)</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-18.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-18">
+Past versions of Linear Modeling-18.png
+</button>
+</p>
+<div id="fig-Linear Modeling-18" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-18.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>newqqplot(-log10(filt.VC$sx_pval), c(0.5, 0.75), &quot;QQ Plot, Sex P-vals, VC Data&quot;)</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-19.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-19">
+Past versions of Linear Modeling-19.png
+</button>
+</p>
+<div id="fig-Linear Modeling-19" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-19.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>newqqplot(-log10(filt.VC$btc_pval), c(0.5, 0.75), &quot;QQ Plot, Batch P-vals, VC Data&quot;)</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-20.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-20">
+Past versions of Linear Modeling-20.png
+</button>
+</p>
+<div id="fig-Linear Modeling-20" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-20.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>###MAIN PAPER FIG 2
 #Volcano plots of the data colored by species of discovery:
 volcplot.KR &lt;- data.frame(pval=-log10(filt.KR$sp_pval), beta=filt.KR$sp_beta, species=filt.KR$disc_species)
 ggplot(data=volcplot.KR, aes(x=beta, y=pval, color=species)) + geom_point() + xlab(&quot;Log2 Fold Change in KR Contact Frequency&quot;) + ylab(&quot;P-values&quot;) + ggtitle(&quot;KR Contact Frequency Differences Colored by Species of Discovery&quot;) + coord_cartesian(xlim=c(-6, 6))</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-21.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-21">
+Past versions of Linear Modeling-21.png
+</button>
+</p>
+<div id="fig-Linear Modeling-21" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-21.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#ggplot(data=volcplot.KR, aes(x=beta, y=pval)) + geom_point() + xlab(&quot;Log2 Fold Change in Contact Frequency&quot;) + ylab(&quot;-log10 BH-corrected p-values&quot;) + ggtitle(&quot;Contact Frequency Differences, KR&quot;) + coord_cartesian(xlim=c(-6, 6))
 
 volcplot.VC &lt;- data.frame(pval=-log10(filt.VC$sp_pval), beta=filt.VC$sp_beta, species=filt.VC$disc_species)
 ggplot(data=volcplot.VC, aes(x=beta, y=pval, color=species)) + geom_point() + xlab(&quot;Log2 Fold Change in VC Contact Frequency&quot;) + ylab(&quot;P-values&quot;) + ggtitle(&quot;VC Contact Frequency Differences Colored by Species of Discovery&quot;) + coord_cartesian(xlim=c(-6, 6))</code></pre>
 <p><img src="figure/juicer_linear_modeling.Rmd/Linear%20Modeling-22.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Linear Modeling-22">
+Past versions of Linear Modeling-22.png
+</button>
+</p>
+<div id="fig-Linear Modeling-22" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_linear_modeling.Rmd/Linear Modeling-22.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#ggplot(data=volcplot.VC, aes(x=beta, y=pval)) + geom_point() + xlab(&quot;Log2 Fold Change in Contact Frequency&quot;) + ylab(&quot;-log10 BH-corrected p-values&quot;) + ggtitle(&quot;Contact Frequency Differences, VC&quot;) + coord_cartesian(xlim=c(-6, 6))
 
 #Write out the data with the new columns added on!

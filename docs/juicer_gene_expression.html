@@ -526,10 +526,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree8380e8bd6c941d21f2a8d0d6a1102ce734cd6bc8targetblank8380e8ba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/8380e8bd6c941d21f2a8d0d6a1102ce734cd6bc8" target="_blank">8380e8b</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree311fad1c5c967a0d334706d7b35821b5186db882targetblank311fad1a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/311fad1c5c967a0d334706d7b35821b5186db882" target="_blank">311fad1</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree8380e8bd6c941d21f2a8d0d6a1102ce734cd6bc8targetblank8380e8ba" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree311fad1c5c967a0d334706d7b35821b5186db882targetblank311fad1a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -851,7 +851,6 @@ Untracked files:
     Untracked:  Rplot304.jpeg
     Untracked:  S2A.jpeg
     Untracked:  S2B.jpeg
-    Untracked:  analysis/juicer_enrichment.Rmd
     Untracked:  code/mediate.test.regressing.R
     Untracked:  data/Chimp_orthoexon_extended_info.txt
     Untracked:  data/Human_orthoexon_extended_info.txt
@@ -866,9 +865,6 @@ Untracked files:
     Untracked:  data/hic_gene_overlap/
     Untracked:  data/human_lengths.txt
     Untracked:  data/old_mediation_permutations/
-    Untracked:  docs/figure/juicer_initial_QC.Rmd/
-    Untracked:  docs/figure/juicer_linear_modeling.Rmd/
-    Untracked:  docs/figure/juicer_linear_modeling_QC.Rmd/
     Untracked:  output/DC_regions.txt
     Untracked:  output/IEE.RPKM.RDS
     Untracked:  output/IEE_voom_object.RDS
@@ -882,17 +878,17 @@ Untracked files:
     Untracked:  output/full.data.10.init.QC
     Untracked:  output/full.data.10.lm.QC
     Untracked:  output/full.data.annotations.RDS
+    Untracked:  output/gene.hic.filt.KR.RDS
     Untracked:  output/gene.hic.filt.RDS
+    Untracked:  output/gene.hic.filt.VC.RDS
+    Untracked:  output/juicer.IEE.RPKM.RDS
+    Untracked:  output/juicer.IEE_voom_object.RDS
     Untracked:  output/juicer.filt.KR
     Untracked:  output/juicer.filt.KR.final
     Untracked:  output/juicer.filt.KR.lm
     Untracked:  output/juicer.filt.VC
     Untracked:  output/juicer.filt.VC.final
     Untracked:  output/juicer.filt.VC.lm
-
-Unstaged changes:
-    Modified:   analysis/TADs.Rmd
-    Modified:   analysis/gene_expression.Rmd
 
 </code></pre>
 <p>
@@ -931,6 +927,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/IttaiEres/HiCiPSC/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/juicer_gene_expression.html" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1094,6 +1107,43 @@ for (i in 2:8){
 }
 legend(&quot;topright&quot;, colnames(dge_final[,1:8]), text.col=col, bty=&quot;n&quot;)</code></pre>
 <p><img src="figure/juicer_gene_expression.Rmd/Prepping%20gene%20expression%20data-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Prepping gene expression data-1">
+Past versions of Prepping gene expression data-1.png
+</button>
+</p>
+<div id="fig-Prepping gene expression data-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-1.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#Quick visualization of the normalization on the whole set of genes.
 col &lt;- brewer.pal(8, &quot;Paired&quot;)
 raw &lt;- as.data.frame(dge$E[,1:8])
@@ -1104,6 +1154,43 @@ title(main=&quot;Unnormalized data&quot;,ylab=&quot;Log-RPKM&quot;)
 boxplot(normed, las=2, col=col, main=&quot;&quot;)
 title(main=&quot;Normalized data&quot;,ylab=&quot;Log-RPKM&quot;)</code></pre>
 <p><img src="figure/juicer_gene_expression.Rmd/Prepping%20gene%20expression%20data-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Prepping gene expression data-2">
+Past versions of Prepping gene expression data-2.png
+</button>
+</p>
+<div id="fig-Prepping gene expression data-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-2.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#Now, observe normalization on the filtered set of genes.
 col &lt;- brewer.pal(8, &quot;Paired&quot;)
 raw &lt;- as.data.frame(dge_filt$E[,1:8])
@@ -1114,12 +1201,86 @@ title(main=&quot;Unnormalized data&quot;,ylab=&quot;Log-RPKM&quot;)
 boxplot(normed, las=2, col=col, main=&quot;&quot;)
 title(main=&quot;Normalized data&quot;,ylab=&quot;Log-RPKM&quot;)</code></pre>
 <p><img src="figure/juicer_gene_expression.Rmd/Prepping%20gene%20expression%20data-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Prepping gene expression data-3">
+Past versions of Prepping gene expression data-3.png
+</button>
+</p>
+<div id="fig-Prepping gene expression data-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-3.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#Now, do some quick MDS plotting to make sure this expression data separates out species properly.
 species &lt;- c(&quot;C&quot;, &quot;C&quot;, &quot;C&quot;, &quot;C&quot;, &quot;H&quot;, &quot;H&quot;, &quot;H&quot;, &quot;H&quot;)
 color &lt;- c(rep(&quot;red&quot;, 4), rep(&quot;blue&quot;, 4))
 par(mfrow=c(1,1))
 plotMDS(dge_final$E[,1:8], labels=species, col=color, main=&quot;MDS Plot&quot;) #Shows separation of the species along the logFC dimension representing the majority of the variance--orthogonal check to PCA, and looks great!</code></pre>
 <p><img src="figure/juicer_gene_expression.Rmd/Prepping%20gene%20expression%20data-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Prepping gene expression data-4">
+Past versions of Prepping gene expression data-4.png
+</button>
+</p>
+<div id="fig-Prepping gene expression data-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-4.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>###Now, apply voom to get quality weights.
 meta.exp.data &lt;- data.frame(&quot;SP&quot;=c(&quot;C&quot;, &quot;C&quot;, &quot;C&quot;, &quot;C&quot;, &quot;H&quot;, &quot;H&quot;, &quot;H&quot;, &quot;H&quot;), &quot;SX&quot;=c(&quot;M&quot;,&quot;M&quot; ,&quot;F&quot;,&quot;F&quot;,&quot;F&quot;, &quot;M&quot;,&quot;M&quot;,&quot;F&quot;))
 SP &lt;- factor(meta.exp.data$SP,levels = c(&quot;H&quot;,&quot;C&quot;))
@@ -1128,6 +1289,43 @@ exp.design &lt;- model.matrix(~0+SP+SX)#(~1+meta.exp.data$SP+meta.exp.data$SX)
 colnames(exp.design) &lt;- c(&quot;Human&quot;, &quot;Chimp&quot;, &quot;Sex&quot;)
 weighted.data &lt;- voom(dge_final, exp.design, plot=TRUE, normalize.method = &quot;cyclicloess&quot;)</code></pre>
 <p><img src="figure/juicer_gene_expression.Rmd/Prepping%20gene%20expression%20data-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Prepping gene expression data-5">
+Past versions of Prepping gene expression data-5.png
+</button>
+</p>
+<div id="fig-Prepping gene expression data-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-5.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>##Obtain rest of LM results, with particular eye to DE table!
 vfit &lt;- lmFit(weighted.data, exp.design)
 efit &lt;- eBayes(vfit)
@@ -1138,6 +1336,43 @@ finalfit &lt;- eBayes(diff_species)
 detable &lt;- topTable(finalfit, coef = 1, adjust.method = &quot;BH&quot;, number = Inf, sort.by=&quot;none&quot;)
 plotSA(efit, main=&quot;Final model: Mean−variance trend&quot;)</code></pre>
 <p><img src="figure/juicer_gene_expression.Rmd/Prepping%20gene%20expression%20data-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Prepping gene expression data-6">
+Past versions of Prepping gene expression data-6.png
+</button>
+</p>
+<div id="fig-Prepping gene expression data-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-6.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#Get lists of the DE and non-DE genes so I can run separate analyses on them at any point.
 DEgenes &lt;- detable$genes[which(detable$adj.P.Val&lt;=0.05)]
 nonDEgenes &lt;- detable$genes[-which(detable$adj.P.Val&lt;=0.05)]
@@ -1509,7 +1744,158 @@ Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code></pre>
-<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-1">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-1.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-1.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-2">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-2.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-2.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-3">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-3.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-3.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-4">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-4.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-4.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>    DEFDR DHICFDR prop.obs   prop.exp     chisq.p Dneither  DE DHiC Dboth
 101 0.025    0.01    0.020 0.01779141 1.000000000     1405 196   25     4
 102 0.025    0.02    0.045 0.03558282 0.572897327     1381 191   49     9
@@ -1682,9 +2068,159 @@ Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code></pre>
 <p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-5">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-5.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-5.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>Warning: Removed 5 rows containing missing values (geom_path).</code></pre>
 <pre><code>Warning: Removed 5 rows containing missing values (geom_path).</code></pre>
-<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-6">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-6.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-6.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-7">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-7.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-7.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-8">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-8.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-8.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>    DEFDR DHICFDR   prop.obs    prop.exp   chisq.p Dneither  DE DHiC Dboth
 101 0.025    0.01 0.00000000 0.000000000 0.0000000     1120 154    0     0
 102 0.025    0.02 0.00000000 0.003139717 1.0000000     1116 154    4     0
@@ -1793,7 +2329,158 @@ Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code
 #enrichment.plotter(gene.hic.filt, &quot;median_FDR.H&quot;, &quot;adj.P.Val&quot;, &quot;Median FDR of Hi-C Contacts Overlapping Gene, Human&quot;)
 #enrichment.plotter(gene.hic.filt, &quot;median_FDR.C&quot;, &quot;adj.P.Val&quot;, &quot;Median FDR of Hi-C Contacts Overlapping Gene, Chimp&quot;)
 enrichment.plotter(gene.hic.VC, &quot;weighted_Z.s2post.H&quot;, &quot;adj.P.Val&quot;, &quot;FDR for Weighted p-val Combine of VC Hi-C Contacts Overlapping Gene&quot;, xmax=1)</code></pre>
-<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-10.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-9">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-9.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-9.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-10">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-10.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-10.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-11">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-11.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-11.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-12">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-12.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-12.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>    DEFDR DHICFDR prop.obs  prop.exp    chisq.p Dneither DE DHiC Dboth
 101 0.025    0.01    0.540 0.4828221 0.09851197      751 92  679   108
 102 0.025    0.02    0.555 0.5036810 0.14041388      720 89  710   111
@@ -1896,7 +2583,158 @@ enrichment.plotter(gene.hic.VC, &quot;weighted_Z.s2post.H&quot;, &quot;adj.P.Val
 199 0.025    0.99    0.910 0.8858896 0.30477538      168 18 1262   182
 200 0.025    1.00    1.000 1.0000000 0.00000000        0  0 1430   200</code></pre>
 <pre class="r"><code>enrichment.plotter(gene.hic.KR, &quot;weighted_Z.s2post.H&quot;, &quot;adj.P.Val&quot;, &quot;FDR for Weighted p-val Combine of KR Hi-C Contacts Overlapping Gene&quot;, xmax=1)</code></pre>
-<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-13.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-14.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-13.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-13">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-13.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-13" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-13.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-14">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-14.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-14.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-15">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-15.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-15.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-16">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-16.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-16.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>    DEFDR DHICFDR  prop.obs  prop.exp    chisq.p Dneither DE DHiC Dboth
 101 0.025    0.01 0.6038961 0.5518053 0.19362378      510 61  610    93
 102 0.025    0.02 0.6298701 0.5745683 0.16346233      485 57  635    97
@@ -2021,7 +2859,158 @@ Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code></pre>
-<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-17.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-18.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-19.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-20.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-17">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-17.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-17.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-18.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-18">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-18.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-18" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-18.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-19.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-19">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-19.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-19" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-19.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-20.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-20">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-20.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-20" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-20.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>    DEFDR DHICFDR prop.obs  prop.exp    chisq.p Dneither  DE DHiC Dboth
 101 0.025    0.01    0.170 0.1361963 0.16820646     1242 166  188    34
 102 0.025    0.02    0.200 0.1766871 0.40998168     1182 160  248    40
@@ -2175,7 +3164,158 @@ Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code></pre>
-<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-21.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-22.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-23.png" width="672" style="display: block; margin: auto;" /><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-24.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-21.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-21">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-21.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-21" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-21.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-22.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-22">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-22.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-22" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-22.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-23.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-23">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-23.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-23" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-23.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/juicer_gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-24.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-24">
+Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-24.png
+</button>
+</p>
+<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-24" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-24.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>    DEFDR DHICFDR  prop.obs  prop.exp   chisq.p Dneither  DE DHiC Dboth
 101 0.025    0.01 0.1233766 0.1145997 0.8182620      993 135  127    19
 102 0.025    0.02 0.1623377 0.1742543 0.7622657      923 129  197    25
@@ -2586,8 +3726,82 @@ ggcorsVC &lt;- rbind(fullcorsVC, fullDEcorsVC, fullnoDEcorsVC)
 #VC then KR
 ggplot(data=filter(ggcorsVC, type==&quot;all&quot;|type==&quot;DE&quot;|type==&quot;non-DE&quot;)) + stat_density(aes(x=cor, group=type, color=type, y=..scaled..), position=&quot;identity&quot;, geom=&quot;line&quot;) + ggtitle(&quot;Correlation b/t RPKM Expression and VC Hi-C Contact Frequency&quot;) + xlab(&quot;Pearson Correlations b/t RPKM Expression and VC Hi-C Contact Frequency&quot;) + ylab(&quot;Density&quot;) + scale_color_manual(&quot;Gene Set&quot;, values=c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;), labels=c(&quot;All genes&quot;, &quot;DE genes&quot;, &quot;non-DE genes&quot;))</code></pre>
 <p><img src="figure/juicer_gene_expression.Rmd/Merging%20Expression%20and%20Hi-C;%20Followed%20by%20correlation%20exploration-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Merging Expression and Hi-C; Followed by correlation exploration-1">
+Past versions of Merging Expression and Hi-C; Followed by correlation exploration-1.png
+</button>
+</p>
+<div id="fig-Merging Expression and Hi-C; Followed by correlation exploration-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Merging Expression and Hi-C; Followed by correlation exploration-1.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=filter(ggcorsKR, type==&quot;all&quot;|type==&quot;DE&quot;|type==&quot;non-DE&quot;)) + stat_density(aes(x=cor, group=type, color=type, y=..scaled..), position=&quot;identity&quot;, geom=&quot;line&quot;) + ggtitle(&quot;Correlation b/t RPKM Expression and KR Hi-C Contact Frequency&quot;) + xlab(&quot;Pearson Correlations b/t RPKM Expression and KR Hi-C Contact Frequency&quot;) + ylab(&quot;Density&quot;) + scale_color_manual(&quot;Gene Set&quot;, values=c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;), labels=c(&quot;All genes&quot;, &quot;DE genes&quot;, &quot;non-DE genes&quot;))</code></pre>
 <p><img src="figure/juicer_gene_expression.Rmd/Merging%20Expression%20and%20Hi-C;%20Followed%20by%20correlation%20exploration-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Merging Expression and Hi-C; Followed by correlation exploration-2">
+Past versions of Merging Expression and Hi-C; Followed by correlation exploration-2.png
+</button>
+</p>
+<div id="fig-Merging Expression and Hi-C; Followed by correlation exploration-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Merging Expression and Hi-C; Followed by correlation exploration-2.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>###This looks great, showing strong bimodal distribution for the DE genes and broader distributions with a peak at 0 for the non-DE set and the full set. To assess if this is legit at all, I now re-run this correlation analysis after permuting the Hi-C values. I shuffle sample IDs on a gene-by-gene basis to accomplish this:
 cor.permuter &lt;- function(hicdata, exprdata, nperm){
   result &lt;- data.frame(cor=NA, type=rep(1:nperm, each=nrow(exprdata)))
@@ -2614,8 +3828,82 @@ nonDE.perm.VC &lt;- cor.permuter(nonDEcontactsVC, nonDEexprsVC, 5)
 #Now visualize.
 ggplot(data=filter(ggcorsKR, type==&quot;all&quot;|type==&quot;DE&quot;|type==&quot;non-DE&quot;)) + stat_density(aes(x=cor, group=type, color=type, y=..scaled..), position=&quot;identity&quot;, geom=&quot;line&quot;) + stat_density(data=full.perm.KR, aes(x=cor, group=type), geom=&quot;line&quot;, linetype=&quot;dotted&quot;, position=&quot;identity&quot;) + stat_density(data=DE.perm.KR, aes(x=cor, group=type), geom=&quot;line&quot;, linetype=&quot;dashed&quot;, position=&quot;identity&quot;) + stat_density(data=nonDE.perm.KR, aes(x=cor, group=type), geom=&quot;line&quot;, linetype=&quot;twodash&quot;, position=&quot;identity&quot;) + ggtitle(&quot;Correlation b/t RPKM Expression and KR Hi-C Contact Frequency&quot;) + xlab(&quot;Pearson Correlations b/t RPKM Expression and KR Hi-C Contact Frequency&quot;) + ylab(&quot;Density&quot;) + scale_color_manual(&quot;Gene Set&quot;, values=c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;), labels=c(&quot;All genes&quot;, &quot;DE genes&quot;, &quot;non-DE genes&quot;))</code></pre>
 <p><img src="figure/juicer_gene_expression.Rmd/Merging%20Expression%20and%20Hi-C;%20Followed%20by%20correlation%20exploration-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Merging Expression and Hi-C; Followed by correlation exploration-3">
+Past versions of Merging Expression and Hi-C; Followed by correlation exploration-3.png
+</button>
+</p>
+<div id="fig-Merging Expression and Hi-C; Followed by correlation exploration-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Merging Expression and Hi-C; Followed by correlation exploration-3.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=filter(ggcorsVC, type==&quot;all&quot;|type==&quot;DE&quot;|type==&quot;non-DE&quot;)) + stat_density(aes(x=cor, group=type, color=type, y=..scaled..), position=&quot;identity&quot;, geom=&quot;line&quot;) + stat_density(data=full.perm.VC, aes(x=cor, group=type), geom=&quot;line&quot;, linetype=&quot;dotted&quot;, position=&quot;identity&quot;) + stat_density(data=DE.perm.VC, aes(x=cor, group=type), geom=&quot;line&quot;, linetype=&quot;dashed&quot;, position=&quot;identity&quot;) + stat_density(data=nonDE.perm.VC, aes(x=cor, group=type), geom=&quot;line&quot;, linetype=&quot;twodash&quot;, position=&quot;identity&quot;) + ggtitle(&quot;Correlation b/t RPKM Expression and VC Hi-C Contact Frequency&quot;) + xlab(&quot;Pearson Correlations b/t RPKM Expression and VC Hi-C Contact Frequency&quot;) + ylab(&quot;Density&quot;) + scale_color_manual(&quot;Gene Set&quot;, values=c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;), labels=c(&quot;All genes&quot;, &quot;DE genes&quot;, &quot;non-DE genes&quot;))</code></pre>
 <p><img src="figure/juicer_gene_expression.Rmd/Merging%20Expression%20and%20Hi-C;%20Followed%20by%20correlation%20exploration-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Merging Expression and Hi-C; Followed by correlation exploration-4">
+Past versions of Merging Expression and Hi-C; Followed by correlation exploration-4.png
+</button>
+</p>
+<div id="fig-Merging Expression and Hi-C; Followed by correlation exploration-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Merging Expression and Hi-C; Followed by correlation exploration-4.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#See that permuted datasets have a tighter correlation distribution with a strong peak at 0. Reassuring. In the future I will repeat this analysis on Midway2, running 10000 permutations to see the full range of permuted data possible.</code></pre>
 <p>Now that I’ve seen some nice effects in the correlation between expression and contact for different sets of genes, and for permutations on those sets, I move to see what kind of quantitiative explanatory power differential contact (DC) might actually have for differential expression (DE).</p>
 <p>###How well does Hi-C data explain expression data? In this next section I “regress out” the effect of Hi-C contacts from their overlapping genes’ RPKM expression values, comparing a linear model run on the base values to one run on the residuals of expression after regressing out Hi-C data. Comparing the p-values before and after this regression can give some sense of whether the DE is being driven by differential Hi-C contacts (DC).</p>
@@ -2681,8 +3969,83 @@ h_minFDR_pvals_VC &lt;- lmcorrect(weighted.data, hmin.VC[,c(&quot;A-21792&quot;,
 
 ggplot(data=h_minFDR_pvals_KR$stats, aes(x=-log10(pval.before), y=-log10(pval.after))) + geom_point(size=0.01) + geom_hline(yintercept=-log10(0.05), color=&quot;red&quot;) + geom_vline(xintercept=-log10(0.05), color=&quot;red&quot;) + geom_abline(slope=1, intercept=0, color=&quot;green&quot;, linetype=&quot;dashed&quot;) + ggtitle(&quot;Evidence for DE Before vs. After Regressing out Hi-C Contact Frequency&quot;) + xlab(&quot;-log10(p-value of DE before KR Hi-C regression)&quot;) + ylab(&quot;-log10(p-value of DE after KR Hi-C regression)&quot;) + theme(plot.title=element_text(hjust=1))</code></pre>
 <p>&lt;img src=“figure/juicer_gene_expression.Rmd/Mediation effect by”regressing out&quot; Hi-C effects from Expression Data-1.png&quot; width=“672” style=“display: block; margin: auto;” /&gt;</p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-1">
+Past versions of Mediation effect by “regressing out” Hi-C effects from Expression Data-1.png
+</button>
+</p>
+<div id="fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+&lt;a href=“<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Mediation" class="uri">https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Mediation</a> effect by”regressing out&quot; Hi-C effects from Expression Data-1.png&quot; target=&quot;_blank&quot;&gt;b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=h_minFDR_pvals_VC$stats, aes(x=-log10(pval.before), y=-log10(pval.after))) + geom_point(size=0.01) + geom_hline(yintercept=-log10(0.05), color=&quot;red&quot;) + geom_vline(xintercept=-log10(0.05), color=&quot;red&quot;) + geom_abline(slope=1, intercept=0, color=&quot;green&quot;, linetype=&quot;dashed&quot;) + ggtitle(&quot;Evidence for DE Before vs. After Regressing out Hi-C Contact Frequency&quot;) + xlab(&quot;-log10(p-value of DE before VC Hi-C regression)&quot;) + ylab(&quot;-log10(p-value of DE after VC Hi-C regression)&quot;) + theme(plot.title=element_text(hjust=1))</code></pre>
-<p>&lt;img src=“figure/juicer_gene_expression.Rmd/Mediation effect by”regressing out&quot; Hi-C effects from Expression Data-2.png&quot; width=“672” style=“display: block; margin: auto;” /&gt; Critically, here I see that “regressing out” Hi-C data and trying to model expression again moves many genes from being significantly differentially expressed (at FDR of 5%) to no longer showing differential expression. Seeing most of the hits in the bottom right corner of these visualizations is what confirms this. Reassuringly, I also see stronger correlations between RPKM expression values and normalized Hi-C interaction frequency values for points farther away from the diagonal green line of expectation. However, since this is not a statistical test, I have no assessment of significance. To accomplish this, I compare these results to running the same kind of analysis on permuted data in the next section.</p>
+<p>&lt;img src=“figure/juicer_gene_expression.Rmd/Mediation effect by”regressing out&quot; Hi-C effects from Expression Data-2.png&quot; width=“672” style=“display: block; margin: auto;” /&gt;</p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-2">
+Past versions of Mediation effect by “regressing out” Hi-C effects from Expression Data-2.png
+</button>
+</p>
+<div id="fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+&lt;a href=“<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Mediation" class="uri">https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Mediation</a> effect by”regressing out&quot; Hi-C effects from Expression Data-2.png&quot; target=&quot;_blank&quot;&gt;b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Critically, here I see that “regressing out” Hi-C data and trying to model expression again moves many genes from being significantly differentially expressed (at FDR of 5%) to no longer showing differential expression. Seeing most of the hits in the bottom right corner of these visualizations is what confirms this. Reassuringly, I also see stronger correlations between RPKM expression values and normalized Hi-C interaction frequency values for points farther away from the diagonal green line of expectation. However, since this is not a statistical test, I have no assessment of significance. To accomplish this, I compare these results to running the same kind of analysis on permuted data in the next section.</p>
 <p>###Differences in effect size/sign changes This next section would be to look at differences in effect size and sign changes when doing the two separate lms (one before and one after regressing out Hi-C data from RPKM expression). Unfortunately the ash results I get have all their svalues as 1 so this is boring/not interesting right now. Hence it is not included. But let’s give it another go!</p>
 <pre class="r"><code>#######FRESH CODE 6-21-18#########
 design &lt;- model.matrix(~meta.data$SP)
@@ -2760,57 +4123,125 @@ ind_sig &lt;- (ash_reg$result$svalue &lt; 0.05)
 ind_sig[ind_sig == TRUE] &lt;- &quot;red&quot;
 ind_sig[ind_sig == FALSE] &lt;- &quot;black&quot;
 plot(x=ash_reg$result$betahat, y=ash_reg$result$sebetahat, ylab=&quot;Standard error of the difference&quot;, xlab=&quot;Difference in effect size from 2 lms, KR&quot;, main=&quot;Difference of effect size (DE genes)&quot;, pch=16, cex=0.6, col=ind_sig)#, xlim=c(-2.5, 2.5), ylim=c(0, 1.3))
-legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
+legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8) #FIGS6A</code></pre>
 <p><img src="figure/juicer_gene_expression.Rmd/Differences%20in%20Effect%20Sizes-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>ash_reg_nonDE &lt;- ash(as.vector(nonDEtest$d), as.vector(vshrnonDE$sd.post), mixcompdist = &quot;normal&quot;) #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
-summary(ash_reg_nonDE$result$svalue&lt;=0.05) #Incredible result, looks too good to be true.</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differences in Effect Sizes-1">
+Past versions of Differences in Effect Sizes-1.png
+</button>
+</p>
+<div id="fig-Differences in Effect Sizes-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differences in Effect Sizes-1.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>ash_reg_nonDE &lt;- ash(as.vector(nonDEtest$d), as.vector(vshrnonDE$sd.post), mixcompdist = &quot;normal&quot;) #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)?
+summary(ash_reg_nonDE$result$svalue&lt;=0.05)</code></pre>
 <pre><code>   Mode   FALSE 
 logical    1039 </code></pre>
 <pre class="r"><code>ind_sig &lt;- (ash_reg_nonDE$result$svalue &lt; 0.05)
 ind_sig[ind_sig == TRUE] &lt;- &quot;red&quot;
 ind_sig[ind_sig == FALSE] &lt;- &quot;black&quot;
 plot(x=ash_reg_nonDE$result$betahat, y=ash_reg_nonDE$result$sebetahat, ylab=&quot;Standard error of the difference&quot;, xlab=&quot;Difference in effect size from 2 lms, KR&quot;, main=&quot;Difference of effect size (non-DE genes)&quot;, pch=16, cex=0.6, col=ind_sig)#, xlim=c(-2.5, 2.5), ylim=c(0, 1.3))
-legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
+legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8) #FIGS6B</code></pre>
 <p><img src="figure/juicer_gene_expression.Rmd/Differences%20in%20Effect%20Sizes-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>exprs &lt;- select(hmin.VC, &quot;A-21792&quot;, &quot;B-28126&quot;, &quot;C-3649&quot;, &quot;D-40300&quot;, &quot;E-28815&quot;, &quot;F-28834&quot;, &quot;G-3624&quot;, &quot;H-3651&quot;, genes) #Should be done on just DE genes, filter with adj.P.Val&lt;=0.05
-hic &lt;- select(hmin.VC,&quot;A_21792_HIC&quot;, &quot;B_28126_HIC&quot;, &quot;C_3649_HIC&quot;, &quot;D_40300_HIC&quot;, &quot;E_28815_HIC&quot;, &quot;F_28834_HIC&quot;, &quot;G_3624_HIC&quot;, &quot;H_3651_HIC&quot;)
-present &lt;- sapply(1:nrow(hic), function(i) !any(is.na(hic[i,])))
-genes &lt;- exprs$genes
-DEgenes &lt;- filter(hmin.KR, adj.P.Val&lt;=0.05) %&gt;% select(., genes)
-myDEindices &lt;- which(genes %in% DEgenes[,1])
-exprs &lt;- exprs[,-9]
-exprs &lt;- data.matrix(exprs[present,])
-hic &lt;- data.matrix(hic[present,])
-designy &lt;- as.factor(c(&quot;human&quot;, &quot;human&quot;, &quot;chimp&quot;, &quot;chimp&quot;, &quot;human&quot;, &quot;human&quot;, &quot;chimp&quot;, &quot;chimp&quot;))
-colnames(hic) &lt;- colnames(exprs)
-hic &lt;- as.data.table(hic)
-exprs &lt;- as.data.table(exprs)
-test &lt;- mediate.test.regressing(exprs, designy, hic)
-vshrDE &lt;- vash(test$d_se[myDEindices], df=6)
-vshrnonDE &lt;- vash(test$d_se[-myDEindices], df=6)
-vshrink &lt;- vash(test$d_se, df=6)
-DEtest &lt;- test[myDEindices,]
-nonDEtest &lt;- test[-myDEindices,]
-ash_reg &lt;- ash(as.vector(DEtest$d), as.vector(vshrDE$sd.post), mixcompdist = &quot;normal&quot;) #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
-summary(ash_reg$result$svalue&lt;=0.05) #Incredible result, looks too good to be true.</code></pre>
-<pre><code>   Mode   FALSE    TRUE 
-logical     197      13 </code></pre>
-<pre class="r"><code>ind_sig &lt;- (ash_reg$result$svalue &lt; 0.05)
-ind_sig[ind_sig == TRUE] &lt;- &quot;red&quot;
-ind_sig[ind_sig == FALSE] &lt;- &quot;black&quot;
-plot(x=ash_reg$result$betahat, y=ash_reg$result$sebetahat, ylab=&quot;Standard error of the difference&quot;, xlab=&quot;Difference in Effect Size from 2 Linear Models, VC-Norm&quot;, main=&quot;Difference of Effect Size in DE Genes&quot;, pch=16, cex=0.6, col=ind_sig, xlim=c(-2.5, 2.5), ylim=c(0, 2.5)) #FIGS15A
-legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
-<p><img src="figure/juicer_gene_expression.Rmd/Differences%20in%20Effect%20Sizes-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>ash_reg_nonDE &lt;- ash(as.vector(nonDEtest$d), as.vector(vshrnonDE$sd.post), mixcompdist = &quot;normal&quot;) #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
-summary(ash_reg_nonDE$result$svalue&lt;=0.05) #Incredible result, looks too good to be true.</code></pre>
-<pre><code>   Mode   FALSE 
-logical    1420 </code></pre>
-<pre class="r"><code>ind_sig &lt;- (ash_reg_nonDE$result$svalue &lt; 0.05)
-ind_sig[ind_sig == TRUE] &lt;- &quot;red&quot;
-ind_sig[ind_sig == FALSE] &lt;- &quot;black&quot;
-plot(x=ash_reg_nonDE$result$betahat, y=ash_reg_nonDE$result$sebetahat, ylab=&quot;Standard error of the difference&quot;, xlab=&quot;Difference in Effect Size from 2 Linear Models, VC-Norm&quot;, main=&quot;Difference of Effect Size in non-DE Genes&quot;, pch=16, cex=0.6, col=ind_sig, xlim=c(-2.5, 2.5), ylim=c(0, 2.5))
-legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8) #FIGS15B</code></pre>
-<p><img src="figure/juicer_gene_expression.Rmd/Differences%20in%20Effect%20Sizes-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differences in Effect Sizes-2">
+Past versions of Differences in Effect Sizes-2.png
+</button>
+</p>
+<div id="fig-Differences in Effect Sizes-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differences in Effect Sizes-2.png" target="_blank">b7d82fc</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code># exprs &lt;- select(hmin.VC, &quot;A-21792&quot;, &quot;B-28126&quot;, &quot;C-3649&quot;, &quot;D-40300&quot;, &quot;E-28815&quot;, &quot;F-28834&quot;, &quot;G-3624&quot;, &quot;H-3651&quot;, genes) #Should be done on just DE genes, filter with adj.P.Val&lt;=0.05
+# hic &lt;- select(hmin.VC,&quot;A_21792_HIC&quot;, &quot;B_28126_HIC&quot;, &quot;C_3649_HIC&quot;, &quot;D_40300_HIC&quot;, &quot;E_28815_HIC&quot;, &quot;F_28834_HIC&quot;, &quot;G_3624_HIC&quot;, &quot;H_3651_HIC&quot;)
+# present &lt;- sapply(1:nrow(hic), function(i) !any(is.na(hic[i,])))
+# genes &lt;- exprs$genes
+# DEgenes &lt;- filter(hmin.KR, adj.P.Val&lt;=0.05) %&gt;% select(., genes)
+# myDEindices &lt;- which(genes %in% DEgenes[,1])
+# exprs &lt;- exprs[,-9]
+# exprs &lt;- data.matrix(exprs[present,])
+# hic &lt;- data.matrix(hic[present,])
+# designy &lt;- as.factor(c(&quot;human&quot;, &quot;human&quot;, &quot;chimp&quot;, &quot;chimp&quot;, &quot;human&quot;, &quot;human&quot;, &quot;chimp&quot;, &quot;chimp&quot;))
+# colnames(hic) &lt;- colnames(exprs)
+# hic &lt;- as.data.table(hic)
+# exprs &lt;- as.data.table(exprs)
+# test &lt;- mediate.test.regressing(exprs, designy, hic)
+# vshrDE &lt;- vash(test$d_se[myDEindices], df=6)
+# vshrnonDE &lt;- vash(test$d_se[-myDEindices], df=6)
+# vshrink &lt;- vash(test$d_se, df=6)
+# DEtest &lt;- test[myDEindices,]
+# nonDEtest &lt;- test[-myDEindices,]
+# ash_reg &lt;- ash(as.vector(DEtest$d), as.vector(vshrDE$sd.post), mixcompdist = &quot;normal&quot;) #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
+# summary(ash_reg$result$svalue&lt;=0.05) #Incredible result, looks too good to be true.
+# ind_sig &lt;- (ash_reg$result$svalue &lt; 0.05)
+# ind_sig[ind_sig == TRUE] &lt;- &quot;red&quot;
+# ind_sig[ind_sig == FALSE] &lt;- &quot;black&quot;
+# plot(x=ash_reg$result$betahat, y=ash_reg$result$sebetahat, ylab=&quot;Standard error of the difference&quot;, xlab=&quot;Difference in Effect Size from 2 Linear Models, VC-Norm&quot;, main=&quot;Difference of Effect Size in DE Genes&quot;, pch=16, cex=0.6, col=ind_sig, xlim=c(-2.5, 2.5), ylim=c(0, 2.5)) #FIGS15A
+# legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)
+# ash_reg_nonDE &lt;- ash(as.vector(nonDEtest$d), as.vector(vshrnonDE$sd.post), mixcompdist = &quot;normal&quot;) #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
+# summary(ash_reg_nonDE$result$svalue&lt;=0.05) #Incredible result, looks too good to be true.
+# ind_sig &lt;- (ash_reg_nonDE$result$svalue &lt; 0.05)
+# ind_sig[ind_sig == TRUE] &lt;- &quot;red&quot;
+# ind_sig[ind_sig == FALSE] &lt;- &quot;black&quot;
+# plot(x=ash_reg_nonDE$result$betahat, y=ash_reg_nonDE$result$sebetahat, ylab=&quot;Standard error of the difference&quot;, xlab=&quot;Difference in Effect Size from 2 Linear Models, VC-Norm&quot;, main=&quot;Difference of Effect Size in non-DE Genes&quot;, pch=16, cex=0.6, col=ind_sig, xlim=c(-2.5, 2.5), ylim=c(0, 2.5))
+# legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8) #FIGS15B</code></pre>
 <br> <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
