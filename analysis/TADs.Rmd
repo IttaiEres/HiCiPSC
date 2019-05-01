@@ -768,8 +768,8 @@ intra.full.plotter <- function(species){
   print(myplot)
 }
 options(scipen=999)
-intra.ortho.plotter("H") #Fig S5E
-intra.ortho.plotter("C") #Fig S5F
+intra.ortho.plotter("H")
+intra.ortho.plotter("C")
 intra.full.plotter("H")
 intra.full.plotter("C")
 
@@ -925,7 +925,7 @@ bounds.indi.clust <- function(resolution){
   heatmaply(heat, main=paste("Pairwise Proportions of Shared TAD Boundaries @ ", resolution/1000, "kb", sep=""), k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
 }
 
-#Alt FIGS5/6, boundary clustering on individual basis with Arrowhead inferences
+#FIGS11F, boundary clustering on individual basis with Arrowhead inferences.
 bounds.indi.clust(10000)
 bounds.indi.clust(25000)
 bounds.indi.clust(50000)
@@ -959,7 +959,7 @@ boundary.inter.plot <- function(y.max=20000){
   print(plot.4)
   print(ggbounds.4)
 }
-boundary.inter.plot()
+boundary.inter.plot() #FigS11C-D
 
 #Now, Jaccard indices for interspecies variation in TAD boundaries#
 jac.inter <- function(resolution){
@@ -1051,7 +1051,7 @@ domain.compare <- function(resolution, letter, species, type, clust=F){
   return(list(intra.stat, conservation))}
   if(clust==TRUE){
     perc.table <- percentage.table.calc(merged.df[,3:10])
-    return(perc.table[,letter]) #Not returning just that column, for some reason...
+    return(perc.table[,letter])
   }
 }
 
@@ -1093,7 +1093,7 @@ indi.TAD.clust <- function(type, resolution){
   heatmaply(indi.TAD.df, main=paste("Pairwise Proportions of Shared TADs @ ", resolution/1000, "kb", sep=""), k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
 }
 
-#Alt FIGS5, TAD clustering on individual basis!
+#FIGS11E alternative, TAD clustering on individual basis, loj methodology (90% reciprocal overlap).
 options(scipen=999)
 indi.TAD.clust("loj", 10000)
 indi.TAD.clust("loj", 25000)
@@ -1101,6 +1101,14 @@ indi.TAD.clust("loj", 50000)
 indi.TAD.clust("loj", 100000)
 indi.TAD.clust("loj", 250000)
 indi.TAD.clust("loj", 500000)
+
+#FIGS11E, TAD clustering on individual basis, Rao methodology. Use this as main b/c using Rao method for stringency analysis.
+indi.TAD.clust("rao", 10000)
+indi.TAD.clust("rao", 25000)
+indi.TAD.clust("rao", 50000)
+indi.TAD.clust("rao", 100000)
+indi.TAD.clust("rao", 250000)
+indi.TAD.clust("rao", 500000)
 
 concatenator <- function(resolution, type) {
   A <- domain.compare(resolution, "A", "H", type)
@@ -1117,6 +1125,14 @@ concatenator <- function(resolution, type) {
     intra.C <- data.frame(indi.found=1:4, count=c(sum(C[[1]][1], D[[1]][1], G[[1]][1], H[[1]][1]), mean(C[[1]][2], D[[1]][2], G[[1]][2], H[[1]][2]), mean(C[[1]][3], D[[1]][3], G[[1]][3], H[[1]][3]), mean(C[[1]][4], D[[1]][4], G[[1]][4], H[[1]][4])))
     intra.C$perc <- intra.C$count/sum(intra.C$count)
   intra.H$resolution <-intra.C$resolution <- paste(resolution/1000, "kb", sep="")
+  print(C[[2]][,1:2])
+  print(D[[2]][,1:2])
+  print(G[[2]][,1:2])
+  print(H[[2]][,1:2])
+  print(A[[2]][,1:2])
+  print(B[[2]][,1:2])
+  print(E[[2]][,1:2])
+  print(F[[2]][,1:2])
   inter.c <- ((C[[2]][,1:2] + D[[2]][,1:2] + G[[2]][,1:2] + H[[2]][,1:2])/4)
   inter.h <- ((A[[2]][,1:2] + B[[2]][,1:2] + E[[2]][,1:2] + F[[2]][,1:2])/4)
   inter <- as.data.frame(cbind(round(inter.c[,1]), round(inter.h[,1]), round((inter.c[,2]+inter.h[,2])/2)))
@@ -1171,8 +1187,8 @@ domain.plotter <- function(type, intra.ymax=8000, inter.ymax=8200){
     print(plot.4)
 }
 
-domain.plotter("rao", intra.ymax = 10000, inter.ymax = 8200) #Fig S11A&B
-domain.plotter("loj", intra.ymax= 11000, inter.ymax=8200)
+domain.plotter("rao", intra.ymax = 10000, inter.ymax = 8200) #FigS11A&B
+domain.plotter("loj", intra.ymax= 11000, inter.ymax=8200) #Alternative, highly similar, slightly less conserved.
 ```
 
 ```{r Boundary Inferences using Individual TopDom Data}
@@ -1333,7 +1349,7 @@ jac.intra.ortho(10000, "C")
 ###Interspecies Conservation of TAD Boundaries###
 #This is performed in much the same manner as above, but this time, combining the file across species.
 #Once again, checked, and merging before/after individual file merging makes no difference.
-inter.bound.cons <- function(resolution){
+inter.bound.cons <- function(resolution, clust=F){
   df <- fread(paste("data/TADs/TopDom/", resolution, "_compare/final.merged.combined.each.merge.ortho.hg38", sep=""), data.table=F)
   df$H <- df$G <- df$F <- df$E <- df$D <- df$C <- df$B <- df$A <- 0
   df$A[grep("A", df$V4)] <- 1
@@ -1356,7 +1372,11 @@ inter.bound.cons <- function(resolution){
   cons.table <- as.data.frame(rbind(table(factor(cons.1, levels=c("Shared", "Human", "Chimpanzee"))), table(factor(cons.2, levels=c("Shared", "Human", "Chimpanzee"))), table(factor(cons.3, levels=c("Shared", "Human", "Chimpanzee"))), table(factor(cons.4, levels=c("Shared", "Human", "Chimpanzee")))))
   cons.table$stringency <- 1:4
   cons.table$resolution <- paste(resolution/1000, "kb", sep="")
-  return(cons.table)
+  if(clust==FALSE){
+    return(cons.table)}
+  if(clust==TRUE){
+    return(df)
+  }
 }
 
 boundary.inter.plot <- function(y.max){
@@ -1385,7 +1405,23 @@ boundary.inter.plot <- function(y.max){
   print(plot.3)
   print(plot.4)
 }
-boundary.inter.plot(3100) #FIGS6G-H
+boundary.inter.plot(3100) #FigS13C-D
+
+#For boundary clustering
+bounds.indi.clust <- function(resolution){
+  bounds <- inter.bound.cons(resolution, clust=TRUE)
+  heat <- percentage.table.calc(bounds[,5:12])
+  colnames(heat) <- rownames(heat) <- c("H_F1", "H_M1", "C_M1", "C_F1", "H_M2", "H_F2", "C_M2", "C_F2")
+  heatmaply(heat, main=paste("Pairwise Proportions of Shared TAD Boundaries @ ", resolution/1000, "kb", sep=""), k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
+}
+
+#FigS13F, boundary clustering on individual basis with TopDom inferences
+bounds.indi.clust(10000)
+bounds.indi.clust(25000)
+bounds.indi.clust(50000)
+bounds.indi.clust(100000)
+bounds.indi.clust(250000)
+bounds.indi.clust(500000)
 
 #Now, Jaccard indices for interspecies variation in TAD boundaries#
 jac.inter <- function(resolution){
@@ -1425,7 +1461,7 @@ jac.inter(10000) #Can be clustered upon later.
 ```
 
 ```{r Domain Inferences Using Individual TopDom Data}
-domain.compare <- function(resolution, letter, species, type){
+domain.compare <- function(resolution, letter, species, type, clust=F){
   df <- fread(paste("data/TADs/TopDom/", resolution, "_compare/inter.", letter, ".", type, sep=""))
   df$ID <- paste(df$V1, df$V2, df$V3, sep="-")
   if(type=="rao"){
@@ -1465,8 +1501,45 @@ domain.compare <- function(resolution, letter, species, type){
   conservation <- as.data.frame(rbind(inter.1.stat, inter.2.stat, inter.3.stat, inter.4.stat))
   conservation$resolution <- paste(resolution/1000, "kb", sep="")
   conservation$stringency <- 1:4
-  return(list(intra.stat, conservation))
+  if(clust==F){
+    return(list(intra.stat, conservation))}
+  if(clust==TRUE){
+    perc.table <- percentage.table.calc(merged.df[,3:10])
+    return(perc.table[,letter])
+  }
 }
+
+###Interspecies domain clustering:
+indi.TAD.clust <- function(type, resolution){
+  A.domain <- domain.compare(resolution, "A", "H", type, clust=TRUE)
+  B.domain <- domain.compare(resolution, "B", "H", type, clust=TRUE)
+  C.domain <- domain.compare(resolution, "C", "C", type, clust=TRUE)
+  D.domain <- domain.compare(resolution, "D", "C", type, clust=TRUE)
+  E.domain <- domain.compare(resolution, "E", "H", type, clust=TRUE)
+  F.domain <- domain.compare(resolution, "F", "H", type, clust=TRUE)
+  G.domain <- domain.compare(resolution, "G", "C", type, clust=TRUE)
+  H.domain <- domain.compare(resolution, "H", "C", type, clust=TRUE)
+  indi.TAD.df <- rbind(A.domain, B.domain, C.domain, D.domain, E.domain, F.domain, G.domain, H.domain)
+  colnames(indi.TAD.df) <- rownames(indi.TAD.df) <- c("H_F1", "H_M1", "C_M1", "C_F1", "H_M2", "H_F2", "C_M2", "C_F2")
+  heatmaply(indi.TAD.df, main=paste("Pairwise Proportions of Shared TADs @ ", resolution/1000, "kb", sep=""), k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
+}
+
+#FIGS13E TAD clustering on individual basis, TopDom!
+options(scipen=999)
+indi.TAD.clust("loj", 10000)
+indi.TAD.clust("loj", 25000)
+indi.TAD.clust("loj", 50000)
+indi.TAD.clust("loj", 100000)
+indi.TAD.clust("loj", 250000)
+indi.TAD.clust("loj", 500000)
+
+#Use this for FIGS13E, since others shown are Rao methodology.
+indi.TAD.clust("rao", 10000)
+indi.TAD.clust("rao", 25000)
+indi.TAD.clust("rao", 50000)
+indi.TAD.clust("rao", 100000)
+indi.TAD.clust("rao", 250000)
+indi.TAD.clust("rao", 500000)
 
 concatenator <- function(resolution, type) {
   A <- domain.compare(resolution, "A", "H", type)
@@ -1535,7 +1608,7 @@ domain.plotter <- function(type, inter.ymax, intra.ymax){
     print(plot.4)
 }
 
-domain.plotter("rao", intra.ymax=12000, inter.ymax=12000) #FIGS6A-D
+domain.plotter("rao", intra.ymax=12000, inter.ymax=12000) #FIGS13A-B
 domain.plotter("loj", intra.ymax=12000, inter.ymax=12000) 
 ```
 
@@ -1602,9 +1675,9 @@ fwrite(chimp.20, "data/TADs/Rao/chimps.10kb.20percent.domains.hg38", quote=FALSE
 fwrite(chimp.30, "data/TADs/Rao/chimps.10kb.30percent.domains.hg38", quote=FALSE, sep="\t", col.names=F)
 
 #Check how many of the domains from these subsamples are conserved.
-rao.overlapper("data/TADs/overlaps_rao_style/10kb.10percent.CH.closest.hg38") #~85%
-rao.overlapper("data/TADs/overlaps_rao_style/10kb.20percent.CH.closest.hg38") #~83%
-rao.overlapper("data/TADs/overlaps_rao_style/10kb.30percent.CH.closest.hg38") #~81%
+rao.overlapper("data/TADs/overlaps_rao_style/10kb.10percent.CH.closest.hg38") #~85%, 798/938
+rao.overlapper("data/TADs/overlaps_rao_style/10kb.20percent.CH.closest.hg38") #~83%, 1556/1876
+rao.overlapper("data/TADs/overlaps_rao_style/10kb.30percent.CH.closest.hg38") #~81%, 2293/2814
 ```
 
 ```{r Juicer_mega hg38 v PT6 interspecies comparison}
