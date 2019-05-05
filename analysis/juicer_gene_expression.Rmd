@@ -840,11 +840,11 @@ This next section would be to look at differences in effect size and sign change
 ```{r Differences in Effect Sizes}
 #######FRESH CODE 6-21-18#########
 design <- model.matrix(~meta.data$SP)
-exprs <- select(hmin.KR, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes) #Should be done on just DE genes, filter with adj.P.Val<=0.05
-hic <- select(hmin.KR,"A_21792_HIC", "B_28126_HIC", "C_3649_HIC", "D_40300_HIC", "E_28815_HIC", "F_28834_HIC", "G_3624_HIC", "H_3651_HIC")
+exprs <- select(hmin.VC, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes) #Should be done on just DE genes, filter with adj.P.Val<=0.05
+hic <- select(hmin.VC,"A_21792_HIC", "B_28126_HIC", "C_3649_HIC", "D_40300_HIC", "E_28815_HIC", "F_28834_HIC", "G_3624_HIC", "H_3651_HIC")
 present <- sapply(1:nrow(hic), function(i) !any(is.na(hic[i,])))
 genes <- exprs$genes
-DEgenes <- filter(hmin.KR, adj.P.Val<=0.05) %>% select(., genes)
+DEgenes <- filter(hmin.VC, adj.P.Val<=0.05) %>% select(., genes)
 myDEindices <- which(genes %in% DEgenes[,1])
 exprs <- exprs[,-9]
 exprs <- data.matrix(exprs[present,])
@@ -907,14 +907,14 @@ summary(ash_reg$result$svalue<=0.05) #Incredible result, looks too good to be tr
 ind_sig <- (ash_reg$result$svalue < 0.05)
 ind_sig[ind_sig == TRUE] <- "red"
 ind_sig[ind_sig == FALSE] <- "black"
-plot(x=ash_reg$result$betahat, y=ash_reg$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in effect size from 2 lms, KR", main="Difference of effect size (DE genes)", pch=16, cex=0.6, col=ind_sig)#, xlim=c(-2.5, 2.5), ylim=c(0, 1.3))
+plot(x=ash_reg$result$betahat, y=ash_reg$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in Effect Size from 2 Linear Models, VC-Norm", main="Difference of Effect Size in DE genes", pch=16, cex=0.6, col=ind_sig, xlim=c(-2.5, 2.5), ylim=c(0, 2.6))
 legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8) #FIGS6A
 ash_reg_nonDE <- ash(as.vector(nonDEtest$d), as.vector(vshrnonDE$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)?
 summary(ash_reg_nonDE$result$svalue<=0.05)
 ind_sig <- (ash_reg_nonDE$result$svalue < 0.05)
 ind_sig[ind_sig == TRUE] <- "red"
 ind_sig[ind_sig == FALSE] <- "black"
-plot(x=ash_reg_nonDE$result$betahat, y=ash_reg_nonDE$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in effect size from 2 lms, KR", main="Difference of effect size (non-DE genes)", pch=16, cex=0.6, col=ind_sig)#, xlim=c(-2.5, 2.5), ylim=c(0, 1.3))
+plot(x=ash_reg_nonDE$result$betahat, y=ash_reg_nonDE$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in Effect Size from 2 Linear Models, VC-Norm", main="Difference of Effect Size in non-DE genes", pch=16, cex=0.6, col=ind_sig, xlim=c(-2.5, 2.5), ylim=c(0, 2.6))
 legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8) #FIGS6B
 
 # exprs <- select(hmin.VC, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes) #Should be done on just DE genes, filter with adj.P.Val<=0.05

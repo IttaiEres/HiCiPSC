@@ -204,10 +204,10 @@ ggplot(data=volcplot.4, aes(x=beta, y=pval)) + geom_point() + xlab("Log2 Fold Ch
 volcplot.4$specorder <- ifelse(volcplot.4$species=="B", 3, ifelse(volcplot.4$species=="C", 2, 1))
 volcplot.4 <- volcplot.4[order(volcplot.4$specorder),]
 
-#FIGS3A
 ggplot(data=volcplot.4, aes(x=beta, y=pval, color=species)) + geom_point() + xlab("Log2 Fold Change in Contact Frequency") + ylab("-log10 BH-corrected p-values") + ggtitle("Contact Frequency Differences Colored by Species of Discovery | 4") + scale_color_manual(name="Species", labels=c("Both", "Chimp", "Human"), values=c("#F8766D", "#00BA38", "#619CFF")) #Modify to add clearer labels
 
-ggplot(data=volcplot.4, aes(x=beta, y=pval, color=species)) + geom_point() + xlab("Log2 Fold Change in Contact Frequency") + ylab("-log10 BH-corrected p-values") + ggtitle("Contact Frequency Differences Colored by Species of Discovery") + scale_color_manual(name="Species", labels=c("Both", "Chimp", "Human"), values=c("#F8766D", "#00BA38", "#619CFF")) + theme(plot.title=element_text(hjust=0.35)) #Modify to add clearer labels, hjust to adjust title location.
+#FIGS9A
+ggplot(data=volcplot.4, aes(x=beta, y=pval, color=species)) + geom_point() + xlab("Log2 Fold Change in Contact Frequency") + ylab("-log10 BH-corrected p-values") + ggtitle("Contact Frequency Differences") + scale_color_manual(name="Species", labels=c("Both", "Chimp", "Human"), values=c("#F8766D", "#00BA38", "#619CFF")) + theme(plot.title=element_text(hjust=0.35)) #Modify to add clearer labels, hjust to adjust title location.
 
 #As expected, we see that hits which produce a strong negative beta in the linear model (suggesting a marked decrease in contact frequency in humans as compared to chimps) are primarily discovered as significant by homer in chimpanzees. The inverse also holds true for human discoveries. This is reassuring, but still, why the asymmetry? Here I break this plot down on a chromosome-by-chromosome basis to see if this is being driven by individual chromosomes ore is an overall issue with the technique or its processing:
 #First rearrange chrs to make a prettier plot that has chrs sequential:
@@ -223,10 +223,10 @@ volcplot.filt <- data.frame(pval=-log10(data.filtered$sp_BH_pval), beta=data.fil
 volcplot.filt$specorder <- ifelse(volcplot.filt$species=="B", 3, ifelse(volcplot.filt$species=="C", 2, 1))
 volcplot.filt <- volcplot.filt[order(volcplot.filt$specorder),]
 
-#FIGS3C (same as FIG2A)
-ggplot(data=volcplot.filt, aes(x=beta, y=pval, color=species)) + geom_point() + xlab("Log2 Fold Change in Contact Frequency") + ylab("-log10 BH-corrected p-values") + ggtitle("Contact Frequency Differences") + scale_color_manual(name="Species", labels=c("Both", "Chimp", "Human"), values=c("#F8766D", "#00BA38", "#619CFF")) #+ geom_hline(yintercept=-log10(0.05), color="red") #Modify to add clearer labels, draw points in different order, and add red line at p=0.05 (actually, removed this, not sure it really matters or helps to show that), perfect for presentations.
+#FIGS9C (same as FIG2A)
+ggplot(data=volcplot.filt, aes(x=beta, y=pval, color=species)) + geom_point() + xlab("Log2 Fold Change in Contact Frequency") + ylab("-log10 BH-corrected p-values") + ggtitle("Filtered Contact Frequency Differences") + scale_color_manual(name="Species", labels=c("Both", "Chimp", "Human"), values=c("#F8766D", "#00BA38", "#619CFF")) #+ geom_hline(yintercept=-log10(0.05), color="red") #Modify to add clearer labels, draw points in different order, and add red line at p=0.05 (actually, removed this, not sure it really matters or helps to show that), perfect for presentations.
 
-#FIG2A (same as FIGS3C)
+#FIG2A (same as FIGS9C)
 FIG2A <- ggplot(data=volcplot.filt, aes(x=beta, y=pval, color=species)) + geom_point() + xlab("Log2 Fold Change in Contact Frequency") + ylab("-log10 BH-corrected p-values") + ggtitle("Contact Frequency Differences") + scale_color_manual(name="Species", labels=c("Both", "Chimp", "Human"), values=c("#F8766D", "#00BA38", "#619CFF")) + theme(plot.title=element_text(hjust=0.27))
 #This volcano plot makes it look as though the asymmetry goes away entirely, with both sides of the volcano showing a visually similar number of hits (no longer AS stark of asymmetry).
 

@@ -513,7 +513,7 @@ ggplot(data=myHMMs) + geom_violin(aes(group=variable, y=value, color=variable, x
 ```{r}
 ####Basic chi-squared tests to check if particular classes of hits are enriched for specific chromHMM marks (i.e. enhancer-associated marks). 
 #First, compare regions making contact with a promoter (not the promoter itself) to those regions that do not do so. I already created DFs of each of these above with duplicates removed: wt.mates.proms.full, and wt.full.no.proms
-proms.assigns <- wt.mates.proms.full$bin2.HMM
+proms.assigns <- wt.mates.proms.full$bin2.HMM #Renamed both columns to bin2.HMM previously for merging, so this includes both bins!
 nonproms.assigns <- c(as.character(wt.full.no.proms$bin1.HMM), as.character(wt.full.no.proms$bin2.HMM))
 proms.assigns <- proms.assigns[!is.na(proms.assigns)]
 nonproms.assigns <- nonproms.assigns[!is.na(nonproms.assigns)] #Get rid of NA values
@@ -522,6 +522,7 @@ nonproms.assigns <- nonproms.assigns[!is.na(nonproms.assigns)] #Get rid of NA va
 proms.assigns.enh <- ifelse(proms.assigns=="6_EnhG", "yes", "no")
 nonproms.assigns.enh <- ifelse(nonproms.assigns=="6_EnhG", "yes", "no")
 
+#TableS14
 table2test <- data.frame(no=c(sum(nonproms.assigns.enh=="no"), sum(proms.assigns.enh=="no")), yes=c(sum(nonproms.assigns.enh=="yes"), sum(proms.assigns.enh=="yes")))
 
 colnames(table2test) <- c("No Enh", "Enh")
@@ -542,6 +543,7 @@ nonDC.assigns <- nonDC.assigns[!is.na(nonDC.assigns)]
 DC.assigns.enh <- ifelse(DC.assigns=="6_EnhG", "yes", "no")
 nonDC.assigns.enh <- ifelse(nonDC.assigns=="6_EnhG", "yes", "no")
 
+#TableS14
 table2test <- data.frame(no=c(sum(nonDC.assigns.enh=="no"), sum(DC.assigns.enh=="no")), yes=c(sum(nonDC.assigns.enh=="yes"), sum(DC.assigns.enh=="yes")))
 
 colnames(table2test) <- c("No Enh", "Enh")
@@ -550,8 +552,6 @@ rownames(table2test) <- c("No DC", "DC")
 chisq.test(table2test) #Gets a good p-value, and has the right direction of effect here! Perfect, only do EnhG
 
 #Great! Can get what I want for both hit classes for 6_EnhG, although direction of the relationship is the opposite of expectation if including Enh and if adding in the other Enh-related annotations too.
-
-#need to see why total DC here is 9629 hits...do about 7k get filtered out after we exclude the RBHLO issues?
 ```
 
 ###ChromHMM Visualization

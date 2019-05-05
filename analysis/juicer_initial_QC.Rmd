@@ -64,7 +64,7 @@ colnames(corheats) <- colnames(corheat)
 rownames(corheats) <- colnames(corheat)
 
 #VC Clustering
-heatmaply(corheat, main="Pairwise Pearson Correlation @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30)) #Clusters well, but not super distinct. #FIGS1B
+heatmaply(corheat, main="Pairwise Pearson Correlation Clustering @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30)) #Clusters well, but not super distinct. #FIGS1B
 heatmaply(corheats, main="Pairwise Spearman Correlation @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30)) #Same as above.
 
 #Can't manage to find a cyclic loess normalization here that makes samples cluster properly for both types of correlations...can get samples clustering in appropriate places but not get the dendrogram to look how I expect--just use same settings as above, in interest of consistency.
@@ -159,7 +159,7 @@ pca <- prcomp(t(full.contacts.KR), scale=TRUE, center=TRUE)
 pca2 <- prcomp(t(full.contacts.VC), scale=TRUE, center=TRUE)
 ggplot(data=as.data.frame(pca$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title="PCA on KR normalized Hi-C Contact Frequency") + guides(color=guide_legend(order=1), size=FALSE, shape=guide_legend(order=2)) + xlab(paste("PC1 (", 100*summary(pca)$importance[2,1], "% of variance)")) + ylab((paste("PC2 (", 100*summary(pca)$importance[2,2], "% of variance)"))) + labs(color="Batch", shape="Species") + scale_shape_manual(labels=c("Chimp", "Human"), values=c(16, 17))
 barplot(summary(pca)$importance[2,], xlab="PCs", ylab="Proportion of Variance Explained", main="PCA on KR normalized Hi-C contact frequency") #Scree plot showing all the PCs and the proportion of the variance they explain.
-ggplot(data=as.data.frame(pca2$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title="PCA on VC normalized Hi-C Contact Frequency") + guides(color=guide_legend(order=1), size=FALSE, shape=guide_legend(order=2)) + xlab(paste("PC1 (", 100*summary(pca)$importance[2,1], "% of variance)")) + ylab((paste("PC2 (", 100*summary(pca)$importance[2,2], "% of variance)"))) + labs(color="Batch", shape="Species") + scale_shape_manual(labels=c("Chimp", "Human"), values=c(16, 17))
+ggplot(data=as.data.frame(pca2$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title="PCA on VC normalized Hi-C Contact Frequency") + guides(color=guide_legend(order=1), size=FALSE, shape=guide_legend(order=2)) + xlab(paste("PC1 (", 100*summary(pca2)$importance[2,1], "% of variance)")) + ylab((paste("PC2 (", 100*summary(pca2)$importance[2,2], "% of variance)"))) + labs(color="Batch", shape="Species") + scale_shape_manual(labels=c("Chimp", "Human"), values=c(16, 17))
 barplot(summary(pca2)$importance[2,], xlab="PCs", ylab="Proportion of Variance Explained", main="PCA on VC normalized Hi-C contact frequency")
 #Scree plot
 
@@ -325,7 +325,7 @@ pca <- prcomp(t(filt.KR[,112:119]), scale=TRUE, center=TRUE)
 pca2 <- prcomp(t(filt.VC[,112:119]), scale=TRUE, center=TRUE)
 ggplot(data=as.data.frame(pca$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title="PCA on KR normalized Hi-C Contact Frequency") + guides(color=guide_legend(order=1), size=FALSE, shape=guide_legend(order=2)) + xlab(paste("PC1 (", 100*summary(pca)$importance[2,1], "% of variance)")) + ylab((paste("PC2 (", 100*summary(pca)$importance[2,2], "% of variance)"))) + labs(color="Batch", shape="Species") + scale_shape_manual(labels=c("Chimp", "Human"), values=c(16, 17))
 barplot(summary(pca)$importance[2,], xlab="PCs", ylab="Proportion of Variance Explained", main="PCA on KR normalized Hi-C contact frequency") #Scree plot showing all the PCs and the proportion of the variance they explain.
-ggplot(data=as.data.frame(pca2$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title="PCA on VC normalized Hi-C Contact Frequency") + guides(color=guide_legend(order=1), size=FALSE, shape=guide_legend(order=2)) + xlab(paste("PC1 (", signif(100*summary(pca)$importance[2,1],2), "% of variance)")) + ylab((paste("PC2 (", signif(100*summary(pca)$importance[2,2],2), "% of variance)"))) + labs(color="Batch", shape="Species") + scale_shape_manual(labels=c("Chimp", "Human"), values=c(16, 17)) #FIGS1A
+ggplot(data=as.data.frame(pca2$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title="PCA on VC Normalized Hi-C Contact Frequency") + guides(color=guide_legend(order=1), size=FALSE, shape=guide_legend(order=2)) + xlab(paste("PC1 (", signif(100*summary(pca2)$importance[2,1],2), "% of variance)")) + ylab((paste("PC2 (", signif(100*summary(pca2)$importance[2,2],2), "% of variance)"))) + labs(color="Batch", shape="Species") + scale_shape_manual(labels=c("Chimp", "Human"), values=c(16, 17)) #FIGS1A
 barplot(summary(pca2)$importance[2,], xlab="PCs", ylab="Proportion of Variance Explained", main="PCA on VC normalized Hi-C contact frequency")
 #Scree plot
 

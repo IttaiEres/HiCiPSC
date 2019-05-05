@@ -138,25 +138,38 @@ counts <- df_combo[,10:17]
 rownames(counts) <- df_combo$genes
 rownames(cov_matrix) <- df_combo$genes
 species <- factor(c(1,1,2,2,1,1,2,2))
+sex <- factor(c("M","M" ,"F","F","F", "M","M","F"))
+
+#Now, run the model twice, once with just species, and then again with species and sex, just to be sure.
 design <- model.matrix(~species)
+design2 <- model.matrix(~species+sex)
 
 # compute weights
 v <- voom(counts,design=model.matrix(~species), plot=T)
+v2 <- voom(counts,design=model.matrix(~species+sex), plot=T)
 
 weights <- v$weights
+weights2 <- v2$weights
 log2cpm <- v$E
+log2cpm2 <- v2$E
 
 fit <- lmFit_varying(object=log2cpm, group_vector=species, cov_matrix=cov_matrix,
                      weights=weights)
+fit2 <- lmFit_varying(object=log2cpm2, group_vector=species, cov_matrix=cov_matrix,
+                     weights=weights2)
 
 fit <- eBayes(fit, robust=TRUE)
+fit2 <- eBayes(fit2, robust=TRUE)
 myintergenes <- topTable(fit, coef=4, number=Inf)
+myintergenes2 <- topTable(fit2, coef=4, number=Inf)
 sum(myintergenes$adj.P.Val<=0.05) #With multiple testing correction, none are significant.
-sum(myintergenes$P.Value<=0.05)
+sum(myintergenes2$adj.P.Val<=0.05) #With multiple testing correction, none are significant.
+#sum(myintergenes$P.Value<=0.05)
 
 #sum(mygenes %in% filter(myintergenes, adj.P.Val<=0.8)$ID)
 
 colors <- c(rep("black", 2), rep("red", 2), rep("black", 2), rep("red", 2))
+#Look at some specific examples, particularly of the lowest-ranked FDR hits.
 plot(log2cpm[rownames(log2cpm)=="ENSG00000170561",], cov_matrix[rownames(log2cpm)=="ENSG00000170561",], col=colors)
 plot(log2cpm[rownames(log2cpm)=="ENSG00000280143",], cov_matrix[rownames(log2cpm)=="ENSG00000280143",], col=colors)
 plot(log2cpm[rownames(log2cpm)=="ENSG00000124486",], cov_matrix[rownames(log2cpm)=="ENSG00000124486",], col=colors)
@@ -169,5 +182,7 @@ plot(log2cpm[rownames(log2cpm)=="ENSG00000228709",], cov_matrix[rownames(log2cpm
 plot(log2cpm[rownames(log2cpm)=="ENSG00000178718",], cov_matrix[rownames(log2cpm)=="ENSG00000178718",], col=colors)
 plot(log2cpm[rownames(log2cpm)=="ENSG00000133636",], cov_matrix[rownames(log2cpm)=="ENSG00000133636",], col=colors)
 plot(log2cpm[rownames(log2cpm)=="ENSG00000204252",], cov_matrix[rownames(log2cpm)=="ENSG00000204252",], col=colors)
+
+#Kind of surprising that none of these are significant, since some of them visually do appear to have a species interaction. But the signal must not be strong enough.
 ```
 
