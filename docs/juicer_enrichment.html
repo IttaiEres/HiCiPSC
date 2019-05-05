@@ -447,7 +447,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-04-30
+<strong>Last updated:</strong> 2019-05-05
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -526,10 +526,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree311fad1c5c967a0d334706d7b35821b5186db882targetblank311fad1a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/311fad1c5c967a0d334706d7b35821b5186db882" target="_blank">311fad1</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree2419813e256df5fc406fc428d7dbe65320f8c7b3targetblank2419813a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/2419813e256df5fc406fc428d7dbe65320f8c7b3" target="_blank">2419813</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree311fad1c5c967a0d334706d7b35821b5186db882targetblank311fad1a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree2419813e256df5fc406fc428d7dbe65320f8c7b3targetblank2419813a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -927,6 +927,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/2419813e256df5fc406fc428d7dbe65320f8c7b3/analysis/juicer_enrichment.Rmd" target="_blank">2419813</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-05-05
+</td>
+<td>
+Update all files.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/IttaiEres/HiCiPSC/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/juicer_enrichment.html" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -26972,9 +27006,83 @@ myrich &lt;- myrich[!duplicated(myrich),]
 ggplot(data=myrich) + geom_histogram(aes(x=chromstate, group=chromstate, fill=chromstate), stat=&quot;count&quot;) + coord_cartesian(ylim=c(0, 10000)) + ggtitle(&quot;Basal chromHMM State Assignments Distribution&quot;) + xlab(&quot;chromHMM State Assignment&quot;) + ylab(&quot;# Bins&quot;) + theme(axis.text.x=element_blank())</code></pre>
 <pre><code>Warning: Ignoring unknown parameters: binwidth, bins, pad</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-1">
+Past versions of unnamed-chunk-2-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/unnamed-chunk-2-1.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=weighter) + geom_histogram(aes(x=chromstate, group=chromstate, fill=chromstate), stat=&quot;count&quot;) + coord_cartesian(ylim=c(0, 10000)) + scale_x_discrete(drop=FALSE) + ggtitle(&quot;Weighted chromHMM State Assignments Distribution&quot;) + xlab(&quot;chromHMM State Assignment&quot;) + ylab(&quot;# Bins&quot;) + theme(axis.text.x=element_blank())</code></pre>
 <pre><code>Warning: Ignoring unknown parameters: binwidth, bins, pad</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-2">
+Past versions of unnamed-chunk-2-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/unnamed-chunk-2-2.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#Looks much better, try running enrichment analyses on this now? Can match H1s and H2s from chromrich.KR with this, add in the sp_BH_pval to keep the Hi-C FDR up in there, and run on midway.
 weightrich &lt;- select(chromrich.KR, H1, H2, sp_BH_pval)
 colnames(weightrich) &lt;- c(&quot;HID&quot;, &quot;HID&quot;, &quot;sp_BH_pval&quot;)
@@ -60732,9 +60840,83 @@ myrich &lt;- myrich[!duplicated(myrich),]
 ggplot(data=myrich) + geom_histogram(aes(x=chromstate, group=chromstate, fill=chromstate), stat=&quot;count&quot;) + coord_cartesian(ylim=c(0, 10000)) + ggtitle(&quot;Basal chromHMM State Assignments Distribution&quot;) + xlab(&quot;chromHMM State Assignment&quot;) + ylab(&quot;# Bins&quot;) + theme(axis.text.x=element_blank())</code></pre>
 <pre><code>Warning: Ignoring unknown parameters: binwidth, bins, pad</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/unnamed-chunk-2-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-3">
+Past versions of unnamed-chunk-2-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/unnamed-chunk-2-3.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=weighter) + geom_histogram(aes(x=chromstate, group=chromstate, fill=chromstate), stat=&quot;count&quot;) + coord_cartesian(ylim=c(0, 10000)) + scale_x_discrete(drop=FALSE) + ggtitle(&quot;Weighted chromHMM State Assignments Distribution&quot;) + xlab(&quot;chromHMM State Assignment&quot;) + ylab(&quot;# Bins&quot;) + theme(axis.text.x=element_blank())</code></pre>
 <pre><code>Warning: Ignoring unknown parameters: binwidth, bins, pad</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/unnamed-chunk-2-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-4">
+Past versions of unnamed-chunk-2-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/unnamed-chunk-2-4.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#Looks much better, try running enrichment analyses on this now? Can match H1s and H2s from chromrich.VC with this, add in the sp_BH_pval to keep the Hi-C FDR up in there, and run on midway.
 weightrich &lt;- select(chromrich.VC, H1, H2, sp_BH_pval)
 colnames(weightrich) &lt;- c(&quot;HID&quot;, &quot;HID&quot;, &quot;sp_BH_pval&quot;)
@@ -60950,9 +61132,83 @@ ggnoprom &lt;- melt(nonprom.props.KR, id=&quot;bin&quot;) #Only take the first ~
 ggplot(data=ggprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position=&quot;fill&quot;) + ggtitle(&quot;chromHMM, Promoter-Contacting Bins&quot;) + xlab(&quot;Ranked Species Term Significance from Hi-C Linear Model&quot;) + ylab(&quot;Proportion of Bins Assigned to Annotation&quot;) + guides(fill=guide_legend(title=&quot;Annotations&quot;)) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) + coord_cartesian((xlim=c(0, 1750)))</code></pre>
 <pre><code>Warning: Removed 1432 rows containing missing values (position_stack).</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/chromHMM%20Visualization-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromHMM Visualization-1">
+Past versions of chromHMM Visualization-1.png
+</button>
+</p>
+<div id="fig-chromHMM Visualization-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/chromHMM Visualization-1.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=ggnoprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position=&quot;fill&quot;) + ggtitle(&quot;chromHMM, non-Promoter-Contacting Bins&quot;) + xlab(&quot;Ranked Species Term Significance from Hi-C Linear Model&quot;) + ylab(&quot;Proportion of Bins Assigned to Annotation&quot;) + guides(fill=guide_legend(title=&quot;Annotations&quot;)) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) + coord_cartesian((xlim=c(0, 1750)))</code></pre>
 <pre><code>Warning: Removed 2100 rows containing missing values (position_stack).</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/chromHMM%20Visualization-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromHMM Visualization-2">
+Past versions of chromHMM Visualization-2.png
+</button>
+</p>
+<div id="fig-chromHMM Visualization-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/chromHMM Visualization-2.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#Read in, format properly, and visualize these same dynamics for promoter bins, split between those that were or were not DE/DC.
 prom.DE.props.KR &lt;- readRDS(&quot;data/epigenetic_enrichments/juicer_enrich_perms/weights/results/mates.proms.KR.DE.RDS.result.RDS&quot;)
 prom.noDE.KR &lt;- readRDS(&quot;data/epigenetic_enrichments/juicer_enrich_perms/weights/results/mates.proms.KR.not.DE.RDS.result.RDS&quot;)
@@ -60968,9 +61224,83 @@ ggprom.noDE &lt;- melt(prom.noDE.KR, id=&quot;bin&quot;)
 ggplot(data=ggpromDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position=&quot;fill&quot;) + ggtitle(&quot;chromHMM Annotations, DE Promoter-Contacting Bins&quot;) + xlab(&quot;Ranked Species Term Significance from Hi-C Linear Model&quot;) + ylab(&quot;Proportion of Bins Assigned to Annotation&quot;) + guides(fill=guide_legend(title=&quot;Annotations&quot;)) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) + coord_cartesian((xlim=c(0, 500)))</code></pre>
 <pre><code>Warning: Removed 1307 rows containing missing values (position_stack).</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/chromHMM%20Visualization-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromHMM Visualization-3">
+Past versions of chromHMM Visualization-3.png
+</button>
+</p>
+<div id="fig-chromHMM Visualization-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/chromHMM Visualization-3.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(data=ggprom.noDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position=&quot;fill&quot;) + ggtitle(&quot;chromHMM Annotations, non-DE Promoter-Contacting Bins&quot;) + xlab(&quot;Ranked Species Term Significance from Hi-C Linear Model&quot;) + ylab(&quot;Proportion of Bins Assigned to Annotation&quot;) + guides(fill=guide_legend(title=&quot;Annotations&quot;)) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) + coord_cartesian((xlim=c(0, 500)))</code></pre>
 <pre><code>Warning: Removed 1900 rows containing missing values (position_stack).</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/chromHMM%20Visualization-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromHMM Visualization-4">
+Past versions of chromHMM Visualization-4.png
+</button>
+</p>
+<div id="fig-chromHMM Visualization-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/chromHMM Visualization-4.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####CHROM HMM PLOTS VC NORMALIZATION
 prom.props.VC &lt;- readRDS(&quot;data/epigenetic_enrichments/juicer_enrich_perms/weights/results/mates.proms.VC.full.RDS.result.RDS&quot;)
 nonprom.props.VC &lt;- readRDS(&quot;data/epigenetic_enrichments/juicer_enrich_perms/weights/results/full.no.promoters.VC.RDS.result.RDS&quot;)
@@ -60991,13 +61321,90 @@ ggprom &lt;- melt(prom.props.VC, id=&quot;bin&quot;)
 ggnoprom &lt;- melt(nonprom.props.VC, id=&quot;bin&quot;) #Only take the first ~50k rows of this because it takes FOREVER otherwise and there are only ~36k promoters anyway.
 
 #Visualize chromHMM annotation dynamics across FDR for promoter bins and non-promoter bins.
-ggplot(data=ggprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position=&quot;fill&quot;) + ggtitle(&quot;chromHMM Annotation Assignment, Promoter-Contacting Bins&quot;) + xlab(&quot;Ranked Species Term Significance from Hi-C Linear Model&quot;) + ylab(&quot;Proportion of Bins Assigned to Annotation&quot;) + guides(fill=guide_legend(title=&quot;Annotations&quot;)) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) + coord_cartesian((xlim=c(0, 600))) + guides(fill=FALSE) #FIGS16B</code></pre>
+ggplot(data=ggprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position=&quot;fill&quot;) + ggtitle(&quot;chromHMM Annotation Assignment, Promoter-Contacting Bins&quot;) + xlab(&quot;Ranked Species Term Significance from Hi-C Linear Model&quot;) + ylab(&quot;Proportion of Bins Assigned to Annotation&quot;) + guides(fill=guide_legend(title=&quot;Annotations&quot;)) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) + coord_cartesian((xlim=c(0, 600))) + guides(fill=FALSE) #FIGS4B</code></pre>
 <pre><code>Warning: Removed 1291 rows containing missing values (position_stack).</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/chromHMM%20Visualization-5.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>ggplot(data=ggnoprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position=&quot;fill&quot;) + ggtitle(&quot;chromHMM Annotation Assignment, non-Promoter Bins&quot;) + xlab(&quot;Ranked Species Term Significance from Hi-C Linear Model&quot;) + ylab(&quot;Proportion of Bins Assigned to Annotation&quot;) + guides(fill=guide_legend(title=&quot;Annotations&quot;)) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) + coord_cartesian((xlim=c(0, 600))) + guides(fill=FALSE) #FIGS16A</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromHMM Visualization-5">
+Past versions of chromHMM Visualization-5.png
+</button>
+</p>
+<div id="fig-chromHMM Visualization-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/chromHMM Visualization-5.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>S4B &lt;- ggplot(data=ggprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position=&quot;fill&quot;) + ggtitle(&quot;chromHMM Annotation Assignment, Promoter-Contacting Bins&quot;) + xlab(&quot;Ranked Species Term Significance from Hi-C Linear Model&quot;) + ylab(&quot;Proportion of Bins Assigned to Annotation&quot;) + guides(fill=guide_legend(title=&quot;Annotations&quot;)) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) + coord_cartesian((xlim=c(0, 600))) + guides(fill=FALSE)
+ggplot(data=ggnoprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position=&quot;fill&quot;) + ggtitle(&quot;chromHMM Annotation Assignment, non-Promoter Bins&quot;) + xlab(&quot;Ranked Species Term Significance from Hi-C Linear Model&quot;) + ylab(&quot;Proportion of Bins Assigned to Annotation&quot;) + guides(fill=guide_legend(title=&quot;Annotations&quot;)) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) + coord_cartesian((xlim=c(0, 600))) + guides(fill=FALSE) #FIGS4A</code></pre>
 <pre><code>Warning: Removed 1740 rows containing missing values (position_stack).</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/chromHMM%20Visualization-6.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>#Read in, format properly, and visualize these same dynamics for promoter bins, split between those that were or were not DE/DC.
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromHMM Visualization-6">
+Past versions of chromHMM Visualization-6.png
+</button>
+</p>
+<div id="fig-chromHMM Visualization-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/chromHMM Visualization-6.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>S4A &lt;- ggplot(data=ggnoprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position=&quot;fill&quot;) + ggtitle(&quot;chromHMM Annotation Assignment, non-Promoter Bins&quot;) + xlab(&quot;Ranked Species Term Significance from Hi-C Linear Model&quot;) + ylab(&quot;Proportion of Bins Assigned to Annotation&quot;) + guides(fill=guide_legend(title=&quot;Annotations&quot;)) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) + coord_cartesian((xlim=c(0, 600))) + guides(fill=FALSE)
+
+#Read in, format properly, and visualize these same dynamics for promoter bins, split between those that were or were not DE/DC.
 prom.DE.props.VC &lt;- readRDS(&quot;data/epigenetic_enrichments/juicer_enrich_perms/weights/results/mates.proms.VC.DE.RDS.result.RDS&quot;)
 prom.noDE.VC &lt;- readRDS(&quot;data/epigenetic_enrichments/juicer_enrich_perms/weights/results/mates.proms.VC.not.DE.RDS.result.RDS&quot;)
 
@@ -61009,13 +61416,98 @@ prom.noDE.VC &lt;- prom.noDE.VC[,-17]
 ggpromDE &lt;- melt(prom.DE.props.VC, id=&quot;bin&quot;)
 ggprom.noDE &lt;- melt(prom.noDE.VC, id=&quot;bin&quot;)
 
-ggplot(data=ggpromDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position=&quot;fill&quot;) + ggtitle(&quot;chromHMM Annotations, DE Promoter-Contacting Bins&quot;) + xlab(&quot;Ranked Species Term Significance from Hi-C Linear Model&quot;) + ylab(&quot;Proportion of Bins Assigned to Annotation&quot;) + guides(fill=guide_legend(title=&quot;Annotations&quot;)) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) + coord_cartesian((xlim=c(0, 600))) + guides(fill=FALSE) #FIGS16D</code></pre>
+ggplot(data=ggpromDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position=&quot;fill&quot;) + ggtitle(&quot;chromHMM Annotations, DE Promoter-Contacting Bins&quot;) + xlab(&quot;Ranked Species Term Significance from Hi-C Linear Model&quot;) + ylab(&quot;Proportion of Bins Assigned to Annotation&quot;) + guides(fill=guide_legend(title=&quot;Annotations&quot;)) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) + coord_cartesian((xlim=c(0, 600))) + guides(fill=FALSE) #FIGS4D</code></pre>
 <pre><code>Warning: Removed 1477 rows containing missing values (position_stack).</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/chromHMM%20Visualization-7.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>ggplot(data=ggprom.noDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position=&quot;fill&quot;) + ggtitle(&quot;chromHMM Annotations, non-DE Promoter-Contacting Bins&quot;) + xlab(&quot;Ranked Species Term Significance from Hi-C Linear Model&quot;) + ylab(&quot;Proportion of Bins Assigned to Annotation&quot;) + guides(fill=guide_legend(title=&quot;Annotations&quot;)) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) + coord_cartesian((xlim=c(0, 600))) + guides(fill=FALSE) #FIGS16C</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromHMM Visualization-7">
+Past versions of chromHMM Visualization-7.png
+</button>
+</p>
+<div id="fig-chromHMM Visualization-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/chromHMM Visualization-7.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>S4D &lt;- ggplot(data=ggpromDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position=&quot;fill&quot;) + ggtitle(&quot;chromHMM Annotations, DE Promoter-Contacting Bins&quot;) + xlab(&quot;Ranked Species Term Significance from Hi-C Linear Model&quot;) + ylab(&quot;Proportion of Bins Assigned to Annotation&quot;) + guides(fill=guide_legend(title=&quot;Annotations&quot;)) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) + coord_cartesian((xlim=c(0, 600))) + guides(fill=FALSE)
+ggplot(data=ggprom.noDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position=&quot;fill&quot;) + ggtitle(&quot;chromHMM Annotations, non-DE Promoter-Contacting Bins&quot;) + xlab(&quot;Ranked Species Term Significance from Hi-C Linear Model&quot;) + ylab(&quot;Proportion of Bins Assigned to Annotation&quot;) + guides(fill=guide_legend(title=&quot;Annotations&quot;)) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) + coord_cartesian((xlim=c(0, 600))) + guides(fill=FALSE) #FIGS4C</code></pre>
 <pre><code>Warning: Removed 2063 rows containing missing values (position_stack).</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/chromHMM%20Visualization-8.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>#HOMER COMMENTARY
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromHMM Visualization-8">
+Past versions of chromHMM Visualization-8.png
+</button>
+</p>
+<div id="fig-chromHMM Visualization-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/chromHMM Visualization-8.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>S4C &lt;- ggplot(data=ggprom.noDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(position=&quot;fill&quot;) + ggtitle(&quot;chromHMM Annotations, non-DE Promoter-Contacting Bins&quot;) + xlab(&quot;Ranked Species Term Significance from Hi-C Linear Model&quot;) + ylab(&quot;Proportion of Bins Assigned to Annotation&quot;) + guides(fill=guide_legend(title=&quot;Annotations&quot;)) + scale_fill_manual(values=HMM.colors, labels=HMM.marks, drop=FALSE) + coord_cartesian((xlim=c(0, 600))) + guides(fill=FALSE)
+
+#Fig S4:
+FIGS4 &lt;- plot_grid(S4A, S4B, S4C, S4D, labels=c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;))</code></pre>
+<pre><code>Warning: Removed 1740 rows containing missing values (position_stack).</code></pre>
+<pre><code>Warning: Removed 1291 rows containing missing values (position_stack).</code></pre>
+<pre><code>Warning: Removed 2063 rows containing missing values (position_stack).</code></pre>
+<pre><code>Warning: Removed 1477 rows containing missing values (position_stack).</code></pre>
+<pre class="r"><code>save_plot(&quot;~/Desktop/FIGS4.png&quot;, FIGS4, ncol=2, nrow=2, base_aspect_ratio = 1.9)
+
+#HOMER COMMENTARY
 #Again unfortunately p-values line up terribly, for instance max at the DC promoters is 5% and nonDC promoters 15% at the same rank (1200). At the smaller ranges (~250), it&#39;s even worse (.1% to 7%). In the DE case, at 4000 rank it&#39;s 65% and 29% DE to no DE, and around areas of extreme change (~250) it&#39;s 4.6% to .17%, and at 100 rank it&#39;s .47% to .06%...
 #Because nothing is conclusive here, just do 10%, 5%, and 1% FDR below.
 
@@ -61284,6 +61776,43 @@ vp &lt;- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.7)
 print(prom.DHS)
 print(box.prom.DHS, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-1">
+Past versions of Other quantitative enrichments-1.png
+</button>
+</p>
+<div id="fig-Other quantitative enrichments-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/Other quantitative enrichments-1.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>##############H3K27Ac plots!!!
 Hac.pvals &lt;- data.frame(differential=c(&quot;contact&quot;, &quot;expression&quot;, &quot;both&quot;, &quot;no&quot;), contact=c(0, signif(t.test(filter(proms.differential.KR, differential==&quot;contact&quot;)$Hacval, filter(proms.differential.KR, differential==&quot;expression&quot;)$Hacval)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;contact&quot;)$Hacval, filter(proms.differential.KR, differential==&quot;both&quot;)$Hacval)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;contact&quot;)$Hacval, filter(proms.differential.KR, differential==&quot;no&quot;)$Hacval)$p.value, 2)), expression=c(signif(t.test(filter(proms.differential.KR, differential==&quot;expression&quot;)$Hacval, filter(proms.differential.KR, differential==&quot;contact&quot;)$Hacval)$p.value, 2), 0, signif(t.test(filter(proms.differential.KR, differential==&quot;expression&quot;)$Hacval, filter(proms.differential.KR, differential==&quot;both&quot;)$Hacval)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;expression&quot;)$Hacval, filter(proms.differential.KR, differential==&quot;no&quot;)$Hacval)$p.value, 2)), both=c(signif(t.test(filter(proms.differential.KR, differential==&quot;both&quot;)$Hacval, filter(proms.differential.KR, differential==&quot;contact&quot;)$Hacval)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;both&quot;)$Hacval, filter(proms.differential.KR, differential==&quot;expression&quot;)$Hacval)$p.value, 2), 0, signif(t.test(filter(proms.differential.KR, differential==&quot;both&quot;)$Hacval, filter(proms.differential.KR, differential==&quot;no&quot;)$Hacval)$p.value, 2)), no=c(signif(t.test(filter(proms.differential.KR, differential==&quot;no&quot;)$Hacval, filter(proms.differential.KR, differential==&quot;contact&quot;)$Hacval)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;no&quot;)$Hacval, filter(proms.differential.KR, differential==&quot;expression&quot;)$Hacval)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;no&quot;)$Hacval, filter(proms.differential.KR, differential==&quot;both&quot;)$Hacval)$p.value, 2), 0))
 rownames(Hac.pvals) &lt;- Hac.pvals$differential
@@ -61294,6 +61823,43 @@ vp &lt;- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.7)
 print(prom.Hac)
 print(box.prom.Hac, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-2">
+Past versions of Other quantitative enrichments-2.png
+</button>
+</p>
+<div id="fig-Other quantitative enrichments-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/Other quantitative enrichments-2.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>t.test(filter(proms.differential.KR, differential==&quot;contact&quot;)$Hacval, filter(proms.differential.KR, differential==&quot;no&quot;)$Hacval)</code></pre>
 <pre><code>
     Welch Two Sample t-test
@@ -61316,6 +61882,43 @@ vp &lt;- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.73)
 print(prom.Hme1)
 print(box.prom.Hme1, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-3">
+Past versions of Other quantitative enrichments-3.png
+</button>
+</p>
+<div id="fig-Other quantitative enrichments-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/Other quantitative enrichments-3.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####H3K4Me3 plots!!!
 Hme3.pvals &lt;- data.frame(differential=c(&quot;contact&quot;, &quot;expression&quot;, &quot;both&quot;, &quot;no&quot;), contact=c(0, signif(t.test(filter(proms.differential.KR, differential==&quot;contact&quot;)$Hme3val, filter(proms.differential.KR, differential==&quot;expression&quot;)$Hme3val)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;contact&quot;)$Hme3val, filter(proms.differential.KR, differential==&quot;both&quot;)$Hme3val)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;contact&quot;)$Hme3val, filter(proms.differential.KR, differential==&quot;no&quot;)$Hme3val)$p.value, 2)), expression=c(signif(t.test(filter(proms.differential.KR, differential==&quot;expression&quot;)$Hme3val, filter(proms.differential.KR, differential==&quot;contact&quot;)$Hme3val)$p.value, 2), 0, signif(t.test(filter(proms.differential.KR, differential==&quot;expression&quot;)$Hme3val, filter(proms.differential.KR, differential==&quot;both&quot;)$Hme3val)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;expression&quot;)$Hme3val, filter(proms.differential.KR, differential==&quot;no&quot;)$Hme3val)$p.value, 2)), both=c(signif(t.test(filter(proms.differential.KR, differential==&quot;both&quot;)$Hme3val, filter(proms.differential.KR, differential==&quot;contact&quot;)$Hme3val)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;both&quot;)$Hme3val, filter(proms.differential.KR, differential==&quot;expression&quot;)$Hme3val)$p.value, 2), 0, signif(t.test(filter(proms.differential.KR, differential==&quot;both&quot;)$Hme3val, filter(proms.differential.KR, differential==&quot;no&quot;)$Hme3val)$p.value, 2)), no=c(signif(t.test(filter(proms.differential.KR, differential==&quot;no&quot;)$Hme3val, filter(proms.differential.KR, differential==&quot;contact&quot;)$Hme3val)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;no&quot;)$Hme3val, filter(proms.differential.KR, differential==&quot;expression&quot;)$Hme3val)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;no&quot;)$Hme3val, filter(proms.differential.KR, differential==&quot;both&quot;)$Hme3val)$p.value, 2), 0))
 rownames(Hme3.pvals) &lt;- Hme3.pvals$differential
@@ -61326,6 +61929,43 @@ print(prom.Hme3)
 vp &lt;- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.7)
 print(box.prom.Hme3, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-4">
+Past versions of Other quantitative enrichments-4.png
+</button>
+</p>
+<div id="fig-Other quantitative enrichments-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/Other quantitative enrichments-4.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####H3K27me3 plots!!!
 HK27.pvals &lt;- data.frame(differential=c(&quot;contact&quot;, &quot;expression&quot;, &quot;both&quot;, &quot;no&quot;), contact=c(0, signif(t.test(filter(proms.differential.KR, differential==&quot;contact&quot;)$HK27val, filter(proms.differential.KR, differential==&quot;expression&quot;)$HK27val)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;contact&quot;)$HK27val, filter(proms.differential.KR, differential==&quot;both&quot;)$HK27val)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;contact&quot;)$HK27val, filter(proms.differential.KR, differential==&quot;no&quot;)$HK27val)$p.value, 2)), expression=c(signif(t.test(filter(proms.differential.KR, differential==&quot;expression&quot;)$HK27val, filter(proms.differential.KR, differential==&quot;contact&quot;)$HK27val)$p.value, 2), 0, signif(t.test(filter(proms.differential.KR, differential==&quot;expression&quot;)$HK27val, filter(proms.differential.KR, differential==&quot;both&quot;)$HK27val)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;expression&quot;)$HK27val, filter(proms.differential.KR, differential==&quot;no&quot;)$HK27val)$p.value, 2)), both=c(signif(t.test(filter(proms.differential.KR, differential==&quot;both&quot;)$HK27val, filter(proms.differential.KR, differential==&quot;contact&quot;)$HK27val)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;both&quot;)$HK27val, filter(proms.differential.KR, differential==&quot;expression&quot;)$HK27val)$p.value, 2), 0, signif(t.test(filter(proms.differential.KR, differential==&quot;both&quot;)$HK27val, filter(proms.differential.KR, differential==&quot;no&quot;)$HK27val)$p.value, 2)), no=c(signif(t.test(filter(proms.differential.KR, differential==&quot;no&quot;)$HK27val, filter(proms.differential.KR, differential==&quot;contact&quot;)$HK27val)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;no&quot;)$HK27val, filter(proms.differential.KR, differential==&quot;expression&quot;)$HK27val)$p.value, 2), signif(t.test(filter(proms.differential.KR, differential==&quot;no&quot;)$HK27val, filter(proms.differential.KR, differential==&quot;both&quot;)$HK27val)$p.value, 2), 0))
 rownames(HK27.pvals) &lt;- HK27.pvals$differential
@@ -61336,6 +61976,43 @@ print(prom.HK27)
 vp &lt;- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.5)
 print(box.prom.HK27, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-5">
+Past versions of Other quantitative enrichments-5.png
+</button>
+</p>
+<div id="fig-Other quantitative enrichments-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/Other quantitative enrichments-5.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>######REPEAT QUANTITATIVE HISTONE ENRICHMENTS FOR VC VALUES
 #######Make a doubled-down data frame for single columns of quantitative enrichments. Really, will need to do differential status-level de-duplication here first, then recombine those to make this simple with ggplot2. Create one huge for looking at differential statuses, and one big one separating out promoters/non promoters (chrom.annos). Also need polarizing ones for DC/not and DE/not, without exclusivity in the case of both. chrom.annos is what was created in the previous chunk for separating out promoters/non promoters. Now, undertake the same process to create the other necessary dfs:
 DE.only.proms.VC &lt;- filter(promoter.contacts.VC, differential==&quot;expression&quot;)
@@ -61362,17 +62039,91 @@ vp &lt;- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.7)
 print(prom.DHS)
 print(box.prom.DHS, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-6">
+Past versions of Other quantitative enrichments-6.png
+</button>
+</p>
+<div id="fig-Other quantitative enrichments-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/Other quantitative enrichments-6.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>##############H3K27Ac plots!!!
 Hac.pvals &lt;- data.frame(differential=c(&quot;contact&quot;, &quot;expression&quot;, &quot;both&quot;, &quot;no&quot;), contact=c(0, signif(t.test(filter(proms.differential.VC, differential==&quot;contact&quot;)$Hacval, filter(proms.differential.VC, differential==&quot;expression&quot;)$Hacval)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;contact&quot;)$Hacval, filter(proms.differential.VC, differential==&quot;both&quot;)$Hacval)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;contact&quot;)$Hacval, filter(proms.differential.VC, differential==&quot;no&quot;)$Hacval)$p.value, 2)), expression=c(signif(t.test(filter(proms.differential.VC, differential==&quot;expression&quot;)$Hacval, filter(proms.differential.VC, differential==&quot;contact&quot;)$Hacval)$p.value, 2), 0, signif(t.test(filter(proms.differential.VC, differential==&quot;expression&quot;)$Hacval, filter(proms.differential.VC, differential==&quot;both&quot;)$Hacval)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;expression&quot;)$Hacval, filter(proms.differential.VC, differential==&quot;no&quot;)$Hacval)$p.value, 2)), both=c(signif(t.test(filter(proms.differential.VC, differential==&quot;both&quot;)$Hacval, filter(proms.differential.VC, differential==&quot;contact&quot;)$Hacval)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;both&quot;)$Hacval, filter(proms.differential.VC, differential==&quot;expression&quot;)$Hacval)$p.value, 2), 0, signif(t.test(filter(proms.differential.VC, differential==&quot;both&quot;)$Hacval, filter(proms.differential.VC, differential==&quot;no&quot;)$Hacval)$p.value, 2)), no=c(signif(t.test(filter(proms.differential.VC, differential==&quot;no&quot;)$Hacval, filter(proms.differential.VC, differential==&quot;contact&quot;)$Hacval)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;no&quot;)$Hacval, filter(proms.differential.VC, differential==&quot;expression&quot;)$Hacval)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;no&quot;)$Hacval, filter(proms.differential.VC, differential==&quot;both&quot;)$Hacval)$p.value, 2), 0))
 rownames(Hac.pvals) &lt;- Hac.pvals$differential
 
-###FIGS17A
+###FIGS5A
 prom.Hac &lt;- ggplot(data=proms.differential.VC) + geom_density(aes(x=Hacval, group=differential, color=differential, y=..scaled..)) + ggtitle(&quot;Enrichment of H3K27ac Overlapping Promoter Hi-C Bins&quot;) + xlab(&quot;Length of Overlap b/t Bin and H3K27ac Peak (BP)&quot;) + ylab(&quot;Density&quot;) + scale_color_manual(name=&quot;Species Differential:&quot;, labels = c(&quot;Both&quot;, &quot;Contact&quot;, &quot;Expression&quot;, &quot;Neither&quot;), values=c(&quot;Red&quot;, &quot;Blue&quot;, &quot;Green&quot;, &quot;Purple&quot;)) + coord_cartesian(xlim=c(0, 3500)) + guides(color=FALSE)
 box.prom.Hac &lt;- ggplot(data=proms.differential.VC) + geom_violin(aes(x=differential, y=Hacval, group=differential, color=differential), draw_quantiles = c(0.5))+ scale_color_manual(name=&quot;Species Differential:&quot;, labels = c(&quot;Both&quot;, &quot;Contact&quot;, &quot;Expression&quot;, &quot;Neither&quot;), values=c(&quot;Red&quot;, &quot;Blue&quot;, &quot;Green&quot;, &quot;Purple&quot;), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank())+ coord_cartesian(ylim=c(0, 1000)) + annotate(&quot;segment&quot;, x=1.1, xend=1.9, y=430, yend=430) + annotate(&quot;segment&quot;, x=1.1, xend=2.9, y=700, yend=700) + annotate(&quot;segment&quot;, x=1.1, xend=3.9, y=880, yend=880) + annotate(&quot;segment&quot;, x=2.1, xend=2.9, y=430, yend=430) + annotate(&quot;segment&quot;, x=2.1, xend=3.9, y=560, yend=560) + annotate(&quot;segment&quot;, x=3.1, xend=3.9, y=430, yend=430) + annotate(&quot;text&quot;, label=Hac.pvals[&quot;both&quot;, &quot;contact&quot;], size=3, fontface=2,x=1.5, y=480) + annotate(&quot;text&quot;, label=Hac.pvals[&quot;expression&quot;, &quot;contact&quot;], size=3, fontface=2,x=2.5, y=480) + annotate(&quot;text&quot;, label=Hac.pvals[&quot;expression&quot;, &quot;no&quot;], size=3, fontface=2,x=3.5, y=480) + annotate(&quot;text&quot;, label=Hac.pvals[&quot;no&quot;, &quot;contact&quot;], size=3, fontface=2,x=3, y=610) + annotate(&quot;text&quot;, label=Hac.pvals[&quot;both&quot;, &quot;expression&quot;], size=3, fontface=2,x=2, y=750) + annotate(&quot;text&quot;, label=Hac.pvals[&quot;both&quot;, &quot;no&quot;], size=3, fontface=2,x=2.5, y=930)
 vp &lt;- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.6)
 print(prom.Hac)
 print(box.prom.Hac, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-7">
+Past versions of Other quantitative enrichments-7.png
+</button>
+</p>
+<div id="fig-Other quantitative enrichments-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/Other quantitative enrichments-7.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>t.test(filter(proms.differential.VC, differential==&quot;contact&quot;)$Hacval, filter(proms.differential.VC, differential==&quot;no&quot;)$Hacval)</code></pre>
 <pre><code>
     Welch Two Sample t-test
@@ -61389,35 +62140,146 @@ mean of x mean of y
 Hme1.pvals &lt;- data.frame(differential=c(&quot;contact&quot;, &quot;expression&quot;, &quot;both&quot;, &quot;no&quot;), contact=c(0, signif(t.test(filter(proms.differential.VC, differential==&quot;contact&quot;)$Hme1val, filter(proms.differential.VC, differential==&quot;expression&quot;)$Hme1val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;contact&quot;)$Hme1val, filter(proms.differential.VC, differential==&quot;both&quot;)$Hme1val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;contact&quot;)$Hme1val, filter(proms.differential.VC, differential==&quot;no&quot;)$Hme1val)$p.value, 2)), expression=c(signif(t.test(filter(proms.differential.VC, differential==&quot;expression&quot;)$Hme1val, filter(proms.differential.VC, differential==&quot;contact&quot;)$Hme1val)$p.value, 2), 0, signif(t.test(filter(proms.differential.VC, differential==&quot;expression&quot;)$Hme1val, filter(proms.differential.VC, differential==&quot;both&quot;)$Hme1val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;expression&quot;)$Hme1val, filter(proms.differential.VC, differential==&quot;no&quot;)$Hme1val)$p.value, 2)), both=c(signif(t.test(filter(proms.differential.VC, differential==&quot;both&quot;)$Hme1val, filter(proms.differential.VC, differential==&quot;contact&quot;)$Hme1val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;both&quot;)$Hme1val, filter(proms.differential.VC, differential==&quot;expression&quot;)$Hme1val)$p.value, 2), 0, signif(t.test(filter(proms.differential.VC, differential==&quot;both&quot;)$Hme1val, filter(proms.differential.VC, differential==&quot;no&quot;)$Hme1val)$p.value, 2)), no=c(signif(t.test(filter(proms.differential.VC, differential==&quot;no&quot;)$Hme1val, filter(proms.differential.VC, differential==&quot;contact&quot;)$Hme1val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;no&quot;)$Hme1val, filter(proms.differential.VC, differential==&quot;expression&quot;)$Hme1val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;no&quot;)$Hme1val, filter(proms.differential.VC, differential==&quot;both&quot;)$Hme1val)$p.value, 2), 0))
 rownames(Hme1.pvals) &lt;- Hme1.pvals$differential
 
-#FIGS17C
+#FIGS5C
 prom.Hme1 &lt;- ggplot(data=proms.differential.VC) + geom_density(aes(x=Hme1val, group=differential, color=differential, y=..scaled..)) + ggtitle(&quot;Enrichment of H3K4me1 Overlapping Promoter Hi-C Bins&quot;) + xlab(&quot;Length of Overlap b/t Bin and H3K4me1 Peak (BP)&quot;) + ylab(&quot;Density&quot;) + scale_color_manual(name=&quot;Species Differential:&quot;, labels = c(&quot;Both&quot;, &quot;Contact&quot;, &quot;Expression&quot;, &quot;Neither&quot;), values=c(&quot;Red&quot;, &quot;Blue&quot;, &quot;Green&quot;, &quot;Purple&quot;)) + coord_cartesian(xlim=c(0, 6100)) + guides(color=FALSE)
 box.prom.Hme1 &lt;- ggplot(data=proms.differential.VC) + geom_violin(aes(x=differential, y=Hme1val, group=differential, color=differential), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(name=&quot;Species Differential:&quot;, labels = c(&quot;Both&quot;, &quot;Contact&quot;, &quot;Expression&quot;, &quot;Neither&quot;), values=c(&quot;Red&quot;, &quot;Blue&quot;, &quot;Green&quot;, &quot;Purple&quot;), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 6000)) + annotate(&quot;segment&quot;, x=1.1, xend=1.9, y=1500, yend=1500) + annotate(&quot;segment&quot;, x=2.1, xend=2.9, y=1500, yend=1500) + annotate(&quot;segment&quot;, x=3.1, xend=3.9, y=1500, yend=1500) + annotate(&quot;segment&quot;, x=1.1, xend=2.9, y=3900, yend=3900) + annotate(&quot;segment&quot;, x=1.1, xend=3.9, y=5100, yend=5100) + annotate(&quot;segment&quot;, x=2.1, xend=3.9, y=2700, yend=2700) + annotate(&quot;text&quot;, x=1.5, y=1800, size=3, fontface=2,label=Hme1.pvals[&quot;both&quot;, &quot;contact&quot;]) + annotate(&quot;text&quot;, x=2.5, y=1800, size=3, fontface=2,label=Hme1.pvals[&quot;expression&quot;, &quot;contact&quot;]) + annotate(&quot;text&quot;, x=3.5, y=1800, size=3, fontface=2,label=Hme1.pvals[&quot;expression&quot;, &quot;no&quot;]) + annotate(&quot;text&quot;, x=3, y=3000, size=3, fontface=2,label=Hme1.pvals[&quot;no&quot;, &quot;contact&quot;]) + annotate(&quot;text&quot;, x=2.5, y=5400, size=3, fontface=2,label=Hme1.pvals[&quot;both&quot;, &quot;no&quot;]) + annotate(&quot;text&quot;, x=2, y=4200, size=3, fontface=2,label=Hme1.pvals[&quot;both&quot;, &quot;expression&quot;])
 vp &lt;- grid::viewport(width=0.4, height=0.4, x=0.6, y=0.6)
 print(prom.Hme1)
 print(box.prom.Hme1, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-8">
+Past versions of Other quantitative enrichments-8.png
+</button>
+</p>
+<div id="fig-Other quantitative enrichments-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/Other quantitative enrichments-8.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####H3K4Me3 plots!!!
 Hme3.pvals &lt;- data.frame(differential=c(&quot;contact&quot;, &quot;expression&quot;, &quot;both&quot;, &quot;no&quot;), contact=c(0, signif(t.test(filter(proms.differential.VC, differential==&quot;contact&quot;)$Hme3val, filter(proms.differential.VC, differential==&quot;expression&quot;)$Hme3val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;contact&quot;)$Hme3val, filter(proms.differential.VC, differential==&quot;both&quot;)$Hme3val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;contact&quot;)$Hme3val, filter(proms.differential.VC, differential==&quot;no&quot;)$Hme3val)$p.value, 2)), expression=c(signif(t.test(filter(proms.differential.VC, differential==&quot;expression&quot;)$Hme3val, filter(proms.differential.VC, differential==&quot;contact&quot;)$Hme3val)$p.value, 2), 0, signif(t.test(filter(proms.differential.VC, differential==&quot;expression&quot;)$Hme3val, filter(proms.differential.VC, differential==&quot;both&quot;)$Hme3val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;expression&quot;)$Hme3val, filter(proms.differential.VC, differential==&quot;no&quot;)$Hme3val)$p.value, 2)), both=c(signif(t.test(filter(proms.differential.VC, differential==&quot;both&quot;)$Hme3val, filter(proms.differential.VC, differential==&quot;contact&quot;)$Hme3val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;both&quot;)$Hme3val, filter(proms.differential.VC, differential==&quot;expression&quot;)$Hme3val)$p.value, 2), 0, signif(t.test(filter(proms.differential.VC, differential==&quot;both&quot;)$Hme3val, filter(proms.differential.VC, differential==&quot;no&quot;)$Hme3val)$p.value, 2)), no=c(signif(t.test(filter(proms.differential.VC, differential==&quot;no&quot;)$Hme3val, filter(proms.differential.VC, differential==&quot;contact&quot;)$Hme3val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;no&quot;)$Hme3val, filter(proms.differential.VC, differential==&quot;expression&quot;)$Hme3val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;no&quot;)$Hme3val, filter(proms.differential.VC, differential==&quot;both&quot;)$Hme3val)$p.value, 2), 0))
 rownames(Hme3.pvals) &lt;- Hme3.pvals$differential
 
-#FIGS17B
+#FIGS5B
 prom.Hme3 &lt;- ggplot(data=proms.differential.VC) + geom_density(aes(x=Hme3val, group=differential, color=differential, y=..scaled..)) + ggtitle(&quot;Enrichment of H3K4me3 Overlapping Promoter Hi-C Bins&quot;) + xlab(&quot;Length of Overlap b/t Bin and H3K4me3 Peak (BP)&quot;) + ylab(&quot;Density&quot;) + scale_color_manual(name=&quot;Species Differential:&quot;, labels = c(&quot;Both&quot;, &quot;Contact&quot;, &quot;Expression&quot;, &quot;Neither&quot;), values=c(&quot;Red&quot;, &quot;Blue&quot;, &quot;Green&quot;, &quot;Purple&quot;)) + guides(color=FALSE)
 box.prom.Hme3 &lt;- ggplot(data=proms.differential.VC) + geom_violin(aes(x=differential, y=Hme3val, group=differential, color=differential), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(name=&quot;Species Differential:&quot;, labels = c(&quot;Both&quot;, &quot;Contact&quot;, &quot;Expression&quot;, &quot;Neither&quot;), values=c(&quot;Red&quot;, &quot;Blue&quot;, &quot;Green&quot;, &quot;Purple&quot;), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 2000)) + annotate(&quot;segment&quot;, x=1.1, xend=1.9, y=750, yend=750) + annotate(&quot;segment&quot;, x=2.1, xend=2.9, y=750, yend=750) + annotate(&quot;segment&quot;, x=3.1, xend=3.9, y=750, yend=750) + annotate(&quot;segment&quot;, x=2.1, xend=3.9, y=1000, yend=1000) + annotate(&quot;segment&quot;, x=1.1, xend=2.9, y=1250, yend=1250) + annotate(&quot;segment&quot;, x=1.1, xend=3.9, y=1500, yend=1500) + annotate(&quot;text&quot;, x=1.5, y=840, size=3, fontface=2,label=Hme3.pvals[&quot;both&quot;, &quot;contact&quot;]) + annotate(&quot;text&quot;, x=2.5, y=840, size=3, fontface=2,label=Hme3.pvals[&quot;expression&quot;, &quot;contact&quot;]) + annotate(&quot;text&quot;, x=3.5, y=840, size=3, fontface=2,label=Hme3.pvals[&quot;expression&quot;, &quot;no&quot;]) + annotate(&quot;text&quot;, x=3, y=1090, size=3, fontface=2,label=Hme3.pvals[&quot;no&quot;, &quot;contact&quot;]) + annotate(&quot;text&quot;, x=2.7, y=1590, size=3, fontface=2,label=Hme3.pvals[&quot;both&quot;, &quot;no&quot;]) + annotate(&quot;text&quot;, x=2, y=1340, size=3, fontface=2,label=Hme3.pvals[&quot;both&quot;, &quot;expression&quot;])
 print(prom.Hme3)
 vp &lt;- grid::viewport(width=0.4, height=0.4, x=0.6, y=0.6)
 print(box.prom.Hme3, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-9">
+Past versions of Other quantitative enrichments-9.png
+</button>
+</p>
+<div id="fig-Other quantitative enrichments-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/Other quantitative enrichments-9.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####H3K27me3 plots!!!
 HK27.pvals &lt;- data.frame(differential=c(&quot;contact&quot;, &quot;expression&quot;, &quot;both&quot;, &quot;no&quot;), contact=c(0, signif(t.test(filter(proms.differential.VC, differential==&quot;contact&quot;)$HK27val, filter(proms.differential.VC, differential==&quot;expression&quot;)$HK27val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;contact&quot;)$HK27val, filter(proms.differential.VC, differential==&quot;both&quot;)$HK27val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;contact&quot;)$HK27val, filter(proms.differential.VC, differential==&quot;no&quot;)$HK27val)$p.value, 2)), expression=c(signif(t.test(filter(proms.differential.VC, differential==&quot;expression&quot;)$HK27val, filter(proms.differential.VC, differential==&quot;contact&quot;)$HK27val)$p.value, 2), 0, signif(t.test(filter(proms.differential.VC, differential==&quot;expression&quot;)$HK27val, filter(proms.differential.VC, differential==&quot;both&quot;)$HK27val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;expression&quot;)$HK27val, filter(proms.differential.VC, differential==&quot;no&quot;)$HK27val)$p.value, 2)), both=c(signif(t.test(filter(proms.differential.VC, differential==&quot;both&quot;)$HK27val, filter(proms.differential.VC, differential==&quot;contact&quot;)$HK27val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;both&quot;)$HK27val, filter(proms.differential.VC, differential==&quot;expression&quot;)$HK27val)$p.value, 2), 0, signif(t.test(filter(proms.differential.VC, differential==&quot;both&quot;)$HK27val, filter(proms.differential.VC, differential==&quot;no&quot;)$HK27val)$p.value, 2)), no=c(signif(t.test(filter(proms.differential.VC, differential==&quot;no&quot;)$HK27val, filter(proms.differential.VC, differential==&quot;contact&quot;)$HK27val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;no&quot;)$HK27val, filter(proms.differential.VC, differential==&quot;expression&quot;)$HK27val)$p.value, 2), signif(t.test(filter(proms.differential.VC, differential==&quot;no&quot;)$HK27val, filter(proms.differential.VC, differential==&quot;both&quot;)$HK27val)$p.value, 2), 0))
 rownames(HK27.pvals) &lt;- HK27.pvals$differential
 
-#FIGS17D
+#FIGS5D
 prom.HK27 &lt;- ggplot(data=proms.differential.VC) + geom_density(aes(x=HK27val, group=differential, color=differential, y=..scaled..)) + ggtitle(&quot;Enrichment of H3K27me3 Overlapping Promoter Hi-C Bins&quot;) + xlab(&quot;Length of Overlap b/t Bin and H3K27me3 Peak (BP)&quot;) + ylab(&quot;Density&quot;) + scale_color_manual(name=&quot;Species Differential:&quot;, labels = c(&quot;Both&quot;, &quot;Contact&quot;, &quot;Expression&quot;, &quot;Neither&quot;), values=c(&quot;Red&quot;, &quot;Blue&quot;, &quot;Green&quot;, &quot;Purple&quot;)) + coord_cartesian((xlim=c(0, 5000))) + guides(color=FALSE)
 box.prom.HK27 &lt;- ggplot(data=proms.differential.VC) + geom_violin(aes(x=differential, y=HK27val, group=differential, color=differential), draw_quantiles = c(0.25, 0.5, 0.75)) + scale_color_manual(name=&quot;Species Differential:&quot;, labels = c(&quot;Both&quot;, &quot;Contact&quot;, &quot;Expression&quot;, &quot;Neither&quot;), values=c(&quot;Red&quot;, &quot;Blue&quot;, &quot;Green&quot;, &quot;Purple&quot;), guide=FALSE) + theme(axis.title.x = element_blank(), axis.text.x=element_blank(), axis.title.y=element_blank()) + coord_cartesian(ylim=c(0, 2000)) + annotate(&quot;segment&quot;, x=1.1, xend=1.9, y=750, yend=750) + annotate(&quot;segment&quot;, x=2.1, xend=2.9, y=750, yend=750) + annotate(&quot;segment&quot;, x=3.1, xend=3.9, y=750, yend=750) + annotate(&quot;segment&quot;, x=2.1, xend=3.9, y=1000, yend=1000) + annotate(&quot;segment&quot;, x=1.1, xend=2.9, y=1250, yend=1250) + annotate(&quot;segment&quot;, x=1.1, xend=3.9, y=1500, yend=1500) + annotate(&quot;text&quot;, x=1.5, y=840, size=3, fontface=2,label=HK27.pvals[&quot;both&quot;, &quot;contact&quot;]) + annotate(&quot;text&quot;, x=2.5, y=840, size=3, fontface=2,label=HK27.pvals[&quot;expression&quot;, &quot;contact&quot;]) + annotate(&quot;text&quot;, x=3.5, y=840, size=3, fontface=2,label=HK27.pvals[&quot;expression&quot;, &quot;no&quot;]) + annotate(&quot;text&quot;, x=3, y=1090, size=3, fontface=2,label=HK27.pvals[&quot;no&quot;, &quot;contact&quot;]) + annotate(&quot;text&quot;, x=2.7, y=1590, size=3, fontface=2,label=HK27.pvals[&quot;both&quot;, &quot;no&quot;]) + annotate(&quot;text&quot;, x=2, y=1340, size=3, fontface=2,label=HK27.pvals[&quot;both&quot;, &quot;expression&quot;])
 print(prom.HK27)
 vp &lt;- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.5)
 print(box.prom.HK27, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-10">
+Past versions of Other quantitative enrichments-10.png
+</button>
+</p>
+<div id="fig-Other quantitative enrichments-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ff886b1b02e83bb447062ed5b348a1b88086dcdf/docs/figure/juicer_enrichment.Rmd/Other quantitative enrichments-10.png" target="_blank">ff886b1</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-04-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br> <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
