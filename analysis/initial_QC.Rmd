@@ -29,7 +29,7 @@ library(compiler)
 enableJIT(3)
 ```
 
-#Initial Data read-in and quality control; Fig S2
+#Initial Data read-in and quality control; Fig S8
 First, I read in the data and normalize it with cyclic pairwise loess normalization. These data have come from compiling all of the significant contacts in any individual across species as called by Homer (p<0.01), and then extracting the interaction frequency values for each contact across all individuals. LiftOver was used to convert coordinates between species, with bins being rounded to the nearest 10kb. Here, I look at histograms of the distributions of the contact frequencies on an individual-by-individual basis, to see if they are comparable. I also look at a plot of the mean vs. the variance as an additional quality control metric; this is typically done on RNA-seq count data. In that case, it's done to check if the normalized data are distributed in a particular fashion (e.g. a poisson model would have a linear mean-variance relationship). In the limma/voom pipeline, count data are log-cpm transformed and a loess trend line of variance vs. mean is then fit to create weights for individual genes to be fed into linear modeling with limma. Since this is not a QC metric typically used for Hi-C data, the only thing I hope to see is no particularly strong relationship between variance and mean.
 ```{r Initial Hi-C Data Read-in and QC}
 ###Read in data, normalize it with cyclic loess (pairwise), clean it from any rows that have missing values.
@@ -48,12 +48,15 @@ hum.dists$variable <- gsub("_norm", "", hum.dists$variable)
 chi.dists$variable <- gsub("_norm", "", chi.dists$variable)
 
 ###First, a quick look at histograms of the distributions of the significant Hi-C hits from homer, in both humans and chimps.
-#FIGS2A
+#FIGS8A
 ggplot(data=hum.dists, aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Homer-Significant Hi-C Contacts; Humans") + xlab("Homer-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 4500)) #Human Dist'ns
+FIGS8A <- ggplot(data=hum.dists, aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Homer-Significant Hi-C Contacts; Humans") + xlab("Homer-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 4500)) #Human Dist'ns
 
-#FIGS2B
+#FIGS8B
 ggplot(data=chi.dists, aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Homer-Significant Hi-C Contacts; Chimpanzees") + xlab("Homer-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 4500)) #Chimp Dist'ns
+FIGS8B <- ggplot(data=chi.dists, aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle("Distributions of Homer-Significant Hi-C Contacts; Chimpanzees") + xlab("Homer-Normalized Interaction Frequency") + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 4500)) #Chimp Dist'ns
 #Both sets of distributions look fairly bimodal, with chimps in particular showing a peak around 0.
+
 
 ###As an initial quality control metric, take a look at the mean vs. variance plot for the normalized data. Also go ahead and add on columns for mean frequencies and variances both within and across the species, while they're being calculated here anyway:
 select(full.data, "A-21792_norm", "B-28126_norm", "E-28815_norm", "F-28834_norm") %>% apply(., 1, mean) -> full.data$Hmean
@@ -92,7 +95,7 @@ heatmaply(corheat, main="Pairwise Pearson Correlation @ 10kb", k_row=2, k_col=2,
 #We can see that all the humans cluster together, as do all the chimps. This is very good, despite the fact that the correlations are fairly low.
 ```
 
-#Variance exploration; Fig S1
+#Variance exploration; Fig S7
 Now I look at several metrics to assess variance in the data, checking which species hits were discovered as significant in and how many individuals a given hit was discovered in. I look at this to understand if there are some cutoffs that should be made to reduce the noisiness of the data and maximize the significance of further findings.
 ```{r Variance QC}
 ###Add columns to full.data to indicate species of discovery and number of individuals discovered in. These pieces of information are good to know about each of the hits generally, but can also be used to make decisions about filtering out certain classes of hits if variance is associated with any of these metrics.  
@@ -113,12 +116,12 @@ sum(full.data$disc_species=="B") #~690 k
 myplot <- data.frame(disc_species=full.data$disc_species, found_in_H=full.data$found_in_H, found_in_C=full.data$found_in_C, tot_indiv_IDd=full.data$tot_indiv_IDd, Hvar=full.data$Hvar, Cvar=full.data$Cvar, ALLvar=full.data$ALLvar)
 ggplot(data=myplot, aes(group=tot_indiv_IDd, x=tot_indiv_IDd, y=ALLvar)) + geom_boxplot() + ggtitle("Number of Individuals a Hi-C Hit is Discovered in Relative to Variance") + xlab("Number of Individuals Where Hi-C Contact Called Significant") + ylab("Variance in Interaction Frequency")
 
-#FIGS1
-FIGS1A <- ggplot(data=myplot, aes(group=tot_indiv_IDd, x=tot_indiv_IDd, y=ALLvar)) + geom_boxplot() + ggtitle("Number of Individuals a Hi-C Hit is Discovered in Relative to Variance") + xlab("Number of Individuals Where Hi-C Contact Called Significant") + ylab("Variance in Interaction Frequency")
+#FIGS7
+FIGS7A <- ggplot(data=myplot, aes(group=tot_indiv_IDd, x=tot_indiv_IDd, y=ALLvar)) + geom_boxplot() + ggtitle("Number of Individuals a Hi-C Hit is Discovered in Relative to Variance") + xlab("Number of Individuals Where Hi-C Contact Called Significant") + ylab("Variance in Interaction Frequency")
 ggplot(data=myplot, aes(group=tot_indiv_IDd, x=tot_indiv_IDd, y=ALLvar)) + geom_boxplot() + scale_y_continuous(limits=c(0, 1)) + ggtitle("Number of Individuals a Hi-C Hit is Discovered in Relative to Variance") + xlab("Number of Individuals Where Hi-C Contact Called Significant") + ylab("Variance in Interaction Frequency")
-FIGS1B <- ggplot(data=myplot, aes(group=tot_indiv_IDd, x=tot_indiv_IDd, y=ALLvar)) + geom_boxplot() + scale_y_continuous(limits=c(0, 1)) + ggtitle("Number of Individuals a Hi-C Hit is Discovered in Relative to Variance") + xlab("Number of Individuals Where Hi-C Contact Called Significant") + ylab("Variance in Interaction Frequency")
-FIGS1 <- plot_grid(FIGS1A, FIGS1B, labels=c("A", "B"), align = "h")
-save_plot("~/Desktop/FIGS1A.png", FIGS1)
+FIGS7B <- ggplot(data=myplot, aes(group=tot_indiv_IDd, x=tot_indiv_IDd, y=ALLvar)) + geom_boxplot() + scale_y_continuous(limits=c(0, 1)) + ggtitle("Number of Individuals a Hi-C Hit is Discovered in Relative to Variance") + xlab("Number of Individuals Where Hi-C Contact Called Significant") + ylab("Variance in Interaction Frequency")
+FIGS7 <- plot_grid(FIGS7A, FIGS7B, labels=c("A", "B"), align = "h")
+save_plot("~/Desktop/FIGS7A.eps", FIGS7)
 ```
 From this, it would appear that variance drops off drastically after discovery in at least 4 individuals. I observed a similar pattern when looking at number of individuals a hit is discovered in vs. species-specific variances, as well as similar reductions when looking at variance in hits within species vs. number of individuals discovered in (not shown). Hence I now repeat all of the QC analyses done above, but this time conditioned upon discovery in 4 individuals. Moving forward I will ultimately filter out all the hits that were not found in at least 4 individuals, though I sometimes check the full dataset as well just for sanity's sake.
 
@@ -157,7 +160,10 @@ pca4 <- prcomp(t(data.4[,304:311]), scale=TRUE, center=TRUE)
 
 #FIG1A
 ggplot(data=as.data.frame(pca4$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title="PCA on Normalized Hi-C Contact Frequency") + guides(color=guide_legend(order=1, title="Batch"), size=FALSE, shape=guide_legend(order=2, title="Species")) + xlab(paste("PC1 (", signif(100*summary(pca4)$importance[2,1],2), "% of variance)")) + ylab((paste("PC2 (", signif(100*summary(pca4)$importance[2,2],2), "% of variance)"))) + labs(color="Batch", shape="Species") + scale_shape_manual(labels=c("Chimp", "Human"), values=c(16, 17)) #Metadata hasn't changed so use the same metadata from above. PCA shows a similar separation along species lines for PC1, with this time it representing 24.171% of the variance (up from 20.49% earlier). This is rather unsurprising, since we have subset down to hits that are more shared than the total set we had before.
+FIG1A <- ggplot(data=as.data.frame(pca4$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title="PCA on Normalized Hi-C Contact Frequency") + guides(color=guide_legend(order=1, title="Batch"), size=FALSE, shape=guide_legend(order=2, title="Species")) + xlab(paste("PC1 (", signif(100*summary(pca4)$importance[2,1],2), "% of variance)")) + ylab((paste("PC2 (", signif(100*summary(pca4)$importance[2,2],2), "% of variance)"))) + labs(color="Batch", shape="Species") + scale_shape_manual(labels=c("Chimp", "Human"), values=c(16, 17))
 barplot(summary(pca4)$importance[2,], xlab="PCs", ylab="Proportion of Variance Explained", main="PCA on normalized Hi-C contact frequency") #Scree plot showing all the PCs and the proportion of the variance they explain. This is similar to above, with no PCs beyond a 7th one, and the first PC taking the vast majority of the variance while the others hover near 12%. No variables in experimentation, library prep, sequencing batch, or anything else seem to correlate with these PCs.
+
+plot_grid(FIG1A, labels=c("A"), align="h")#, rel_widths = c(1, 0.01))
 
 #Actually statistically test correlation w/ PCs:
 PC1 <- pca4$x[,1]
@@ -217,6 +223,42 @@ for(i in 1:7){
 PC_pvals
 PC_rsquareds
 #So PC1 correlates strongly and significantly with species, whereas PC4 has some moderate correlation with sex--but nothing else has a significant effect.
+
+###Heatmap clustering of data after conditioning upon discovery in 4 individuals (regardless of species). Would expect to see the same clustering, with perhaps higher correlation values due to conditioning upon discovery in 4 individuals.
+corheat4 <- cor(data.4[,304:311], use="complete.obs", method="pearson") #Corheat for the full data set, and heatmap
+#colnames(corheat4) <- c("A_HF", "B_HM", "C_CM", "D_CF", "E_HM", "F_HF", "G_CM", "H_CF")
+colnames(corheat4) <- c("H_F1", "H_M1", "C_M1", "C_F1", "H_M2", "H_F2", "C_M2", "C_F2") #Better for presentation
+rownames(corheat4) <- colnames(corheat4)
+
+#FIG1B
+heatmaply(corheat4, main="Pairwise Pearson Correlation Clustering @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30), cellnote_size=10)#, scale_fill_gradient_fun = ggplot2::scale_fill_gradient2(low = "yellow", high = "blue", midpoint = 0.5, limits = c(0, 1)))
+#Indeed, we can again see that all the humans cluster together, as do all the chimps. This is very good, and given this new condition, we also see higher within-species correlations for the significant hits, in the 0.6-0.7 range (was much closer to 0.3 before).
+FIG1B <- heatmaply(corheat4, main="Pairwise Pearson Correlation Clustering @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30), plot_method = "ggplot", return_ppxpy = TRUE)
+
+#FIG1B <- readPNG("~/Downloads/newplot (16).png")
+#theme_cowplot(font_size=10, font_family="Arial")
+
+#Need to mess with this now to get it paper-ready:
+# FIG1B <- FIG1B[!sapply(FIG1B, is.null)]
+# FIG1B <- lapply(FIG1B, ggplotGrob)
+# FIG1B$p$widths <- FIG1B$px$widths <- FIG1B$py$widths <- unit.pmax(
+#     FIG1B$p$widths, 
+#     FIG1B$px$widths, 
+#     FIG1B$py$widths)
+# 
+# FIG1B$p$heights <- FIG1B$px$heights <- FIG1B$py$heights <- unit.pmax(
+#     FIG1B$p$heights, 
+#     FIG1B$px$heights, 
+#     FIG1B$py$heights)
+# 
+# grid.arrange(FIG1B$py, textGrob(""), FIG1B$p, FIG1B$px, nrow=2)
+# 
+# FIG1 <- plot_grid(FIG1A, labels=c("B", "B"), align="h")#, rel_widths = c(1, 0.01))
+# save_plot("~/Desktop/test.eps", FIG1)
+# 
+# 
+# save_plot("~/Desktop/Paper Drafts/PLOS/Revision/Revision_2/Final?/FINAL/figures/FIGS8A.eps", FIGS8A)
+
 
 ###Repeat the above, but conditioned upon discovery in 4 individuals within a species--would expect many of the same patterns here, this time with much stronger separation due to only grabbing hits that are fixed in a species:
 pca4 <- prcomp(t(data.4.fixed[,304:311]), scale=TRUE, center=TRUE)
@@ -286,12 +328,8 @@ PC_rsquareds
 ###Heatmap clustering of data after conditioning upon discovery in 4 individuals (regardless of species). Would expect to see the same clustering, with perhaps higher correlation values due to conditioning upon discovery in 4 individuals.
 corheat4 <- cor(data.4[,304:311], use="complete.obs", method="pearson") #Corheat for the full data set, and heatmap
 #colnames(corheat4) <- c("A_HF", "B_HM", "C_CM", "D_CF", "E_HM", "F_HF", "G_CM", "H_CF")
-colnames(corheat4) <- c("HF1", "HM1", "CM1", "CF1", "HM2", "HF2", "CM2", "CF2") #Better for presentation
+colnames(corheat4) <- c("H_F1", "H_M1", "C_M1", "C_F1", "H_M2", "H_F2", "C_M2", "C_F2") #Better for presentation
 rownames(corheat4) <- colnames(corheat4)
-
-#FIG1B
-heatmaply(corheat4, main="Pairwise Pearson Correlation Clustering @ 10kb | 4", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))#, scale_fill_gradient_fun = ggplot2::scale_fill_gradient2(low = "yellow", high = "blue", midpoint = 0.5, limits = c(0, 1)))
-#Indeed, we can again see that all the humans cluster together, as do all the chimps. This is very good, and given this new condition, we also see higher within-species correlations for the significant hits, in the 0.6-0.7 range (was much closer to 0.3 before).
 
 #Here I just make a fake PCA plot with some words on it so I can use them as labels on the heatmaply plot (for consistency)
 ggplot(data=as.data.frame(pca4$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title="Pairwise Pearson Correlation Clustering @ 10kb") + guides(color=guide_legend(order=1, title="Pearson Correlation"), size=FALSE, shape=guide_legend(order=2, title="Species")) + xlab(paste("PC1 (", signif(100*summary(pca4)$importance[2,1],2), "% of variance)")) + ylab((paste("PC2 (", signif(100*summary(pca4)$importance[2,2],2), "% of variance)"))) + labs(color="Batch", shape="Species") + scale_shape_manual(labels=c("Chimp", "Human"), values=c(16, 17))
@@ -316,7 +354,7 @@ fwrite(data.4, "output/data.4.init.QC", quote=FALSE, sep="\t", row.names=FALSE, 
 fwrite(data.4.fixed, "output/data.4.fixed.init.QC", quote=FALSE, sep="\t", row.names=FALSE, col.names=TRUE, na="NA", showProgress = FALSE)
 ```
 
-#Homer-specific QC; Fig S11
+#Homer-specific QC
 ```{r HOMER-specific QC Metrics}
 #Read in pre-prepped tables of this information.
 rand.frag <- fread("~/Desktop/Hi-C/homer_QCs/petag.Local.ALL.distn", header=TRUE, stringsAsFactors = FALSE, data.table=FALSE)
@@ -343,7 +381,6 @@ group_by(dist.distn, binID) %>% summarise(A_H=sum(A_H), B_H=sum(B_H), C_C=sum(C_
 distdf <- data.frame(dist=rep(mydist$binID, 8), fraction=c(mydist$A_H, mydist$B_H, mydist$C_C, mydist$D_C, mydist$E_H, mydist$F_H, mydist$G_C, mydist$H_C), ID=c(rep("A-21792", 30001), rep("B-28126", 30001), rep("C-3649", 30001), rep("D-40300", 30001), rep("E-28815", 30001), rep("F-28834", 30001), rep("G-3624", 30001), rep("H-3651", 30001)), species=c(rep("Human", 60002), rep("Chimpanzee", 60002), rep("Human", 60002), rep("Chimpanzee", 60002)))
 
 #Now, plot out on several different distance scales to see if there is any strong species effect.
-#FIGS11
 ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 50000)) + xlab("Distance Between Mates") + ylab("Fraction of Hi-C PE reads") + ggtitle("Hi-C Pair Distance Distributions") #FIGS11B
 ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 100000)) + xlab("Distance between mates") + ylab("Fraction of Hi-C PE reads") + ggtitle("Hi-C Pair Distance Distributions")
 ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 500000)) + xlab("Distance Between mates") + ylab("Fraction of Hi-C PE reads") + ggtitle("Hi-C Pair Distance Distributions") #FIGS11A

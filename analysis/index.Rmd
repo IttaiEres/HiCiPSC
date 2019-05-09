@@ -6,24 +6,24 @@ output:
     toc: false
 ---
 
-This website details computational analyses done for the paper "Reorganization of 3D Genome Structure May Contribute to Gene Regulatory Evolution in Primates". In this work, I utilized Hi-C and RNA-seq to find 3-dimensional regulatory differences affecting gene expression between humans and chimpanzees. Click on any of the links below to jump to that section of the analysis. Note that, for many interaction analyses, I repeated the same analysis using different normalization and significance-calling schmes (HOMER vs. Juicer); these are the larger headers:
+This website details computational analyses done for the paper "Reorganization of 3D Genome Structure May Contribute to Gene Regulatory Evolution in Primates". In this work, I utilized Hi-C and RNA-seq to find 3-dimensional regulatory differences affecting gene expression between humans and chimpanzees. Click on any of the links below to jump to that section of the analysis. Note that, for many interaction analyses, I repeated the same analysis using different normalization and significance-calling schmes (HOMER vs. Juicer); these are the larger headers. Figures 3, 5, and S10 were not created in R and thus are not seen here (I used pyGenomeTracks to make them). All other figures can be found in the associated files, as written below:
 
 #### Analyses Utilizing Homer
-*  [Reading in of the data, normalization, and initial quality control metrics--Figures 1, S1, S2, S11](initial_QC.html)
-*  [Linear modeling of the data to find quantitative contact differences between humans and chimpanzees--No figures here, but useful for understanding Figures 2 & S3 ](linear_modeling.html)
-*  [Quality control on the linear modeling, to account for p-value inflation and volcano plot asymmetry--Figures 2, S3](linear_modeling_QC.html)
-*  [Orthogonal analysis with gene expression data collected from the same cell lines--Figures 4, S4, 5, ](gene_expression.html)
-*  [Epigenetic annotation enrichment analyses on the linear-modeling significant Hi-C hits](enrichment.html)
+*  [Reading in of the data, normalization, and initial quality control metrics--Figures 1, S7, S8](initial_QC.html)
+*  [Linear modeling of the data to find quantitative contact differences between humans and chimpanzees--No figures here, but useful for understanding Figures 2 & S9](linear_modeling.html)
+*  [Quality control on the linear modeling, to account for p-value inflation and volcano plot asymmetry--Figures 2, S9](linear_modeling_QC.html)
+*  [Orthogonal analysis with gene expression data collected from the same cell lines--Figures 6, S14, S15, S19](gene_expression.html)
+*  [Epigenetic annotation enrichment analyses on the linear-modeling significant Hi-C hits--Figures 7, S16, S17, S18](enrichment.html)
 
 #### Analyses Utilizing Juicer
-*  [Reading in of the data, normalization, and initial quality control metrics](juicer_initial_QC.html)
-*  [Linear modeling of the data to find quantitative contact differences between humans and chimpanzees](juicer_linear_modeling.html)
-*  [Quality control on the linear modeling, to account for p-value inflation and volcano plot asymmetry](juicer_linear_modeling_QC.html)
-*  [Orthogonal analysis with gene expression data collected from the same cell lines](juicer_gene_expression.html)
-*  [Enrichment analyses on the linear-modeling significant Hi-C hits](juicer_enrichment.html)
+*  [Reading in of the data, normalization, and initial quality control metrics--Figure S1](juicer_initial_QC.html)
+*  [Linear modeling of the data to find quantitative contact differences between humans and chimpanzees--No figures here, but useful for understanding Figure S2](juicer_linear_modeling.html)
+*  [Quality control on the linear modeling, to account for p-value inflation and volcano plot asymmetry--Figure S2](juicer_linear_modeling_QC.html)
+*  [Orthogonal analysis with gene expression data collected from the same cell lines--Figures S3, S6](juicer_gene_expression.html)
+*  [Enrichment analyses on the linear-modeling significant Hi-C hits--Figures S4, S5](juicer_enrichment.html)
 
 #### TAD Analyses
-*  [TAD Analyses](TADs.html)
+*  [TAD Analyses--Figures 4, S11, S12, S13](TADs.html)
 
 #### Mediation Concerns
-*  [Alternative Mediation](alt_mediation.html)
+*  [Alternative Mediation for a species:frequency interaction term](alt_mediation.html)

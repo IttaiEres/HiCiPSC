@@ -514,7 +514,7 @@ enrichment.plotter <- function(df, HiC_col, DE_col, xlab, xmax=0.3, i=c(0.01, 0.
 #Visualization of enrichment of DE/DC in one another. For most of these, using the gene.hic.filt df is sufficient as their Hi-C FDR numbers are the same. For the upstream genes it's a little more complicated because gene.hic.filt doesn't incorporate strand information on the genes, so use the specific US dfs for that, with the USFDR column.
 #FIG6
 enrichment.plotter(gene.hic.filt, "min_FDR.H", "adj.P.Val", "Minimum FDR of Hi-C Contacts Overlapping Gene", xmax=1) #FIG6A/B
-enrichment.plotter(gene.hic.filt, "adj.P.Val", "min_FDR.H", "Minimum DE FDR of Genes Overlapping Hi-C Contacts", xmax=1, recip=TRUE) #Can switching this around give what the reviewer requests easily? Yes, it can.
+enrichment.plotter(gene.hic.filt, "adj.P.Val", "min_FDR.H", "Minimum DE FDR of Genes Overlapping Hi-C Contacts", xmax=1, recip=TRUE) #FIGS19A/B
 enrichment.plotter(gene.hic.filt, "min_FDR.C", "adj.P.Val", "Minimum FDR of Hi-C Contacts Overlapping Gene, Chimp")
 #enrichment.plotter(h_US, "USFDR", "adj.P.Val", "FDR for Closest Upstream Hi-C Contact Overlapping Gene, Human") #These two are ugly, and can't be run anyway until next chunk is complete to create their DFs. It's OK without them.
 #enrichment.plotter(c_US, "USFDR", "adj.P.Val", "FDR for Closest Upstream Hi-C Contact Overlapping Gene, Chimp")
@@ -525,8 +525,8 @@ enrichment.plotter(gene.hic.filt, "median_FDR.C", "adj.P.Val", "Median FDR of Hi
 enrichment.plotter(gene.hic.filt, "weighted_Z.s2post.H", "adj.P.Val", "FDR for Weighted p-val Combine of Hi-C Contacts Overlapping Gene, Human")
 enrichment.plotter(gene.hic.filt, "weighted_Z.s2post.C", "adj.P.Val", "FDR for Weighted p-val Combine of Hi-C Contacts Overlapping Gene, Chimp")
 
-#FIG6C/D
-enrichment.plotter(gene.hic.filt, "weighted_Z.ALLvar.H", "adj.P.Val", "FDR for Weighted p-val Combine of Hi-C Contacts Overlapping Gene", xmax=1) #FIG6C/D
+#FIGS19C/D
+enrichment.plotter(gene.hic.filt, "weighted_Z.ALLvar.H", "adj.P.Val", "FDR for Weighted p-val Combine of Hi-C Contacts Overlapping Gene", xmax=1) #FIGS19C/D
 enrichment.plotter(gene.hic.filt, "weighted_Z.ALLvar.C", "adj.P.Val", "FDR for Weighted p-val Combine of Hi-C Contacts Overlapping Gene, Chimp")
 
 #Custom function for doing this for the paper:
@@ -558,16 +558,16 @@ if(significance==TRUE){
 #FIG6
 FIG6A <- pap.enrichment.plotter(gene.hic.filt, "min_FDR.H", "adj.P.Val", "Minimum FDR of Contacts", xmax=1) #FIG6A
 FIG6B <- pap.enrichment.plotter(gene.hic.filt, "min_FDR.H", "adj.P.Val", "Minimum FDR of Contacts", xmax=1, significance = TRUE) #FIG6B
-FIG6C <- pap.enrichment.plotter(gene.hic.filt, "weighted_Z.ALLvar.H", "adj.P.Val", "FDR for Weighted P-val Combination", xmax=1) #FIG6C
-FIG6D <- pap.enrichment.plotter(gene.hic.filt, "weighted_Z.ALLvar.H", "adj.P.Val", "FDR for Weighted P-val Combination", xmax=1, significance = TRUE) #FIG6D
-FIG6 <- plot_grid(FIG6A, FIG6B, FIG6C, FIG6D, labels=c("A", "B", "C", "D"), align="h", rel_widths=c(1, 1.2))
-save_plot("~/Desktop/FIG6.png", FIG6, nrow=2, ncol=2)
+#FIG6C <- pap.enrichment.plotter(gene.hic.filt, "weighted_Z.ALLvar.H", "adj.P.Val", "FDR for Weighted P-val Combination", xmax=1) #FIG6C
+#FIG6D <- pap.enrichment.plotter(gene.hic.filt, "weighted_Z.ALLvar.H", "adj.P.Val", "FDR for Weighted P-val Combination", xmax=1, significance = TRUE) #FIG6D
+FIG6 <- plot_grid(FIG6A, FIG6B, labels=c("A", "B"), align="h", rel_widths=c(1, 1.2))
+save_plot("~/Desktop/FIG6.tiff", FIG6, nrow=1, ncol=2) #Good again, but needs to be copied into photoshop to reduce size!
 
-#FIGS9
-FIGS9A <- pap.enrichment.plotter(gene.hic.filt, "adj.P.Val", "min_FDR.H",  "Minimum FDR of Genes", xmax=1, recip=TRUE) #FIGS9A
-FIGS9B <- pap.enrichment.plotter(gene.hic.filt, "adj.P.Val", "min_FDR.H",  "Minimum FDR of Genes", xmax=1, significance = TRUE, recip=TRUE) #FIGS9B
-FIGS9 <- plot_grid(FIGS9A, FIGS9B, labels=c("A", "B"), align="h", rel_widths=c(1, 1.2))
-save_plot("~/Desktop/FIGS9.png", FIGS9, nrow=1, ncol=2)
+#FIGS19
+FIGS19A <- pap.enrichment.plotter(gene.hic.filt, "adj.P.Val", "min_FDR.H",  "Minimum FDR of Genes", xmax=1, recip=TRUE) #FIGS19A
+FIGS19B <- pap.enrichment.plotter(gene.hic.filt, "adj.P.Val", "min_FDR.H",  "Minimum FDR of Genes", xmax=1, significance = TRUE, recip=TRUE) #FIGS19B
+FIGS19 <- plot_grid(FIGS19A, FIGS19B, labels=c("A", "B"), align="h", rel_widths=c(1, 1.2))
+save_plot("~/Desktop/FIGS19.png", FIGS19, nrow=1, ncol=2)
 ```
 Now that I've seen some enrichment of differential contact (DC) in differential expression (DE) based on my linear modeling results from before, I would like to further quantify this effect. In order to do so, I now extract log2 observed/expected homer-normalized contact frequency values and RPKM expression values for each gene/bin set, so I can look at correlations of these values and assess their explanatory power.
 
@@ -754,8 +754,8 @@ DE.perm <-  cor.permuter(DEcontacts, DEexprs, 10)
 nonDE.perm <- cor.permuter(nonDEcontacts, nonDEexprs, 10)
 
 #Now visualize.
-#FIGS8
-ggplot(data=filter(ggcors, type=="all"|type=="DE"|type=="non-DE")) + stat_density(aes(x=cor, group=type, color=type, y=..scaled..), position="identity", geom="line") + stat_density(data=full.perm, aes(x=cor, group=type), geom="line", linetype="dotted", position="identity") + stat_density(data=DE.perm, aes(x=cor, group=type), geom="line", linetype="dashed", position="identity") + stat_density(data=nonDE.perm, aes(x=cor, group=type), geom="line", linetype="twodash", position="identity") + ggtitle("Correlation b/t RPKM Expression and Hi-C Contact Frequency") + xlab("Pearson Correlations, RPKM Expression & Hi-C Contact Frequency") + ylab("Density") + scale_color_manual("Gene Set", values=c("red", "blue", "green"), labels=c("All genes", "DE genes", "non-DE genes")) + theme(plot.title=element_text(hjust=0.3))#FIGS8
+#FIGS14
+ggplot(data=filter(ggcors, type=="all"|type=="DE"|type=="non-DE")) + stat_density(aes(x=cor, group=type, color=type, y=..scaled..), position="identity", geom="line") + stat_density(data=full.perm, aes(x=cor, group=type), geom="line", linetype="dotted", position="identity") + stat_density(data=DE.perm, aes(x=cor, group=type), geom="line", linetype="dashed", position="identity") + stat_density(data=nonDE.perm, aes(x=cor, group=type), geom="line", linetype="twodash", position="identity") + ggtitle("Correlation b/t RPKM Expression and Hi-C Contact Frequency") + xlab("Pearson Correlations, RPKM Expression & Hi-C Contact Frequency") + ylab("Density") + scale_color_manual("Gene Set", values=c("red", "blue", "green"), labels=c("All genes", "DE genes", "non-DE genes")) + theme(plot.title=element_text(hjust=0.3))#FIGS14
 #See that permuted datasets have a tighter correlation distribution with a strong peak at 0. Reassuring. In the future I will repeat this analysis on Midway2, running 10000 permutations to see the full range of permuted data possible.
 
 ####Deprecated, for use in species-specific analysis.
@@ -951,7 +951,7 @@ summary(ash_reg$result$svalue<=0.05)
 ind_sig <- (ash_reg$result$svalue < 0.05)
 ind_sig[ind_sig == TRUE] <- "red"
 ind_sig[ind_sig == FALSE] <- "black"
-#FIG5A
+#FIG15A
 plot(x=ash_reg$result$betahat, y=ash_reg$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in Effect Size from 2 Linear Models", main="Difference of Effect Size in DE Genes", pch=16, cex=0.6, col=ind_sig, xlim=c(-4.5, 4.5), ylim=c(0, 3))
 legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
 plot(ash_reg$result$betahat, -log10(ash_reg$result$svalue))
@@ -963,7 +963,7 @@ ind_sig <- (ash_reg_nonDE$result$svalue < 0.05)
 ind_sig[ind_sig == TRUE] <- "red"
 ind_sig[ind_sig == FALSE] <- "black"
 
-#FIG5B
+#FIG15B
 plot(x=ash_reg_nonDE$result$betahat, y=ash_reg_nonDE$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in Effect Size from 2 Linear Models", main="Difference of Effect Size in non-DE Genes", pch=16, cex=0.6, col=ind_sig, xlim=c(-4.5, 4.5), ylim=c(0, 3))
 legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
 plot(ash_reg_nonDE$result$betahat, -log10(ash_reg_nonDE$result$svalue))

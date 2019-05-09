@@ -838,7 +838,6 @@ Critically, here I see that "regressing out" Hi-C data and trying to model expre
 ###Differences in effect size/sign changes
 This next section would be to look at differences in effect size and sign changes when doing the two separate lms (one before and one after regressing out Hi-C data from RPKM expression). Unfortunately the ash results I get have all their svalues as 1 so this is boring/not interesting right now. Hence it is not included. But let's give it another go!
 ```{r Differences in Effect Sizes}
-#######FRESH CODE 6-21-18#########
 design <- model.matrix(~meta.data$SP)
 exprs <- select(hmin.VC, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes) #Should be done on just DE genes, filter with adj.P.Val<=0.05
 hic <- select(hmin.VC,"A_21792_HIC", "B_28126_HIC", "C_3649_HIC", "D_40300_HIC", "E_28815_HIC", "F_28834_HIC", "G_3624_HIC", "H_3651_HIC")
@@ -863,7 +862,7 @@ vshrink <- vash(test$d_se, df=4)
 DEtest <- test[myDEindices,]
 nonDEtest <- test[-myDEindices,]
 ash_reg <- ash(as.vector(DEtest$d), as.vector(vshrDE$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
-summary(ash_reg$result$svalue<=0.05) #Incredible result, looks too good to be true.
+summary(ash_reg$result$svalue<=0.05)
 
 ###### START EXAMPLE
 #Figure out where some of these are to pull out good examples, try to find a dense region of them

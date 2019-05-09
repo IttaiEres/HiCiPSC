@@ -177,9 +177,9 @@ true3d <- data.frame(dist_class=c(rep("None", 5), rep("Short (<=20kb)", 5), rep(
 true3d$prop <- true3d$num_sig/true3d$set_size #Get the proportion of these different sets that are significant (at or below 5% FDR)
 
 #I will then take this data frame and export it to plot.ly's online interface, in order to make a 3D plot that will allow me to visualize FDR significance inflation in any of these sets (and subsequently filter them out). The 3D plot looks like this:
-#FIGS3B
 htmltools::includeHTML("output/QQQC.html")
 
+#FIGS9B
 #Reviewer 3 also suggested/requested turning this into a 2D scatterplot of dist diff vs. bin diff, with a color scale to indicate proportion significant:
 levels(true3d$dist_class)
 true3d$dist_class <- factor(true3d$dist_class, levels(true3d$dist_class)[c(2, 3, 1)]) #Reorder factor levels!
@@ -267,14 +267,30 @@ FIG2B <- ggplot(data=volcplot.noY.filt, aes(x=beta, y=pval, color=species)) + ge
 
 #FIG2
 FIG2 <- plot_grid(FIG2A, FIG2B, labels=c("A", "B"))
-save_plot("~/Desktop/FIG2.png", FIG2, ncol=2, nrow=1, base_aspect_ratio=1.3)
+save_plot("~/Desktop/Fig2.tiff", FIG2, ncol=2, nrow=1, base_aspect_ratio=1.6) #Will need to drag into Adobe and edit afterwards as well, to reduce size.
 ######
 #ggsave('~/Desktop/volcchr.jpg', device="jpeg", antialias="none") This was an earlier attempt at clearing up some image resolution blurriness with the text.
 #ggsave('~/Desktop/volcchr2.jpg', device="jpeg", dpi=5000) #Works well!
-ggsave("~/Desktop/volcchr2.jpg", device="jpg", dpi=200)
+#ggsave("~/Desktop/volcchr2.jpg", device="jpg", dpi=200)
 #Write out the data with the new columns added on!
 fwrite(full.data, "output/full.data.10.lm.QC", quote = TRUE, sep = "\t", row.names = FALSE, col.names = TRUE, na="NA", showProgress = FALSE)
 fwrite(data.4, "output/data.4.lm.QC", quote=FALSE, sep="\t", row.names=FALSE, col.names=TRUE, na="NA", showProgress = FALSE)
 fwrite(data.filtered, "output/data.4.filtered.lm.QC", quote=FALSE, sep="\t", row.names=FALSE, col.names=TRUE, na="NA", showProgress = FALSE)
+
+#Extract DC regions for supplementary table 10 (Table S10) for paper:
+DC.table <- filter(data.filtered, sp_BH_pval<=0.05)
+DC.table <- select(DC.table, Hchr, H1, H2, Cchr, C1, C2, sp_BH_pval)
+DC.table$Hchr <- gsub("Chr. ", "chr", DC.table$Hchr)
+DC.table$H1 <- as.numeric(gsub(".*-", "", DC.table$H1))
+DC.table$H2 <- as.numeric(gsub(".*-", "", DC.table$H2))
+DC.table$C1 <- as.numeric(gsub(".*-", "", DC.table$C1))
+DC.table$C2 <- as.numeric(gsub(".*-", "", DC.table$C2))
+DC.table$H1.end <- DC.table$H1+10000
+DC.table$H2.end <- DC.table$H2+10000
+DC.table$C1.end <- DC.table$C1+10000
+DC.table$C2.end <- DC.table$C2+10000
+DC.table <- DC.table[,c(1, 2, 8, 3, 9, 4, 5, 10, 6, 11, 7)]
+colnames(DC.table) <- c("Human.chromosome", "Human.1.start", "Human.1.end", "Human.2.start", "Human.2.end", "Chimp.chromosome", "Chimp.1.start", "Chimp.1.end", "Chimp.2.start", "Chimp.2.end", "DC FDR")
+fwrite(DC.table, "~/Desktop/Paper Drafts/PLOS/Revision/Revision_2/Final?/FINAL/supptables/S10 Table.txt", quote = FALSE, sep="\t")
 ```
 From this analysis we have dealt with some quality control issues, and filtered down the data to a final set of biologically significant Hi-C interaction frequencies, many of which appear species-specific. There are clearly strong differences between the species that make their 3D regulatory landscapes divergent. Now, I move to orthogonal gene expression analyses.

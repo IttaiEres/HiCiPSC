@@ -468,7 +468,8 @@ mybounds$chimp.perc <- mybounds$Chimpanzee/mybounds$totals
 ggbounds <- melt(mybounds[,1:4])
 ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
 colnames(ggbounds) <- c("Resolution", "Species", "count")
-ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee")) #+ geom_text()#Need to add percentages here
+ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
+#FIGS12B
 
 ###Interspecies TAD boundary overlap with bedtools -c###
 
@@ -511,7 +512,7 @@ mybounds$chimp.perc <- mybounds$Chimpanzee/mybounds$totals
 ggbounds <- melt(mybounds[,1:4])
 ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
 colnames(ggbounds) <- c("Resolution", "Species", "count")
-ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
+ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
 #FIG4B
 
 ###Interspecies TAD boundary Rao Style Overlaps###
@@ -556,7 +557,6 @@ bounds.50 <- rao.bounds.overlapper(50000)
 bounds.100 <- rao.bounds.overlapper(100000)
 bounds.250 <- rao.bounds.overlapper(250000)
 bounds.500 <- rao.bounds.overlapper(500000)
-#Boundaries closest to failed for chimp coords on 100kb and 250kb...
 
 mybounds <- as.data.frame(rbind(bounds.10, bounds.25, bounds.50, bounds.100, bounds.250, bounds.500))
 colnames(mybounds) <- c("Shared", "Human", "Chimpanzee", "Resolution")
@@ -569,15 +569,14 @@ mybounds$chimp.perc <- mybounds$Chimpanzee/mybounds$totals
 ggbounds <- melt(mybounds[,1:4])
 ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
 colnames(ggbounds) <- c("Resolution", "Species", "count")
-ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
-#FIG S4B
+ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
 ```
 
 ```{r Juicer Mega Interspecies Domain Conservation}
 ###Interspecies Domain Conservation using Rao et al. Method###
 #First, define a function to call domain conservation as was performed in Rao et al. 2014.
 #50kb is the leniency used by Rao et al for interspecies comparisons of domains, 0.5*|i-j| was also used for interspecies comparison (as opposed to 0.2*|i-j| for the cell types within human comparison), under the reasoning that we should be somewhat more permissive with flexibility of calling conservation allowing for errors in liftOver. This function works on the output of the files processed by mega.domains.rao.sh
-rao.domain.overlapper <- function(resolution, mega=TRUE, species="H", leniency=50000){
+rao.domain.overlapper <- function(resolution, mega=TRUE, species="H", leniency=50000, paper=FALSE){
   if(species=="H"){
   df.h <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".HC.closest.hg38", sep=""), data.table=F, header=F)
   df.c <- fread(paste("data/TADs/overlaps_rao_style/", resolution, ".CH.closest.hg38", sep=""), data.table=F, header=F)
@@ -605,8 +604,48 @@ rao.domain.overlapper <- function(resolution, mega=TRUE, species="H", leniency=5
   ourcons <- max(as.numeric(cons.total.h), as.numeric(cons.total.c))
   myvec <- c(ourcons, length(unique(df.h$ID))-ourcons, length(unique(df.c$ID))-ourcons, resolution)
   names(myvec) <- c("Shared", "Human", "Chimpanzee", "Resolution")
-  return(myvec)
+  if(paper==TRUE){
+    return(list(df.h, df.c))
+  }
+  else{
+  return(myvec)}
 }
+
+###For writing out table S13:
+domains.10 <- rao.domain.overlapper(10000, paper=TRUE)
+myH <- domains.10[[1]]
+colnames(myH) <- c("Hchr", "Hstart", "Hend", "Hscore", "Cchr", "Cstart", "Cend", "Cscore", "size", "dist_max", "conserved", "unique_ID")
+myH <- select(myH, Hchr, Hstart, Hend, Cchr, Cstart, Cend, conserved, unique_ID)
+myH$species.file <- "Human"
+myC <- domains.10[[2]]
+colnames(myC) <- c("Cchr", "Cstart", "Cend", "Cscore", "Hchr", "Hstart", "Hend", "Hscore", "size", "dist_max", "conserved", "unique_ID")
+myC <- select(myC, Hchr, Hstart, Hend, Cchr, Cstart, Cend, conserved, unique_ID)
+myC$species.file <- "Chimpanzee"
+
+test <- fread("~/Desktop/Hi-C/2019TAD/Human_inter_30_KR_contact_domains/10000.domains.ortho.hg38")
+colnames(test) <- c("Hchr", "Hstart", "Hend", "score")
+test2 <- fread("~/Desktop/Hi-C/2019TAD/Human_inter_30_KR_contact_domains/10000.domains.ortho.panTro5")
+colnames(test2) <- c("Cchr", "Cstart", "Cend", "Cscore")
+test <- test[,-4]
+test2 <- test2[,-4]
+
+S13 <- cbind(test, test2)
+S13$disc_species <- "Human"
+
+test <- fread("~/Desktop/Hi-C/2019TAD/Chimp_inter_30_KR_contact_domains/10000.domains.ortho.hg38")
+colnames(test) <- c("Hchr", "Hstart", "Hend", "score")
+test2 <- fread("~/Desktop/Hi-C/2019TAD/Chimp_inter_30_KR_contact_domains/10000.domains.ortho.panTro5")
+colnames(test2) <- c("Cchr", "Cstart", "Cend", "Cscore")
+test <- test[,-4]
+test2 <- test2[,-4]
+test2$disc_species <- "Chimp"
+S13.sub <- cbind(test, test2)
+
+S13.final <- rbind(S13, S13.sub)
+fwrite(S13.final, "~/Desktop/Paper Drafts/PLOS/Revision/Revision_2/Final?/FINAL/supptables/S13 Table.txt", quote=F, sep="\t")
+#group_by(myH, ID) %>% summarise(., Hchr=unique(Hchr), Hstart=unique(Hstart), Hend=unique(Hend), Cchr=unique(Cchr), Cstart=unique(Cstart), Cend=unique(Cend), conserved=paste(conserved, collapse=","))
+####
+
 
 domains.5 <- rao.domain.overlapper(5000)
 domains.10 <- rao.domain.overlapper(10000)
@@ -615,6 +654,8 @@ domains.50 <- rao.domain.overlapper(50000)
 domains.100 <- rao.domain.overlapper(100000)
 domains.250 <- rao.domain.overlapper(250000)
 domains.500 <- rao.domain.overlapper(500000)
+
+
 
 mydomains <- as.data.frame(rbind(domains.10, domains.25, domains.50, domains.100, domains.250, domains.500))
 colnames(mydomains) <- c("Shared", "Human", "Chimpanzee", "Resolution")
@@ -627,8 +668,8 @@ mydomains$chimp.perc <- mydomains$Chimpanzee/mydomains$totals
 ggdomains <- melt(mydomains[,1:4])
 ggdomains$Resolution <- factor(ggdomains$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
 colnames(ggdomains) <- c("Resolution", "Species", "count")
-ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Interspecies TAD Domain Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
-#FIGS4A
+ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Interspecies TAD Domain Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
+#FIGS12A
 
 #This method was likely the most robust way to define domain conservation, particularly with nested domains.
 
@@ -670,7 +711,7 @@ mydomains$chimp.perc <- mydomains$Chimpanzee/mydomains$totals
 ggdomains <- melt(mydomains[,1:4])
 ggdomains$Resolution <- factor(ggdomains$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
 colnames(ggdomains) <- c("Resolution", "Species", "count")
-ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Interspecies TAD domain Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
+ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Interspecies TAD Domain Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
 #FIG4A
 ```
 
@@ -915,6 +956,7 @@ rownames(test) <- rownames(test2) <-  colnames(test)
 #Similar to figure 1B, but done on the whole set of data, without subsetting down to hits found significant in at least 4 individuals (regardless of species).
 heatmaply(test, main="Pairwise Proportions of Shared TAD Boundaries @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
 #heatmaply(test2, main="TAD Boundary Pairwise Pearson Correlations @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
+
 #FIG4D
 ####
 
@@ -959,7 +1001,7 @@ boundary.inter.plot <- function(y.max=20000){
   print(plot.4)
   print(ggbounds.4)
 }
-boundary.inter.plot() #FigS11C-D
+boundary.inter.plot() #FIGS11C-D
 
 #Now, Jaccard indices for interspecies variation in TAD boundaries#
 jac.inter <- function(resolution){
@@ -1075,7 +1117,7 @@ rownames(domainclust) <- rownames(clust2) <- colnames(domainclust)
 
 heatmaply(domainclust, main="Pairwise Proportions of Shared TADs @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
 heatmaply(clust2, main="Pairwise Proportions of Shared TADs @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
-#FIG4C; 2nd one more easily explainable.
+#FIG4C
 
 
 
@@ -1285,8 +1327,8 @@ intra.full.plotter <- function(species){
   print(myplot)
 }
 
-intra.ortho.plotter("H", 2100) #FIGS6E
-intra.ortho.plotter("C", 2100) #FIGS6F
+intra.ortho.plotter("H", 2100)
+intra.ortho.plotter("C", 2100)
 #intra.full.plotter("H")
 #intra.full.plotter("C")
 
@@ -1524,7 +1566,7 @@ indi.TAD.clust <- function(type, resolution){
   heatmaply(indi.TAD.df, main=paste("Pairwise Proportions of Shared TADs @ ", resolution/1000, "kb", sep=""), k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
 }
 
-#FIGS13E TAD clustering on individual basis, TopDom!
+#FIGS13E alternative TAD clustering on individual basis, TopDom!
 options(scipen=999)
 indi.TAD.clust("loj", 10000)
 indi.TAD.clust("loj", 25000)
@@ -1533,7 +1575,7 @@ indi.TAD.clust("loj", 100000)
 indi.TAD.clust("loj", 250000)
 indi.TAD.clust("loj", 500000)
 
-#Use this for FIGS13E, since others shown are Rao methodology.
+#Used this for FIGS13E, since others shown are Rao methodology.
 indi.TAD.clust("rao", 10000)
 indi.TAD.clust("rao", 25000)
 indi.TAD.clust("rao", 50000)
@@ -1716,8 +1758,8 @@ mybounds$chimp.perc <- mybounds$Chimpanzee/mybounds$totals
 ggbounds <- melt(mybounds[,1:4])
 ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
 colnames(ggbounds) <- c("Resolution", "Species", "count")
-ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee")) #+ geom_text()#Need to add percentages here
-#FIGS4D
+ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
+#FIGS12D
 
 ###Interspecies TAD boundary overlap with bedtools -c###
 
@@ -1761,7 +1803,6 @@ ggbounds <- melt(mybounds[,1:4])
 ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
 colnames(ggbounds) <- c("Resolution", "Species", "count")
 ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
-#FIGS4G
 
 ###Interspecies TAD boundary Rao Style Overlaps###
 
@@ -1818,8 +1859,7 @@ mybounds$chimp.perc <- mybounds$Chimpanzee/mybounds$totals
 ggbounds <- melt(mybounds[,1:4])
 ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
 colnames(ggbounds) <- c("Resolution", "Species", "count")
-ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
-#FIG S4I
+ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()
 
 ###Interspecies Domain Conservation using Rao et al. Method###
 #First, define a function to call domain conservation as was performed in Rao et al. 2014.
@@ -1875,7 +1915,7 @@ ggdomains <- melt(mydomains[,1:4])
 ggdomains$Resolution <- factor(ggdomains$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
 colnames(ggdomains) <- c("Resolution", "Species", "count")
 ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Interspecies TAD Domain Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
-#FIGS4C
+#FIGS12C
 
 #This method was likely the most robust way to define domain conservation, particularly with nested domains.
 
@@ -1917,8 +1957,7 @@ mydomains$chimp.perc <- mydomains$Chimpanzee/mydomains$totals
 ggdomains <- melt(mydomains[,1:4])
 ggdomains$Resolution <- factor(ggdomains$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
 colnames(ggdomains) <- c("Resolution", "Species", "count")
-ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Interspecies TAD domain Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
-#FIGS4E
+ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Interspecies TAD domain Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#
 ```
 
 <!-- #```{r Juicer MEGA on robust boundaries to figure out what may separate them from non-robust boundaries} -->
