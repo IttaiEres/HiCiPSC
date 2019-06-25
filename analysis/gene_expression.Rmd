@@ -898,239 +898,202 @@ perm.vis("permout_c_US_DE", cUSDE, meta.data, "(upstream contact, Chimps)", DE=T
 ```
 The permutations reveal that the observed data does appear pretty significant: it falls well outside the range of the distributions in each of the categories. The most important is showing that many more genes lose their DE status after regressing out Hi-C data in the observed case as compared to the permutations.
 
-#Differences in effect size/sign changes
-This next section would be to look at differences in effect size and sign changes when doing the two separate lms (one before and one after regressing out Hi-C data from RPKM expression). Unfortunately the ash results I get have all their svalues as 1 so this is boring/not interesting right now. Hence it is not included. But let's give it another go!
-```{r Differences in Effect Sizes}
-design <- model.matrix(~meta.data$SP+meta.data$SX)
-exprs <- select(hmin, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes) #Should be done on just DE genes, filter with adj.P.Val<=0.05
-hic <- select(hmin,"A_21792_HIC", "B_28126_HIC", "C_3649_HIC", "D_40300_HIC", "E_28815_HIC", "F_28834_HIC", "G_3624_HIC", "H_3651_HIC")
-present <- sapply(1:nrow(hic), function(i) !any(is.na(hic[i,])))
+#Now, get the appropriate data and actually run the mediation analysis
+```{r Mediation test}
+source("code/mediation_test.R") #Obtain necessary functions
+# data already filtered
+# expr: log2RPKM
+# hic: interaction frequency for each individual per gene
+expr <- select(hmin, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes, adj.P.Val) #log2RPKM expression of genes
+hic <- select(hmin,"A_21792_HIC", "B_28126_HIC", "C_3649_HIC", "D_40300_HIC", "E_28815_HIC", "F_28834_HIC", "G_3624_HIC", "H_3651_HIC") #Interaction frequency for each individual gene
+is_de <- which(expr$adj.P.Val < .05)
+isnot_de <- which(expr$adj.P.Val >= .05)
+gvec <- expr$genes
+expr <- expr[,1:8]
 
-#Also test with log2 CPM instead of RPKM:
-exprs.2 <- as.data.frame(lcpms)
-exprs.2$genes <- rownames(exprs.2)
-exprs.2 <- exprs.2[,c(8, 6, 1, 4, 7, 5, 2, 3, 9)]
-exprs.2 <- exprs.2[(which(exprs.2$genes %in% exprs$genes)),]
+# metadata label
+species <- factor(c("H","H","C","C","H","H","C","C"))
+sex <- factor(c("F","M" ,"M","F","M", "F","M","F"))
 
-genes <- exprs$genes
-genes2 <- exprs.2$genes
-DEgenes <- filter(hmin, adj.P.Val<=0.05) %>% select(., genes)
-myDEindices <- which(genes %in% DEgenes[,1])
-myDEindices.2 <- which(genes2 %in% DEgenes[,1])
-exprs <- exprs[,-9]
-exprs.2 <- exprs.2[,-9]
-exprs <- data.matrix(exprs[present,])
-exprs.2 <- data.matrix(exprs.2[present,])
-hic <- data.matrix(hic[present,])
-#designy <- rbind(as.vector(as.factor(c("human", "human", "chimp", "chimp", "human", "human", "chimp", "chimp"))), as.vector(as.factor(meta.data$SX)))
-designy <- as.factor(c("human", "human", "chimp", "chimp", "human", "human", "chimp", "chimp"))
-colnames(hic) <- colnames(exprs) <- colnames(exprs.2)
-hic <- as.data.table(hic)
-exprs <- as.data.table(exprs)
-exprs.2 <- as.data.table(exprs.2)
+metadata <- data.frame(sample=names(expr)[1:8],
+                       species=species, 
+                       sex=sex)
+
+###Compute indirect effects. 
+
+fit_de <- test_mediation(exprs = expr[is_de,], 
+                         fixed_covariates = list(species=metadata$species,
+                                                 sex=metadata$sex),
+                         varying_covariate = hic[is_de,])
+
+fit_node <- test_mediation(exprs = expr[isnot_de,], 
+                           fixed_covariates = list(species=metadata$species,
+                                                   sex=metadata$sex),
+                           varying_covariate = hic[isnot_de,])
+
+#Save for running monte carlo on the cluster:
+save(fit_de, fit_node, is_de, isnot_de, expr, hic, metadata, gvec, file = "output/homer_mediation.rda")
+
+###Monte Carlo simulation to assess significance; obtaining the Monte Carlo distributions is done on a high-performance computing cluster in order to be able to assess many iterations of random sampling of the data. See the chunk below this one for details on how to obtain the Monte Carlo distributions loaded in here:
+mc_de <- readRDS(file = "output/mc_de_homer.rds")
+mc_node <- readRDS(file = "output/mc_node_homer.rds")
 
 
+##In DE genes
+ngenes <- ncol(mc_de)
+ab <- fit_de$alpha*fit_de$beta
+out <- sapply(1:ngenes, function(g) {
+  x <- unlist(mc_de[,g])
+  q <- quantile(x, prob = c(.025, .975))
+#  q <- quantile(x, prob = c(.005, .995))
+  ifelse(0 > q[1] & 0 < q[2], F, T)
+})
+table(out) #Table of TRUE/FALSE for DE genes assessing if the indirect effect (alpha * beta) is non-zero/does not fall within the 95% confidence interval of Monte Carlo simulation.
+114/(114+1287) #8% of DE genes show significant non-zero mediating effect.
 
-#For further specifics on the function used for the mediation below, please see: https://github.com/jhsiao999/mediation/blob/master/pkg/R/mediate.test.regressing.R
-source("code/mediate.test.regressing.R")
-test <- mediate.test.regressing(exprs, designy, hic, cov=as.factor(meta.data$SX))
-#test <- mediate.test.regressing(exprs.2, designy, hic) Gives extremely similar results, 222/1401 genes significantly mediated (16%), and still 0 of non-DE genes.
+#Visualize, Fig S15A:
+DEdat <- data.frame(bf=fit_de$tau, af=fit_de$tau_prime, significance=out)
+DEdat$color <- ifelse(DEdat$significance==TRUE, "red", "black")
+plot(x=DEdat$bf, y=DEdat$af, ylab="Effect Size After Controlling for Contact", xlab="Effect Size Before Controlling for Contact", main="Effect of Contact on Expression Divergence in DE genes", col=alpha(DEdat$color, 0.6), pch=16, cex=0.6, xlim=c(-10, 10), ylim=c(-10,10))
+legend("topleft", legend=c("95% CI Significant (n=114)", "95% CI Non significant (n=1287)"), col=c("red", "black"), pch=16:16, cex=0.8)
+abline(0, 1)
+abline(h=0)
+abline(v=0)
 
-#Shrink dat variance!
-vshrDE <- vash(test$d_se[myDEindices], df=4)
-vshrnonDE <- vash(test$d_se[-myDEindices], df=4)
-vshrink <- vash(test$d_se, df=4)
+##In non-DE genes
+ngenes <- ncol(mc_node)
+ab <- fit_node$alpha*fit_node$beta
+out <- sapply(1:ngenes, function(g) {
+  x <- unlist(mc_node[,g])
+  q <- quantile(x, prob = c(.025, .975))
+#  q <- quantile(x, prob = c(.005, .995))
+  ifelse(0 > q[1] & 0 < q[2], F, T)
+})
+table(out) #Similar table to as above.
+315/(315+6048) #5% of non-DE genes show significant non-zero mediating effect.
 
-#Separate out DE from non-DE genes:
-DEtest <- test[myDEindices,]
-nonDEtest <- test[-myDEindices,]
-
-#Ash on DE genes
-ash_reg <- ash(as.vector(DEtest$d), as.vector(vshrDE$sd.post), mixcompdist = "normal") 
-summary(ash_reg$result$svalue<=0.05)
-ind_sig <- (ash_reg$result$svalue < 0.05)
-ind_sig[ind_sig == TRUE] <- "red"
-ind_sig[ind_sig == FALSE] <- "black"
-#FIG15A
-plot(x=ash_reg$result$betahat, y=ash_reg$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in Effect Size from 2 Linear Models", main="Difference of Effect Size in DE Genes", pch=16, cex=0.6, col=ind_sig, xlim=c(-4.5, 4.5), ylim=c(0, 3))
-legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
-plot(ash_reg$result$betahat, -log10(ash_reg$result$svalue))
-
-#Now on non-DE genes
-ash_reg_nonDE <- ash(as.vector(nonDEtest$d), as.vector(vshrnonDE$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
-summary(ash_reg_nonDE$result$svalue<=0.05)
-ind_sig <- (ash_reg_nonDE$result$svalue < 0.05)
-ind_sig[ind_sig == TRUE] <- "red"
-ind_sig[ind_sig == FALSE] <- "black"
-
-#FIG15B
-plot(x=ash_reg_nonDE$result$betahat, y=ash_reg_nonDE$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in Effect Size from 2 Linear Models", main="Difference of Effect Size in non-DE Genes", pch=16, cex=0.6, col=ind_sig, xlim=c(-4.5, 4.5), ylim=c(0, 3))
-legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
-plot(ash_reg_nonDE$result$betahat, -log10(ash_reg_nonDE$result$svalue))
-
-#Now on the full set, for comparison's sake.
-ash_reg_full <- ash(as.vector(test$d), as.vector(vshrink$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
-summary(ash_reg_full$result$svalue<=0.05) #Incredible result, looks too good to be true.
-ind_sig <- (ash_reg_full$result$svalue < 0.05)
-ind_sig[ind_sig == TRUE] <- "red"
-ind_sig[ind_sig == FALSE] <- "black"
-plot(x=ash_reg_full$result$betahat, y=ash_reg_full$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in effect size from 2 lms", main="Difference of effect size (DE genes)", pch=16, cex=0.6, col=ind_sig)#, xlim=c(-2.5, 2.5), ylim=c(0, 1.3))
-legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
-plot(ash_reg_full$result$betahat, -log10(ash_reg_full$result$svalue))
-
-#Look at effect size shrinkage in full set ash vs. separated DE/nonDE ash:
-plot(c(ash_reg$result$PosteriorMean, ash_reg_nonDE$result$PosteriorMean), ash_reg_full$result$PosteriorMean)
-
-#Look at this just in DE:
-plot(ash_reg$result$PosteriorMean, ash_reg_full$result$PosteriorMean[myDEindices])
-
-#Look at this just in non-DE:
-plot(ash_reg_nonDE$result$PosteriorMean, ash_reg_full$result$PosteriorMean[-myDEindices])
+#Visualize, Fig S15B:
+noDEdat <- data.frame(bf=fit_node$tau, af=fit_node$tau_prime, significance=out)
+noDEdat$color <- ifelse(noDEdat$significance==TRUE, "red", "black")
+plot(x=noDEdat$bf, y=noDEdat$af, ylab="Effect Size After Controlling for Contact", xlab="Effect Size Before Controlling for Contact", main="Effect of Contact on Expression Divergence in non-DE genes", col=alpha(noDEdat$color, 0.6), pch=16, cex=0.6, xlim=c(-10, 10), ylim=c(-10,10), adj=0.6)
+legend("topleft", legend=c("95% CI Significant (n=315)", "95% CI Non significant (n=6048)"), col=c("red", "black"), pch=16:16, cex=0.8)
+abline(0, 1)
+abline(h=0)
+abline(v=0)
 ```
 
-#```{r, include=FALSE, echo=FALSE, Work for getting example regions. Useful for pyGenomeTracks}
-# #Grab genes that were significantly mediated:
-# therows <- which(ash_reg$result$svalue<=0.05)
-# besthits <- myDEindices[therows]
-# mygenes <- genes[besthits]
-# 
-# ###### START EXAMPLE
-# #Figure out where some of these are to pull out good examples, try to find a dense region of them
-# myhits <- which(ash_reg$result$svalue<=0.05) #These SHOULD line up with DEtest indices...
-# realhits <- myDEindices[myhits] #Now go back to exprs original with these indices to get the gene names!
-# exprs <- select(hmin, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes) #Should be done on just DE genes, filter with adj.P.Val<=0.05
-# demgenes <- exprs[realhits,9]
-# testcases <- filter(gene.hic.filt, genes %in% demgenes)
-# table(testcases$genechr.H)
-# testcases$sval <- ash_reg$result$svalue[myhits]
-# testcases <- testcases[order(testcases$sval),]
-# 
-# #Now, pull out expression values for those suckers:
-# options(scipen = 999)
-# mytest <- filter(humgenes, genes %in% testcases$genes)
-# mytest <- mytest[(mytest$genes %in% weighted.data$genes$genes),]
-# mean.species.expression <- as.data.frame(weighted.data$E) #Now, need to pull out the mean expression values for all those genes!
-# mean.species.expression$genes <- rownames(mean.species.expression)
-# mean.species.expression$Hmean <- rowMeans(mean.species.expression[,c(1:2,5:6)])
-# mean.species.expression$Cmean <- rowMeans(mean.species.expression[,c(3:4,7:8)])
-# mean.species.expression <- mean.species.expression[,(-1:-8)]
-# 
-# left_join(testcases, mean.species.expression, by="genes") -> filt.example
-# filter(filt.example, min_FDR.H<=0.05|min_FDR.C<=0.05) -> final.example
-# final.example$Hmean-final.example$Cmean
-# #gonna end up pulling 48th row example from final.example. Pull out its contact frequency vals for arc diagram creation:
-# final.example[48,]
-# which((data.filtered$H1=="chr17-64470000"|data.filtered$H2=="chr17-64470000")&(data.filtered$C1=="chr17-63970000"|data.filtered$C2=="chr17-63970000"))
-# which((data.filtered$H1=="chr17-64470000"&data.filtered$H2=="chr17-64430000")|(data.filtered$H2=="chr17-64470000"&data.filtered$H1=="chr17-64430000"))
-# 
-# #Check on what other contacts might be significant in the region
-# QC <- filter(data.filtered, Hchr=="Chr. 17"&sp_BH_pval<=0.05)
-# QC$H1 <- gsub(".*-", "", QC$H1)
-# QC$H2 <- gsub(".*-", "", QC$H2)
-# which((QC$H1>=64400000&QC$H1<=64500000)&(QC$H2>=64400000&QC$H2<=64500000))
-# QC[c(218,323,397),]
-# 
-# 
-# #filter(example, Hstart>=140500000&Hstart<=141500000) -> filt.example
-# hgenebed <- select(filt.example, genechr.H, genepos.H, Hmean)
-# cgenebed <- select(filt.example, genechr.C, genepos.C, Cmean)
-# hgenebed$end <- hgenebed$genepos.H+5000
-# cgenebed$end <- cgenebed$genepos.C+5000
-# hgenebed <- hgenebed[,c(1,2,4,3)]
-# cgenebed <- cgenebed[,c(1,2,4,3)]
-# cgenebed <- cgenebed[complete.cases(cgenebed),]
-# 
-# fwrite(hgenebed, "~/Desktop/Hi-C/pyGenomeTracks/filt.h.genes.bed", quote=FALSE, sep="\t", col.names =FALSE)
-# fwrite(cgenebed, "~/Desktop/Hi-C/pyGenomeTracks/filt.c.genes.bed", quote=FALSE, sep="\t", col.names =FALSE)
-# 
-# #Write out the appropriate columns from data.filtered to make an "arcs" file for visualization:
-# harcs <- filter(data.filtered, sp_beta>0, sp_BH_pval<=0.05) %>% select(., H1, H2, Hmean) #Note chr notation different due to other things changed; check on this later.
-# harcs$chr <- gsub("-.*", "", harcs$H1)
-# harcs$H1start <- as.numeric(gsub(".*-", "", harcs$H1))
-# harcs$H1end <- harcs$H1start+10000
-# harcs$H2start <- as.numeric(gsub(".*-", "", harcs$H2))
-# harcs$H2end <- harcs$H2start+10000
-# harcs <- harcs[,c(4:6, 4, 7:8, 3)]
-# harcs <- format(harcs, scientific=FALSE)
-# fwrite(harcs, "~/Desktop/Hi-C/pyGenomeTracks/RNAseq/humans.arcs", quote=FALSE, sep="\t", col.names=FALSE)
-# 
-# #Prep the same thing for chimpanzees:
-# carcs <- filter(data.filtered, sp_beta<0, sp_BH_pval<=0.05) %>% select(., C1, C2, Cmean) #Note chr notation different due to other things changed; check on this later.
-# carcs$chr <- gsub("-.*", "", carcs$C1)
-# carcs$C1start <- as.numeric(gsub(".*-", "", carcs$C1))
-# carcs$C1end <- carcs$C1start+10000
-# carcs$C2start <- as.numeric(gsub(".*-", "", carcs$C2))
-# carcs$C2end <- carcs$C2start+10000
-# carcs <- carcs[,c(4:6, 4, 7:8, 3)]
-# carcs <- format(carcs, scientific=FALSE)
-# fwrite(carcs, "~/Desktop/Hi-C/pyGenomeTracks/RNAseq/chimps.arcs", quote=FALSE, sep="\t", col.names=FALSE)
-# 
-# 
-# #Now add in an extra column placeholder so strand is in the right column for bedtools, and rearrange columns as well for bedtools' ease.
-# humgenes$placeholder <- "."
-# chimpgenes$placeholder <- "."
-# humgenes$Hend <- humgenes$Hstart+1
-# chimpgenes$Cend <- chimpgenes$Cstart+1
-# humgenes <- humgenes[,c(2:3, 6, 1, 5, 4)]
-# chimpgenes <- chimpgenes[,c(2:3, 6, 1, 5, 4)]
-# 
-# #Turn off scientific notation for writing the file out for bedtools to be able to use correctly.
-# options(scipen=999)
-# 
-# ####### END EXAMPLE
-#
-#```
+#Monte Carlo Specifics; the script used on a computing cluster to obtain Monte Carlo simulations for significance testing
+```{r echo=FALSE, eval=FALSE}
+#!/usr/bin/env Rscript
+
+#source("mediation_test.R")
+
+load("homer_mediation.rda")
+
+library(MASS)
+
+# columns: genes, rows: random sample
+mc_de <- list()
+for (g in 1:length(is_de)) {
+  mu <- c(fit_de$a[g], fit_de$b[g])
+  acov <- cbind(c(fit_de$sigma2_alpha[g],0), c(0, fit_de$sigma2_beta[g]))
+  rnorm_de <- mvrnorm(1000, mu, acov, empirical=FALSE)
+  ab_de <- rnorm_de[,1]*rnorm_de[,2]
+
+  mc_de <- cbind(mc_de, ab_de)  
+  }
+names(mc_de) <- gvec[is_de]
+saveRDS(mc_de, file = "mc_de.rds")
+
+mc_node <- list()
+for (g in 1:length(isnot_de)) {
+  mu <- c(fit_node$a[g], fit_node$b[g])
+  acov <- cbind(c(fit_node$sigma2_alpha[g],0), c(0, fit_node$sigma2_beta[g]))
+  rnorm_node <- mvrnorm(1000, mu, acov, empirical=FALSE)
+  ab_node <- rnorm_node[,1]*rnorm_node[,2]
+
+  mc_node <- cbind(mc_node, ab_node)
+  }
+names(mc_node) <- gvec[isnot_de]
+saveRDS(mc_node, file = "mc_node.rds")
+```
+
+## Mediation test intuition and reasoning
+
+The motivation of the current anaysis is to estimate the contribution of contact frequency to phenotype differences (e.g., tissue, species, etc.) in gene expression. In terms of linear models, the hypothesis is that the relationship between independent variable phenotypes and dependent variable gene expression is partially due to the mediating effect of contact frequency. We assess the mediating effect of contact frequency in the association between phenotypes and expression under the following framework.
+
+Consider a hypothetical example. Say we know A causes B, and this relationship may be due to C which is highly correlated with A and and B. The hypothesis is that the relationship between A and B can be explained by the mechansim of A -> C -> B. To quantify the mediating effect of C on the relationship of A and B, we estimate the total effect of A on B and the direct effect of A on B after controlling for C. Total effect of A on B equals the direct effect of A on B after controlling for C and the indirect effect of A on B through C. When the indirect effect is large, we say that C plays a significant role in mediating the relationship between A and B. Applying to the current problem, we hypothesize that the total effect of phenotype on expression equals the direct effect of phenotype on expression after controlling for contact frequency and the indirect effect of phenotype on expression through contact frequency
+
+For each gene, we fit three linear models as follows:
+
+1. $Y_g = \gamma_1 + \tau X^P + \epsilon_1 \tag{Eq. 1}$
+
+2. $X^M_g = \gamma_2 + \alpha X^P + \epsilon_2 \tag{Eq. 2}$
+
+3. $Y_g = \gamma_3 + \tau^{\prime} X^P + \beta X^M_g + \epsilon_3 \tag{Eq. 3}$
+
+$~$
+
+Notations: 
+
+$Y_g$: length-$N$ gene expression vector for gene $g$.
+
+$X^M_g$: length-$N$ vector for methylation measurements corresponding to samples at gene $g$.
+
+$X^P$: length-$N$ vector for sample phenotype labels.
+
+$\tau$: estimated total effect of phenotype $X^P$ on expression $Y_g$.
+
+$\tau^{\prime}$: estimated effect of phenotype $X^P$ on expression $Y_g$ after controlling for $X^M_g$, or the direct effect of phenotype on expression.
+
+$\alpha$: estimated effect of phenotype$X^P$ on the methylation $X^M_g$.
+
+$\beta$: estimated effect of methylation $X^M_g$ on expression $Y_g$ after controlling for phenotype differences.
+
+$\gamma_1, \gamma_2, \gamma_3$: intercepts 
+
+$\epsilon_1, \epsilon_2, \epsilon_3$: error terms in each model. Each assumed to be iid and follows normal distributions with mean 0 and variance $\sigma^2_1, \sigma^2_2, \sigma^2_3$.
 
 
+$~$
 
-#Mediation Review Questions
-#```{r, include=FALSE, echo=FALSE}
-# #Simple plotting of logFC vs logFC. A positive logFC from the expression data indicates higher expression in humans.
-# #First, perform for entire set of genes, on non-DE and DE genes separately.
-# mydat <- select(gene.hic.filt, logFC, min_FDR_B.H, adj.P.Val, AveExpr)
-# ggplot(mydat) + geom_point(aes(x=logFC, y=min_FDR_B.H, color=adj.P.Val))
-# ggplot(filter(mydat, adj.P.Val<=0.05)) + geom_point(aes(x=logFC, y=min_FDR_B.H)) + xlab("LogFC, Expression") + ylab("LogFC, Contact") + ggtitle("LogFC Expression vs. LogFC Contact for DE Genes")
-# ggplot(filter(mydat, adj.P.Val>0.05)) + geom_point(aes(x=logFC, y=min_FDR_B.H)) + xlab("LogFC, Expression") + ylab("LogFC, Contact") + ggtitle("LogFC Expression vs. LogFC Contact for non-DE Genes")
-# 
-# #Now, take a look at what happens if I stratify things by which species it's more highly expressed in, and its DE status, and calculate R-squareds. Should do this with actual mean expression values per species
-# human.high.DE <- filter(mydat, logFC>0, adj.P.Val<=0.05)
-# human.high.nonDE <- filter(mydat, logFC>0, adj.P.Val>0.05)
-# chimp.high.DE <- filter(mydat, logFC<0, adj.P.Val<=0.05)
-# chimp.high.nonDE <- filter(mydat, logFC<0, adj.P.Val>0.05)
-# summary(lm(human.high.nonDE$logFC~human.high.nonDE$min_FDR_B.H))$adj.r.squared
-# summary(lm(human.high.DE$logFC~human.high.DE$min_FDR_B.H))$adj.r.squared
-# summary(lm(chimp.high.nonDE$logFC~chimp.high.nonDE$min_FDR_B.H))$adj.r.squared
-# summary(lm(chimp.high.DE$logFC~chimp.high.DE$min_FDR_B.H))$adj.r.squared
-# 
-# 
-# #Now, try out the suggested regression.
-# new.weighted.data <- weighted.data
-# new.weighted.data$E <- dge_final$lcpm_counts[,c(8, 6, 1, 4, 7, 5, 2, 3)]
-# 
-# #Now, need to subset this down to the genes we have contact frequency for (from hmin table, created far below)
-# my.hmin <- select(hmin, genes, A_21792_HIC, B_28126_HIC, C_3649_HIC, D_40300_HIC, E_28815_HIC, F_28834_HIC, G_3624_HIC, H_3651_HIC)
-# deez.genes <- left_join(new.weighted.data$genes, my.hmin)
-# good.indices <- which(complete.cases(deez.genes))
-# new.weighted.data <- new.weighted.data[good.indices,]
-# new.weighted.data$HiC <- deez.genes[good.indices, 3:10]
-# 
-# meta.exp.data <- data.frame("SP"=c("C", "C", "C", "C", "H", "H", "H", "H"), "SX"=c("M","M" ,"F","F","F", "M","M","F"))
-# SP <- factor(meta.exp.data$SP,levels = c("H","C"))
-# 
-# 
-# for(row in 1:nrow(new.weighted.data$E)){
-#   lmFit()
-# }
-# exp.design <- model.matrix(~0+SP+new.weighted.data$HiC+SP:new.weighted.data$HiC)#(~1+meta.exp.data$SP+meta.exp.data$SX) But where does freq come from?
-# colnames(exp.design) <- c("Human", "Chimp")
-# weighted.data <- voom(new.weighted.data, exp.design, plot=TRUE, normalize.method = "cyclicloess")
-# 
-# ##Obtain rest of LM results, with particular eye to DE table!
-# vfit <- lmFit(weighted.data, exp.design)
-# efit <- eBayes(vfit)
-# 
-# mycon <- makeContrasts(HvC = Human-Chimp, levels = exp.design)
-# diff_species <- contrasts.fit(efit, mycon)
-# finalfit <- eBayes(diff_species)
-# detable <- topTable(finalfit, coef = 1, adjust.method = "BH", number = Inf, sort.by="none")
-#```
+For statistical inference, we use bootstrapping to test for statistical significance of the indirect effect (Preacher and Hayes, 2008). In contrast to the popular [Sobel's test][sobel], boostrapping doesn't require normality assumption and independence of mediating and independent variables. 
+
+Preacher, K. J., & Hayes, A. F. (2008). Asymptotic and resampling strategies for assessing and comparing indirect effects in multiple mediator models. Behavior Research Methods, 40, 879-891.
+
+
+#LogFC DE vs LogFC DC Analysis
+```{r}
+#First, do it on all genes.
+mydf <- select(gene.hic.filt, adj.P.Val, logFC, min_FDR_B.H)
+#+ logFC in DE is higher expression in humans; + logFC in DC is stronger contact in humans
+mydf$color <- ifelse(mydf$adj.P.Val<=0.05, "red", "black")
+ggplot(mydf, aes(x=logFC, y=min_FDR_B.H)) + geom_point() + xlab("Log FC Expression") + ylab("Log FC Contact Frequency") + ggtitle("LogFC Expression vs. LogFC Contact for All Genes")
+#plot(x=mydf$logFC, y=mydf$min_FDR_B.H, ylab="LogFC DC", xlab="LogFC DE", main="Log Fold Changes, Expression vs. Contact Frequency",  col=mydf$color, pch=16, cex=0.6)
+#legend("topleft", legend=c("DE gene", "Non-DE gene"), col=c("red", "black"), pch=16:16, cex=0.8)
+
+mydf <- filter(mydf, adj.P.Val<=0.05)
+mydf$color <- ifelse(mydf$logFC>0, "red", "blue")
+#colnames(mydf)[4] <- "Species with higher expression"
+ggplot(mydf, aes(x=logFC, y=min_FDR_B.H, color=color)) + geom_point() + xlab("Log FC Expression") + ylab("Log FC Contact Frequency") + ggtitle("LogFC Expression vs. LogFC Contact for DE Genes") + scale_color_discrete(name="Higher Expression", labels=c("Chimp", "Human"))
+#plot(y=mydf$logFC, x=mydf$min_FDR_B.H, ylab="LogFC DE", xlab="LogFC DC", main="Log Fold Changes, Expression vs. Contact Frequency",  col=mydf$color)
+#legend("topleft", legend=c("Significant higher expression in humans", "Significant higher expression in chimps"), col=c("red", "blue"), pch=16:16, cex=0.8)
+
+#Alternative method:
+#Simple plotting of logFC vs logFC. A positive logFC from the expression data indicates higher expression in humans.
+#First, perform for entire set of genes, on non-DE and DE genes separately.
+mydat <- select(gene.hic.filt, logFC, min_FDR_B.H, adj.P.Val, AveExpr)
+ggplot(mydat) + geom_point(aes(x=logFC, y=min_FDR_B.H, color=adj.P.Val))
+ggplot(filter(mydat, adj.P.Val<=0.05)) + geom_point(aes(x=logFC, y=min_FDR_B.H)) + xlab("LogFC, Expression") + ylab("LogFC, Contact") + ggtitle("LogFC Expression vs. LogFC Contact for DE Genes")
+ggplot(filter(mydat, adj.P.Val>0.05)) + geom_point(aes(x=logFC, y=min_FDR_B.H)) + xlab("LogFC, Expression") + ylab("LogFC, Contact") + ggtitle("LogFC Expression vs. LogFC Contact for non-DE Genes")
+
+#Now, take a look at what happens if I stratify things by which species it's more highly expressed in, and its DE status, and calculate R-squareds. Should do this with actual mean expression values per species
+human.high.DE <- filter(mydat, logFC>0, adj.P.Val<=0.05)
+human.high.nonDE <- filter(mydat, logFC>0, adj.P.Val>0.05)
+chimp.high.DE <- filter(mydat, logFC<0, adj.P.Val<=0.05)
+chimp.high.nonDE <- filter(mydat, logFC<0, adj.P.Val>0.05)
+summary(lm(human.high.nonDE$logFC~human.high.nonDE$min_FDR_B.H))$adj.r.squared
+summary(lm(human.high.DE$logFC~human.high.DE$min_FDR_B.H))$adj.r.squared
+summary(lm(chimp.high.nonDE$logFC~chimp.high.nonDE$min_FDR_B.H))$adj.r.squared
+summary(lm(chimp.high.DE$logFC~chimp.high.DE$min_FDR_B.H))$adj.r.squared
+```

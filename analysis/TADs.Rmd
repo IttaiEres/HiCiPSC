@@ -1960,6 +1960,18 @@ colnames(ggdomains) <- c("Resolution", "Species", "count")
 ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Interspecies TAD domain Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#
 ```
 
+#Human-Chimp large-scale linear interval synteny analysis
+```{r}
+#Obtained these data from running the reciprocal best hits liftOver method on genome-wide windows of varying sizes created with bedtools makewindows. I then ran wc -l to look at line counts of the resultant files to see how many intervals were retained.
+#FigS20A
+syn.df <- data.frame(window=c(100, 250, 500, 750, 1000, 1250, 1500, 1750, 2000), total=c(32351, 13100, 6743, 4638, 3583, 2949, 2533, 2229, 2007), retained=c(23025, 9491, 4862, 3264, 2442, 1952, 1624, 1381, 1209))#, species=c(rep("Human", 9), rep("Chimp", 9)))
+ggplot(data=syn.df, aes(x=window, y=total)) + geom_col(aes(fill="Total"), position="identity") + geom_col(aes(y=retained, fill="Syntenic"), position="identity") + xlab("Interval Window (kb)") + ylab("Total Intervals") + ggtitle("Genome-Wide Synteny, Human to Chimpanzee") + scale_fill_manual(name="Intervals", values=c(Total="red", Syntenic="blue"))
+
+#FigS20B
+syn.df.pt5 <- data.frame(window=rep(c(100, 250, 500, 750, 1000, 1250, 1500, 1750, 2000), 2), total=c(29687, 11881, 5947, 3967, 2979, 2387, 1990, 1708, 1494), retained=c(23252, 9607, 4907, 3301, 2499, 1971, 1650, 1409, 1229))#, species=c(rep("Human", 9), rep("Chimp", 9)))
+ggplot(data=syn.df.pt5, aes(x=window, y=total)) + geom_col(aes(fill="Total"), position="identity") + geom_col(aes(y=retained, fill="Syntenic"), position="identity") + xlab("Interval Window (kb)") + ylab("Total Intervals") + ggtitle("Genome-Wide Synteny, Chimpanzee to Human") + scale_fill_manual(name="Intervals", values=c(Total="red", Syntenic="blue"))
+```
+
 <!-- #```{r Juicer MEGA on robust boundaries to figure out what may separate them from non-robust boundaries} -->
 <!-- #First and arguably easiest task is to see if the boundaries conserved across resolutions within each species (altho, really, humans) are more enriched for CTCF binding sites... -->
 <!-- hbounds <- fread("data/TADs/overlaps/human.multires.bounds.final.bed", header=F, data.table=F) -->

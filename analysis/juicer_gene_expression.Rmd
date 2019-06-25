@@ -833,124 +833,94 @@ h_minFDR_pvals_VC <- lmcorrect(weighted.data, hmin.VC[,c("A-21792", "B-28126", "
 ggplot(data=h_minFDR_pvals_KR$stats, aes(x=-log10(pval.before), y=-log10(pval.after))) + geom_point(size=0.01) + geom_hline(yintercept=-log10(0.05), color="red") + geom_vline(xintercept=-log10(0.05), color="red") + geom_abline(slope=1, intercept=0, color="green", linetype="dashed") + ggtitle("Evidence for DE Before vs. After Regressing out Hi-C Contact Frequency") + xlab("-log10(p-value of DE before KR Hi-C regression)") + ylab("-log10(p-value of DE after KR Hi-C regression)") + theme(plot.title=element_text(hjust=1))
 ggplot(data=h_minFDR_pvals_VC$stats, aes(x=-log10(pval.before), y=-log10(pval.after))) + geom_point(size=0.01) + geom_hline(yintercept=-log10(0.05), color="red") + geom_vline(xintercept=-log10(0.05), color="red") + geom_abline(slope=1, intercept=0, color="green", linetype="dashed") + ggtitle("Evidence for DE Before vs. After Regressing out Hi-C Contact Frequency") + xlab("-log10(p-value of DE before VC Hi-C regression)") + ylab("-log10(p-value of DE after VC Hi-C regression)") + theme(plot.title=element_text(hjust=1))
 ```
-Critically, here I see that "regressing out" Hi-C data and trying to model expression again moves many genes from being significantly differentially expressed (at FDR of 5%) to no longer showing differential expression. Seeing most of the hits in the bottom right corner of these visualizations is what confirms this. Reassuringly, I also see stronger correlations between RPKM expression values and normalized Hi-C interaction frequency values for points farther away from the diagonal green line of expectation. However, since this is not a statistical test, I have no assessment of significance. To accomplish this, I compare these results to running the same kind of analysis on permuted data in the next section.
+Critically, here I see that "regressing out" Hi-C data and trying to model expression again moves many genes from being significantly differentially expressed (at FDR of 5%) to no longer showing differential expression. Seeing most of the hits in the bottom right corner of these visualizations is what confirms this. Reassuringly, I also see stronger correlations between RPKM expression values and normalized Hi-C interaction frequency values for points farther away from the diagonal green line of expectation. However, since this is not a statistical test, I have no assessment of significance. To accomplish this, I run Monte Carlo mediation testing in the next chunk.
 
-###Differences in effect size/sign changes
-This next section would be to look at differences in effect size and sign changes when doing the two separate lms (one before and one after regressing out Hi-C data from RPKM expression). Unfortunately the ash results I get have all their svalues as 1 so this is boring/not interesting right now. Hence it is not included. But let's give it another go!
-```{r Differences in Effect Sizes}
-design <- model.matrix(~meta.data$SP)
-exprs <- select(hmin.VC, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes) #Should be done on just DE genes, filter with adj.P.Val<=0.05
+
+#Monte Carlo Mediation Testing
+```{r Mediation testing with Monte Carlo}
+#First, obtain processed data for running MC on the cluster:
+# data already filtered
+# expr: log2RPKM
+# hic: interaction frequency for each individual per gene
+expr <- select(hmin.VC, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes, adj.P.Val)
 hic <- select(hmin.VC,"A_21792_HIC", "B_28126_HIC", "C_3649_HIC", "D_40300_HIC", "E_28815_HIC", "F_28834_HIC", "G_3624_HIC", "H_3651_HIC")
-present <- sapply(1:nrow(hic), function(i) !any(is.na(hic[i,])))
-genes <- exprs$genes
-DEgenes <- filter(hmin.VC, adj.P.Val<=0.05) %>% select(., genes)
-myDEindices <- which(genes %in% DEgenes[,1])
-exprs <- exprs[,-9]
-exprs <- data.matrix(exprs[present,])
-hic <- data.matrix(hic[present,])
-designy <- as.factor(c("human", "human", "chimp", "chimp", "human", "human", "chimp", "chimp"))
-colnames(hic) <- colnames(exprs)
-hic <- as.data.table(hic)
-exprs <- as.data.table(exprs)
+is_de <- which(expr$adj.P.Val < .05)
+isnot_de <- which(expr$adj.P.Val >= .05)
+gvec <- expr$genes
+expr <- expr[,1:8]
 
+#Set up metadata labels
+species <- factor(c("H","H","C","C","H","H","C","C"))
+sex <- factor(c("F","M" ,"M","F","M", "F","M","F"))
 
-source("code/mediate.test.regressing.R")
-test <- mediate.test.regressing(exprs, designy, hic, cov=as.factor(meta.data$SX))
-vshrDE <- vash(test$d_se[myDEindices], df=4)
-vshrnonDE <- vash(test$d_se[-myDEindices], df=4)
-vshrink <- vash(test$d_se, df=4)
-DEtest <- test[myDEindices,]
-nonDEtest <- test[-myDEindices,]
-ash_reg <- ash(as.vector(DEtest$d), as.vector(vshrDE$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
-summary(ash_reg$result$svalue<=0.05)
+metadata <- data.frame(sample=names(expr)[1:8],
+                       species=species, 
+                       sex=sex)
 
-###### START EXAMPLE
-#Figure out where some of these are to pull out good examples, try to find a dense region of them
-# myhits <- which(ash_reg$result$svalue<=0.05) #These SHOULD line up with DEtest indices...
-# realhits <- myDEindices[myhits] #Now go back to exprs original with these indices to get the gene names!
-# exprs <- select(hmin.KR, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes) #Should be done on just DE genes, filter with adj.P.Val<=0.05
-# demgenes <- exprs[realhits,9]
-# testcases <- filter(gene.hic.KR, genes %in% demgenes)
-# table(testcases$genechr.H)
-# testcases$sval <- ash_reg$result$svalue[myhits]
-# testcases <- testcases[order(testcases$sval),]
-# 
-# #Now, pull out expression values for those suckers:
-# options(scipen = 999)
-# mean.species.expression <- as.data.frame(weighted.data$E) #Now, need to pull out the mean expression values for all those genes!
-# mean.species.expression$genes <- rownames(mean.species.expression)
-# mean.species.expression$Hmean <- rowMeans(mean.species.expression[,c(1:2,5:6)])
-# mean.species.expression$Cmean <- rowMeans(mean.species.expression[,c(3:4,7:8)])
-# mean.species.expression <- mean.species.expression[,(-1:-8)]
-# 
-# left_join(testcases, mean.species.expression, by="genes") -> filt.example
-# filter(filt.example, min_FDR.H<=0.05|min_FDR.C<=0.05) -> final.example
-# final.example$Hmean-final.example$Cmean
-# #gonna end up pulling 48th row example from final.example. Pull out its contact frequency vals for arc diagram creation:
-# final.example[48,]
-# which((data.filtered$H1=="chr17-64470000"|data.filtered$H2=="chr17-64470000")&(data.filtered$C1=="chr17-63970000"|data.filtered$C2=="chr17-63970000"))
-# which((data.filtered$H1=="chr17-64470000"&data.filtered$H2=="chr17-64430000")|(data.filtered$H2=="chr17-64470000"&data.filtered$H1=="chr17-64430000"))
-# 
-# #Check on what other contacts might be significant in the region
-# QC <- filter(data.filtered, Hchr=="Chr. 17"&sp_BH_pval<=0.05)
-# QC$H1 <- gsub(".*-", "", QC$H1)
-# QC$H2 <- gsub(".*-", "", QC$H2)
-# which((QC$H1>=64400000&QC$H1<=64500000)&(QC$H2>=64400000&QC$H2<=64500000))
-# QC[c(218,323,397),]
+#Grab necessary functions
+source("code/mediation_test.R")
 
-######END EXAMPLE
+#Compute indirect effects:
+fit_de <- test_mediation(exprs = expr[is_de,], 
+                         fixed_covariates = list(species=metadata$species,
+                                                 sex=metadata$sex),
+                         varying_covariate = hic[is_de,])
 
+fit_node <- test_mediation(exprs = expr[isnot_de,], 
+                           fixed_covariates = list(species=metadata$species,
+                                                   sex=metadata$sex),
+                           varying_covariate = hic[isnot_de,])
 
+save(fit_de, fit_node, is_de, isnot_de, expr, hic, metadata, gvec,
+     file = "output/juicer_mediation.rda")
 
+#These data are then used on a high performance computing cluster to generate many Monte Carlo simulatons and create the confidence interval. Read the MC simulations in here:
+mc_de <- readRDS(file = "output/mc_de_juicer.rds")
+mc_node <- readRDS(file = "output/mc_node_juicer.rds")
 
-ind_sig <- (ash_reg$result$svalue < 0.05)
-ind_sig[ind_sig == TRUE] <- "red"
-ind_sig[ind_sig == FALSE] <- "black"
-plot(x=ash_reg$result$betahat, y=ash_reg$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in Effect Size from 2 Linear Models, VC-Norm", main="Difference of Effect Size in DE genes", pch=16, cex=0.6, col=ind_sig, xlim=c(-2.5, 2.5), ylim=c(0, 2.6))
-legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8) #FIGS6A
-ash_reg_nonDE <- ash(as.vector(nonDEtest$d), as.vector(vshrnonDE$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)?
-summary(ash_reg_nonDE$result$svalue<=0.05)
-ind_sig <- (ash_reg_nonDE$result$svalue < 0.05)
-ind_sig[ind_sig == TRUE] <- "red"
-ind_sig[ind_sig == FALSE] <- "black"
-plot(x=ash_reg_nonDE$result$betahat, y=ash_reg_nonDE$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in Effect Size from 2 Linear Models, VC-Norm", main="Difference of Effect Size in non-DE genes", pch=16, cex=0.6, col=ind_sig, xlim=c(-2.5, 2.5), ylim=c(0, 2.6))
-legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8) #FIGS6B
+#Now, use those simulations to assess the 95% confidence interval and assign significance of the indirect effect:
+#In DE genes
+ngenes <- ncol(mc_de)
+ab <- fit_de$alpha*fit_de$beta
+out <- sapply(1:ngenes, function(g) {
+  x <- unlist(mc_de[,g])
+  q <- quantile(x, prob = c(.025, .975))
+#  q <- quantile(x, prob = c(.005, .995))
+  ifelse(0 > q[1] & 0 < q[2], F, T)
+})
+table(out)
+15/(15+284) #5% DE genes mediated significantly by contact.
 
-# exprs <- select(hmin.VC, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", genes) #Should be done on just DE genes, filter with adj.P.Val<=0.05
-# hic <- select(hmin.VC,"A_21792_HIC", "B_28126_HIC", "C_3649_HIC", "D_40300_HIC", "E_28815_HIC", "F_28834_HIC", "G_3624_HIC", "H_3651_HIC")
-# present <- sapply(1:nrow(hic), function(i) !any(is.na(hic[i,])))
-# genes <- exprs$genes
-# DEgenes <- filter(hmin.KR, adj.P.Val<=0.05) %>% select(., genes)
-# myDEindices <- which(genes %in% DEgenes[,1])
-# exprs <- exprs[,-9]
-# exprs <- data.matrix(exprs[present,])
-# hic <- data.matrix(hic[present,])
-# designy <- as.factor(c("human", "human", "chimp", "chimp", "human", "human", "chimp", "chimp"))
-# colnames(hic) <- colnames(exprs)
-# hic <- as.data.table(hic)
-# exprs <- as.data.table(exprs)
-# test <- mediate.test.regressing(exprs, designy, hic)
-# vshrDE <- vash(test$d_se[myDEindices], df=6)
-# vshrnonDE <- vash(test$d_se[-myDEindices], df=6)
-# vshrink <- vash(test$d_se, df=6)
-# DEtest <- test[myDEindices,]
-# nonDEtest <- test[-myDEindices,]
-# ash_reg <- ash(as.vector(DEtest$d), as.vector(vshrDE$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
-# summary(ash_reg$result$svalue<=0.05) #Incredible result, looks too good to be true.
-# ind_sig <- (ash_reg$result$svalue < 0.05)
-# ind_sig[ind_sig == TRUE] <- "red"
-# ind_sig[ind_sig == FALSE] <- "black"
-# plot(x=ash_reg$result$betahat, y=ash_reg$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in Effect Size from 2 Linear Models, VC-Norm", main="Difference of Effect Size in DE Genes", pch=16, cex=0.6, col=ind_sig, xlim=c(-2.5, 2.5), ylim=c(0, 2.5)) #FIGS15A
-# legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
-# ash_reg_nonDE <- ash(as.vector(nonDEtest$d), as.vector(vshrnonDE$sd.post), mixcompdist = "normal") #Now it works with this design coding. Use 6 df, as 2-group comparison and 8 individual samples (samples - 2)
-# summary(ash_reg_nonDE$result$svalue<=0.05) #Incredible result, looks too good to be true.
-# ind_sig <- (ash_reg_nonDE$result$svalue < 0.05)
-# ind_sig[ind_sig == TRUE] <- "red"
-# ind_sig[ind_sig == FALSE] <- "black"
-# plot(x=ash_reg_nonDE$result$betahat, y=ash_reg_nonDE$result$sebetahat, ylab="Standard error of the difference", xlab="Difference in Effect Size from 2 Linear Models, VC-Norm", main="Difference of Effect Size in non-DE Genes", pch=16, cex=0.6, col=ind_sig, xlim=c(-2.5, 2.5), ylim=c(0, 2.5))
-# legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8) #FIGS15B
+#Visualize for DE genes, Fig S6A:
+DEdat <- data.frame(bf=fit_de$tau, af=fit_de$tau_prime, significance=out)
+DEdat$color <- ifelse(DEdat$significance==TRUE, "red", "black")
+plot(x=DEdat$bf, y=DEdat$af, ylab="Effect Size After Controlling for Contact", xlab="Effect Size Before Controlling for Contact", main="Effect of Contact on Expression Divergence in DE genes", col=alpha(DEdat$color, 0.6), pch=16, cex=0.6, xlim=c(-5, 5), ylim=c(-5,5))
+legend("topleft", legend=c("95% CI Significant (n=15)", "95% CI Non significant (n=284)"), col=c("red", "black"), pch=16:16, cex=0.8)
+abline(0, 1)
+abline(h=0)
+abline(v=0)
+
+#In non-DE genes
+ngenes <- ncol(mc_node)
+ab <- fit_node$alpha*fit_node$beta
+out <- sapply(1:ngenes, function(g) {
+  x <- unlist(mc_node[,g])
+  q <- quantile(x, prob = c(.025, .975))
+#  q <- quantile(x, prob = c(.005, .995))
+  ifelse(0 > q[1] & 0 < q[2], F, T)
+})
+table(out)
+31/(31+1300) #2% non-DE genes appear mediated by contact
+
+#Visualize for non-DE genes, Fig S6B:
+noDEdat <- data.frame(bf=fit_node$tau, af=fit_node$tau_prime, significance=out)
+noDEdat$color <- ifelse(noDEdat$significance==TRUE, "red", "black")
+plot(x=noDEdat$bf, y=noDEdat$af, ylab="Effect Size After Controlling for Contact", xlab="Effect Size Before Controlling for Contact", main="Effect of Contact on Expression Divergence in non-DE genes", col=alpha(noDEdat$color, 0.6), pch=16, cex=0.6, xlim=c(-5, 5), ylim=c(-5,5), adj=0.6)
+legend("topleft", legend=c("95% CI Significant (n=31)", "95% CI Non significant (n=1300)"), col=c("red", "black"), pch=16:16, cex=0.8)
+abline(0, 1)
+abline(h=0)
+abline(v=0)
 ```
-
 
 
 

@@ -25,5 +25,8 @@ This website details computational analyses done for the paper "Reorganization o
 #### TAD Analyses
 *  [TAD Analyses--Figures 4, S11, S12, S13](TADs.html)
 
-#### Mediation Concerns
-*  [Alternative Mediation for a species:frequency interaction term](alt_mediation.html)
+#### License
+Copyright (c) 2019, Ittai Eres, Kaixuan Luo, Chiaowen Joyce Hsiao, Lauren E. Blake, and Yoav Gilad.
+All source code and software in this repository are made available under the terms of the [GNU GPL v3][]
+
+[GNU GPL v3]:(https://www.gnu.org/licenses/gpl-3.0.en.html)
