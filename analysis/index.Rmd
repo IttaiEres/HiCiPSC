@@ -27,6 +27,4 @@ This website details computational analyses done for the paper "Reorganization o
 
 #### License
 Copyright (c) 2019, Ittai Eres, Kaixuan Luo, Chiaowen Joyce Hsiao, Lauren E. Blake, and Yoav Gilad.
-All source code and software in this repository are made available under the terms of the [GNU GPL v3][]
-
-[GNU GPL v3]:(https://www.gnu.org/licenses/gpl-3.0.en.html)
+All source code and software in this repository are made available under the terms of the [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.en.html)
