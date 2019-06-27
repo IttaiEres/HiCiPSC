@@ -447,7 +447,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-06-25
+<strong>Last updated:</strong> 2019-06-26
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -526,10 +526,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree253a196d1ad2357a8607f2b3c25c2ceba048a29ctargetblank253a196a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/253a196d1ad2357a8607f2b3c25c2ceba048a29c" target="_blank">253a196</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtreea15345db7998f1a53058d383564584bd3489b6batargetblanka15345da"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/a15345db7998f1a53058d383564584bd3489b6ba" target="_blank">a15345d</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree253a196d1ad2357a8607f2b3c25c2ceba048a29ctargetblank253a196a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtreea15345db7998f1a53058d383564584bd3489b6batargetblanka15345da" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -961,6 +961,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/a15345db7998f1a53058d383564584bd3489b6ba/analysis/gene_expression.Rmd" target="_blank">a15345d</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-06-26
+</td>
+<td>
+Update index and corresponding figure references to match final version of paper.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/IttaiEres/HiCiPSC/5fda2d6be754f4c39dd034fc9972a6665bea0e68/docs/gene_expression.html" target="_blank">5fda2d6</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-06-25
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -3124,7 +3158,7 @@ Ittai Eres
 498  2075
 499  2080
 500  2084</code></pre>
-<pre class="r"><code>enrichment.plotter(gene.hic.filt, &quot;adj.P.Val&quot;, &quot;min_FDR.H&quot;, &quot;Minimum DE FDR of Genes Overlapping Hi-C Contacts&quot;, xmax=1, recip=TRUE) #FIGS19A/B</code></pre>
+<pre class="r"><code>enrichment.plotter(gene.hic.filt, &quot;adj.P.Val&quot;, &quot;min_FDR.H&quot;, &quot;Minimum DE FDR of Genes Overlapping Hi-C Contacts&quot;, xmax=1, recip=TRUE) #FIGS20A/B</code></pre>
 <pre><code>Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
@@ -11756,8 +11790,8 @@ Ittai Eres
 498 0.100    0.98 0.8331740 0.8227279 0.15279214     1030 349 4657  1743
 499 0.100    0.99 0.8408222 0.8295411 0.11622647      993 333 4694  1759
 500 0.100    1.00 1.0000000 1.0000000 0.00000000        0   0 5687  2092</code></pre>
-<pre class="r"><code>#FIGS19C/D
-enrichment.plotter(gene.hic.filt, &quot;weighted_Z.ALLvar.H&quot;, &quot;adj.P.Val&quot;, &quot;FDR for Weighted p-val Combine of Hi-C Contacts Overlapping Gene&quot;, xmax=1) #FIGS19C/D</code></pre>
+<pre class="r"><code>#FIGS20C/D
+enrichment.plotter(gene.hic.filt, &quot;weighted_Z.ALLvar.H&quot;, &quot;adj.P.Val&quot;, &quot;FDR for Weighted p-val Combine of Hi-C Contacts Overlapping Gene&quot;, xmax=1) #FIGS20C/D</code></pre>
 <pre><code>Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code></pre>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-37.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -14161,21 +14195,21 @@ Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code
 FIG6 &lt;- plot_grid(FIG6A, FIG6B, labels=c(&quot;A&quot;, &quot;B&quot;), align=&quot;h&quot;, rel_widths=c(1, 1.2))
 save_plot(&quot;~/Desktop/FIG6.tiff&quot;, FIG6, nrow=1, ncol=2) #Good again, but needs to be copied into photoshop to reduce size!
 
-#FIGS19
-FIGS19A &lt;- pap.enrichment.plotter(gene.hic.filt, &quot;adj.P.Val&quot;, &quot;min_FDR.H&quot;,  &quot;Minimum FDR of Genes&quot;, xmax=1, recip=TRUE) #FIGS19A</code></pre>
+#FIGS20
+FIGS20A &lt;- pap.enrichment.plotter(gene.hic.filt, &quot;adj.P.Val&quot;, &quot;min_FDR.H&quot;,  &quot;Minimum FDR of Genes&quot;, xmax=1, recip=TRUE) #FIGS20A</code></pre>
 <pre><code>Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code></pre>
-<pre class="r"><code>FIGS19B &lt;- pap.enrichment.plotter(gene.hic.filt, &quot;adj.P.Val&quot;, &quot;min_FDR.H&quot;,  &quot;Minimum FDR of Genes&quot;, xmax=1, significance = TRUE, recip=TRUE) #FIGS19B</code></pre>
+<pre class="r"><code>FIGS20B &lt;- pap.enrichment.plotter(gene.hic.filt, &quot;adj.P.Val&quot;, &quot;min_FDR.H&quot;,  &quot;Minimum FDR of Genes&quot;, xmax=1, significance = TRUE, recip=TRUE) #FIGS20B</code></pre>
 <pre><code>Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code></pre>
-<pre class="r"><code>FIGS19 &lt;- plot_grid(FIGS19A, FIGS19B, labels=c(&quot;A&quot;, &quot;B&quot;), align=&quot;h&quot;, rel_widths=c(1, 1.2))
-save_plot(&quot;~/Desktop/FIGS19.png&quot;, FIGS19, nrow=1, ncol=2)</code></pre>
+<pre class="r"><code>FIGS20 &lt;- plot_grid(FIGS20A, FIGS20B, labels=c(&quot;A&quot;, &quot;B&quot;), align=&quot;h&quot;, rel_widths=c(1, 1.2))
+save_plot(&quot;~/Desktop/FIGS20.png&quot;, FIGS20, nrow=1, ncol=2)</code></pre>
 <p>Now that I’ve seen some enrichment of differential contact (DC) in differential expression (DE) based on my linear modeling results from before, I would like to further quantify this effect. In order to do so, I now extract log2 observed/expected homer-normalized contact frequency values and RPKM expression values for each gene/bin set, so I can look at correlations of these values and assess their explanatory power.</p>
 <div id="contact-frequency-extraction" class="section level3">
 <h3>Contact Frequency Extraction</h3>
@@ -14504,8 +14538,8 @@ DE.perm &lt;-  cor.permuter(DEcontacts, DEexprs, 10)
 nonDE.perm &lt;- cor.permuter(nonDEcontacts, nonDEexprs, 10)
 
 #Now visualize.
-#FIGS14
-ggplot(data=filter(ggcors, type==&quot;all&quot;|type==&quot;DE&quot;|type==&quot;non-DE&quot;)) + stat_density(aes(x=cor, group=type, color=type, y=..scaled..), position=&quot;identity&quot;, geom=&quot;line&quot;) + stat_density(data=full.perm, aes(x=cor, group=type), geom=&quot;line&quot;, linetype=&quot;dotted&quot;, position=&quot;identity&quot;) + stat_density(data=DE.perm, aes(x=cor, group=type), geom=&quot;line&quot;, linetype=&quot;dashed&quot;, position=&quot;identity&quot;) + stat_density(data=nonDE.perm, aes(x=cor, group=type), geom=&quot;line&quot;, linetype=&quot;twodash&quot;, position=&quot;identity&quot;) + ggtitle(&quot;Correlation b/t RPKM Expression and Hi-C Contact Frequency&quot;) + xlab(&quot;Pearson Correlations, RPKM Expression &amp; Hi-C Contact Frequency&quot;) + ylab(&quot;Density&quot;) + scale_color_manual(&quot;Gene Set&quot;, values=c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;), labels=c(&quot;All genes&quot;, &quot;DE genes&quot;, &quot;non-DE genes&quot;)) + theme(plot.title=element_text(hjust=0.3))#FIGS14</code></pre>
+#FIGS15
+ggplot(data=filter(ggcors, type==&quot;all&quot;|type==&quot;DE&quot;|type==&quot;non-DE&quot;)) + stat_density(aes(x=cor, group=type, color=type, y=..scaled..), position=&quot;identity&quot;, geom=&quot;line&quot;) + stat_density(data=full.perm, aes(x=cor, group=type), geom=&quot;line&quot;, linetype=&quot;dotted&quot;, position=&quot;identity&quot;) + stat_density(data=DE.perm, aes(x=cor, group=type), geom=&quot;line&quot;, linetype=&quot;dashed&quot;, position=&quot;identity&quot;) + stat_density(data=nonDE.perm, aes(x=cor, group=type), geom=&quot;line&quot;, linetype=&quot;twodash&quot;, position=&quot;identity&quot;) + ggtitle(&quot;Correlation b/t RPKM Expression and Hi-C Contact Frequency&quot;) + xlab(&quot;Pearson Correlations, RPKM Expression &amp; Hi-C Contact Frequency&quot;) + ylab(&quot;Density&quot;) + scale_color_manual(&quot;Gene Set&quot;, values=c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;), labels=c(&quot;All genes&quot;, &quot;DE genes&quot;, &quot;non-DE genes&quot;)) + theme(plot.title=element_text(hjust=0.3))#FIGS15</code></pre>
 <p><img src="figure/gene_expression.Rmd/Merging%20Expression%20and%20Hi-C;%20Followed%20by%20correlation%20exploration-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Merging Expression and Hi-C; Followed by correlation exploration-4">
@@ -17313,7 +17347,7 @@ FALSE  TRUE
  1287   114 </code></pre>
 <pre class="r"><code>114/(114+1287) #8% of DE genes show significant non-zero mediating effect.</code></pre>
 <pre><code>[1] 0.08137045</code></pre>
-<pre class="r"><code>#Visualize, Fig S15A:
+<pre class="r"><code>#Visualize, Fig S16:
 DEdat &lt;- data.frame(bf=fit_de$tau, af=fit_de$tau_prime, significance=out)
 DEdat$color &lt;- ifelse(DEdat$significance==TRUE, &quot;red&quot;, &quot;black&quot;)
 plot(x=DEdat$bf, y=DEdat$af, ylab=&quot;Effect Size After Controlling for Contact&quot;, xlab=&quot;Effect Size Before Controlling for Contact&quot;, main=&quot;Effect of Contact on Expression Divergence in DE genes&quot;, col=alpha(DEdat$color, 0.6), pch=16, cex=0.6, xlim=c(-10, 10), ylim=c(-10,10))
@@ -17322,6 +17356,43 @@ abline(0, 1)
 abline(h=0)
 abline(v=0)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Mediation%20test-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Mediation test-1">
+Past versions of Mediation test-1.png
+</button>
+</p>
+<div id="fig-Mediation test-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/5fda2d6be754f4c39dd034fc9972a6665bea0e68/docs/figure/gene_expression.Rmd/Mediation test-1.png" target="_blank">5fda2d6</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-06-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>##In non-DE genes
 ngenes &lt;- ncol(mc_node)
 ab &lt;- fit_node$alpha*fit_node$beta
@@ -17337,7 +17408,7 @@ FALSE  TRUE
  6048   315 </code></pre>
 <pre class="r"><code>315/(315+6048) #5% of non-DE genes show significant non-zero mediating effect.</code></pre>
 <pre><code>[1] 0.04950495</code></pre>
-<pre class="r"><code>#Visualize, Fig S15B:
+<pre class="r"><code>#Visualization for non DE genes:
 noDEdat &lt;- data.frame(bf=fit_node$tau, af=fit_node$tau_prime, significance=out)
 noDEdat$color &lt;- ifelse(noDEdat$significance==TRUE, &quot;red&quot;, &quot;black&quot;)
 plot(x=noDEdat$bf, y=noDEdat$af, ylab=&quot;Effect Size After Controlling for Contact&quot;, xlab=&quot;Effect Size Before Controlling for Contact&quot;, main=&quot;Effect of Contact on Expression Divergence in non-DE genes&quot;, col=alpha(noDEdat$color, 0.6), pch=16, cex=0.6, xlim=c(-10, 10), ylim=c(-10,10), adj=0.6)
@@ -17346,6 +17417,43 @@ abline(0, 1)
 abline(h=0)
 abline(v=0)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Mediation%20test-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Mediation test-2">
+Past versions of Mediation test-2.png
+</button>
+</p>
+<div id="fig-Mediation test-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/5fda2d6be754f4c39dd034fc9972a6665bea0e68/docs/figure/gene_expression.Rmd/Mediation test-2.png" target="_blank">5fda2d6</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-06-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="monte-carlo-specifics-the-script-used-on-a-computing-cluster-to-obtain-monte-carlo-simulations-for-significance-testing" class="section level1">
 <h1>Monte Carlo Specifics; the script used on a computing cluster to obtain Monte Carlo simulations for significance testing</h1>
@@ -17384,6 +17492,43 @@ mydf$color &lt;- ifelse(mydf$adj.P.Val&lt;=0.05, &quot;red&quot;, &quot;black&qu
 ggplot(mydf, aes(x=logFC, y=min_FDR_B.H)) + geom_point() + xlab(&quot;Log FC Expression&quot;) + ylab(&quot;Log FC Contact Frequency&quot;) + ggtitle(&quot;LogFC Expression vs. LogFC Contact for All Genes&quot;)</code></pre>
 <pre><code>Warning: Removed 410 rows containing missing values (geom_point).</code></pre>
 <p><img src="figure/gene_expression.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-1">
+Past versions of unnamed-chunk-2-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/5fda2d6be754f4c39dd034fc9972a6665bea0e68/docs/figure/gene_expression.Rmd/unnamed-chunk-2-1.png" target="_blank">5fda2d6</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-06-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#plot(x=mydf$logFC, y=mydf$min_FDR_B.H, ylab=&quot;LogFC DC&quot;, xlab=&quot;LogFC DE&quot;, main=&quot;Log Fold Changes, Expression vs. Contact Frequency&quot;,  col=mydf$color, pch=16, cex=0.6)
 #legend(&quot;topleft&quot;, legend=c(&quot;DE gene&quot;, &quot;Non-DE gene&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)
 
@@ -17393,6 +17538,43 @@ mydf$color &lt;- ifelse(mydf$logFC&gt;0, &quot;red&quot;, &quot;blue&quot;)
 ggplot(mydf, aes(x=logFC, y=min_FDR_B.H, color=color)) + geom_point() + xlab(&quot;Log FC Expression&quot;) + ylab(&quot;Log FC Contact Frequency&quot;) + ggtitle(&quot;LogFC Expression vs. LogFC Contact for DE Genes&quot;) + scale_color_discrete(name=&quot;Higher Expression&quot;, labels=c(&quot;Chimp&quot;, &quot;Human&quot;))</code></pre>
 <pre><code>Warning: Removed 81 rows containing missing values (geom_point).</code></pre>
 <p><img src="figure/gene_expression.Rmd/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-2">
+Past versions of unnamed-chunk-2-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/5fda2d6be754f4c39dd034fc9972a6665bea0e68/docs/figure/gene_expression.Rmd/unnamed-chunk-2-2.png" target="_blank">5fda2d6</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-06-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#plot(y=mydf$logFC, x=mydf$min_FDR_B.H, ylab=&quot;LogFC DE&quot;, xlab=&quot;LogFC DC&quot;, main=&quot;Log Fold Changes, Expression vs. Contact Frequency&quot;,  col=mydf$color)
 #legend(&quot;topleft&quot;, legend=c(&quot;Significant higher expression in humans&quot;, &quot;Significant higher expression in chimps&quot;), col=c(&quot;red&quot;, &quot;blue&quot;), pch=16:16, cex=0.8)
 
@@ -17403,12 +17585,123 @@ mydat &lt;- select(gene.hic.filt, logFC, min_FDR_B.H, adj.P.Val, AveExpr)
 ggplot(mydat) + geom_point(aes(x=logFC, y=min_FDR_B.H, color=adj.P.Val))</code></pre>
 <pre><code>Warning: Removed 410 rows containing missing values (geom_point).</code></pre>
 <p><img src="figure/gene_expression.Rmd/unnamed-chunk-2-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-3">
+Past versions of unnamed-chunk-2-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/5fda2d6be754f4c39dd034fc9972a6665bea0e68/docs/figure/gene_expression.Rmd/unnamed-chunk-2-3.png" target="_blank">5fda2d6</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-06-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(filter(mydat, adj.P.Val&lt;=0.05)) + geom_point(aes(x=logFC, y=min_FDR_B.H)) + xlab(&quot;LogFC, Expression&quot;) + ylab(&quot;LogFC, Contact&quot;) + ggtitle(&quot;LogFC Expression vs. LogFC Contact for DE Genes&quot;)</code></pre>
 <pre><code>Warning: Removed 81 rows containing missing values (geom_point).</code></pre>
 <p><img src="figure/gene_expression.Rmd/unnamed-chunk-2-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-4">
+Past versions of unnamed-chunk-2-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/5fda2d6be754f4c39dd034fc9972a6665bea0e68/docs/figure/gene_expression.Rmd/unnamed-chunk-2-4.png" target="_blank">5fda2d6</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-06-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(filter(mydat, adj.P.Val&gt;0.05)) + geom_point(aes(x=logFC, y=min_FDR_B.H)) + xlab(&quot;LogFC, Expression&quot;) + ylab(&quot;LogFC, Contact&quot;) + ggtitle(&quot;LogFC Expression vs. LogFC Contact for non-DE Genes&quot;)</code></pre>
 <pre><code>Warning: Removed 329 rows containing missing values (geom_point).</code></pre>
 <p><img src="figure/gene_expression.Rmd/unnamed-chunk-2-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-5">
+Past versions of unnamed-chunk-2-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/5fda2d6be754f4c39dd034fc9972a6665bea0e68/docs/figure/gene_expression.Rmd/unnamed-chunk-2-5.png" target="_blank">5fda2d6</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-06-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#Now, take a look at what happens if I stratify things by which species it&#39;s more highly expressed in, and its DE status, and calculate R-squareds. Should do this with actual mean expression values per species
 human.high.DE &lt;- filter(mydat, logFC&gt;0, adj.P.Val&lt;=0.05)
 human.high.nonDE &lt;- filter(mydat, logFC&gt;0, adj.P.Val&gt;0.05)
