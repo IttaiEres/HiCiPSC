@@ -469,7 +469,7 @@ ggbounds <- melt(mybounds[,1:4])
 ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
 colnames(ggbounds) <- c("Resolution", "Species", "count")
 ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
-#FIGS12B
+#FIGS13B
 
 ###Interspecies TAD boundary overlap with bedtools -c###
 
@@ -669,7 +669,7 @@ ggdomains <- melt(mydomains[,1:4])
 ggdomains$Resolution <- factor(ggdomains$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
 colnames(ggdomains) <- c("Resolution", "Species", "count")
 ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Interspecies TAD Domain Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
-#FIGS12A
+#FIGS13A
 
 #This method was likely the most robust way to define domain conservation, particularly with nested domains.
 
@@ -967,7 +967,7 @@ bounds.indi.clust <- function(resolution){
   heatmaply(heat, main=paste("Pairwise Proportions of Shared TAD Boundaries @ ", resolution/1000, "kb", sep=""), k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
 }
 
-#FIGS11F, boundary clustering on individual basis with Arrowhead inferences.
+#FIGS12F, boundary clustering on individual basis with Arrowhead inferences.
 bounds.indi.clust(10000)
 bounds.indi.clust(25000)
 bounds.indi.clust(50000)
@@ -1001,7 +1001,7 @@ boundary.inter.plot <- function(y.max=20000){
   print(plot.4)
   print(ggbounds.4)
 }
-boundary.inter.plot() #FIGS11C-D
+boundary.inter.plot() #FIGS12C-D
 
 #Now, Jaccard indices for interspecies variation in TAD boundaries#
 jac.inter <- function(resolution){
@@ -1135,7 +1135,7 @@ indi.TAD.clust <- function(type, resolution){
   heatmaply(indi.TAD.df, main=paste("Pairwise Proportions of Shared TADs @ ", resolution/1000, "kb", sep=""), k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
 }
 
-#FIGS11E alternative, TAD clustering on individual basis, loj methodology (90% reciprocal overlap).
+#FIGS12E alternative, TAD clustering on individual basis, loj methodology (90% reciprocal overlap).
 options(scipen=999)
 indi.TAD.clust("loj", 10000)
 indi.TAD.clust("loj", 25000)
@@ -1144,7 +1144,7 @@ indi.TAD.clust("loj", 100000)
 indi.TAD.clust("loj", 250000)
 indi.TAD.clust("loj", 500000)
 
-#FIGS11E, TAD clustering on individual basis, Rao methodology. Use this as main b/c using Rao method for stringency analysis.
+#FIGS12E, TAD clustering on individual basis, Rao methodology. Use this as main b/c using Rao method for stringency analysis.
 indi.TAD.clust("rao", 10000)
 indi.TAD.clust("rao", 25000)
 indi.TAD.clust("rao", 50000)
@@ -1229,7 +1229,7 @@ domain.plotter <- function(type, intra.ymax=8000, inter.ymax=8200){
     print(plot.4)
 }
 
-domain.plotter("rao", intra.ymax = 10000, inter.ymax = 8200) #FigS11A&B
+domain.plotter("rao", intra.ymax = 10000, inter.ymax = 8200) #FigS12A&B
 domain.plotter("loj", intra.ymax= 11000, inter.ymax=8200) #Alternative, highly similar, slightly less conserved.
 ```
 
@@ -1447,7 +1447,7 @@ boundary.inter.plot <- function(y.max){
   print(plot.3)
   print(plot.4)
 }
-boundary.inter.plot(3100) #FigS13C-D
+boundary.inter.plot(3100) #FigS14C-D
 
 #For boundary clustering
 bounds.indi.clust <- function(resolution){
@@ -1457,7 +1457,7 @@ bounds.indi.clust <- function(resolution){
   heatmaply(heat, main=paste("Pairwise Proportions of Shared TAD Boundaries @ ", resolution/1000, "kb", sep=""), k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
 }
 
-#FigS13F, boundary clustering on individual basis with TopDom inferences
+#FigS14F, boundary clustering on individual basis with TopDom inferences
 bounds.indi.clust(10000)
 bounds.indi.clust(25000)
 bounds.indi.clust(50000)
@@ -1566,7 +1566,7 @@ indi.TAD.clust <- function(type, resolution){
   heatmaply(indi.TAD.df, main=paste("Pairwise Proportions of Shared TADs @ ", resolution/1000, "kb", sep=""), k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
 }
 
-#FIGS13E alternative TAD clustering on individual basis, TopDom!
+#FIgS14E alternative TAD clustering on individual basis, TopDom!
 options(scipen=999)
 indi.TAD.clust("loj", 10000)
 indi.TAD.clust("loj", 25000)
@@ -1575,7 +1575,7 @@ indi.TAD.clust("loj", 100000)
 indi.TAD.clust("loj", 250000)
 indi.TAD.clust("loj", 500000)
 
-#Used this for FIGS13E, since others shown are Rao methodology.
+#Used this for FIgS14E, since others shown are Rao methodology.
 indi.TAD.clust("rao", 10000)
 indi.TAD.clust("rao", 25000)
 indi.TAD.clust("rao", 50000)
@@ -1650,7 +1650,7 @@ domain.plotter <- function(type, inter.ymax, intra.ymax){
     print(plot.4)
 }
 
-domain.plotter("rao", intra.ymax=12000, inter.ymax=12000) #FIGS13A-B
+domain.plotter("rao", intra.ymax=12000, inter.ymax=12000) #FIgS14A-B
 domain.plotter("loj", intra.ymax=12000, inter.ymax=12000) 
 ```
 
@@ -1759,7 +1759,7 @@ ggbounds <- melt(mybounds[,1:4])
 ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
 colnames(ggbounds) <- c("Resolution", "Species", "count")
 ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
-#FIGS12D
+#FIGS13D
 
 ###Interspecies TAD boundary overlap with bedtools -c###
 
@@ -1915,7 +1915,7 @@ ggdomains <- melt(mydomains[,1:4])
 ggdomains$Resolution <- factor(ggdomains$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
 colnames(ggdomains) <- c("Resolution", "Species", "count")
 ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Interspecies TAD Domain Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
-#FIGS12C
+#FIGS13C
 
 #This method was likely the most robust way to define domain conservation, particularly with nested domains.
 
@@ -1963,11 +1963,11 @@ ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xl
 #Human-Chimp large-scale linear interval synteny analysis
 ```{r}
 #Obtained these data from running the reciprocal best hits liftOver method on genome-wide windows of varying sizes created with bedtools makewindows. I then ran wc -l to look at line counts of the resultant files to see how many intervals were retained.
-#FigS20A
+#FigS11A
 syn.df <- data.frame(window=c(100, 250, 500, 750, 1000, 1250, 1500, 1750, 2000), total=c(32351, 13100, 6743, 4638, 3583, 2949, 2533, 2229, 2007), retained=c(23025, 9491, 4862, 3264, 2442, 1952, 1624, 1381, 1209))#, species=c(rep("Human", 9), rep("Chimp", 9)))
 ggplot(data=syn.df, aes(x=window, y=total)) + geom_col(aes(fill="Total"), position="identity") + geom_col(aes(y=retained, fill="Syntenic"), position="identity") + xlab("Interval Window (kb)") + ylab("Total Intervals") + ggtitle("Genome-Wide Synteny, Human to Chimpanzee") + scale_fill_manual(name="Intervals", values=c(Total="red", Syntenic="blue"))
 
-#FigS20B
+#FigS11B
 syn.df.pt5 <- data.frame(window=rep(c(100, 250, 500, 750, 1000, 1250, 1500, 1750, 2000), 2), total=c(29687, 11881, 5947, 3967, 2979, 2387, 1990, 1708, 1494), retained=c(23252, 9607, 4907, 3301, 2499, 1971, 1650, 1409, 1229))#, species=c(rep("Human", 9), rep("Chimp", 9)))
 ggplot(data=syn.df.pt5, aes(x=window, y=total)) + geom_col(aes(fill="Total"), position="identity") + geom_col(aes(y=retained, fill="Syntenic"), position="identity") + xlab("Interval Window (kb)") + ylab("Total Intervals") + ggtitle("Genome-Wide Synteny, Chimpanzee to Human") + scale_fill_manual(name="Intervals", values=c(Total="red", Syntenic="blue"))
 ```

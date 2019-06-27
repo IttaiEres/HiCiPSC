@@ -891,7 +891,7 @@ out <- sapply(1:ngenes, function(g) {
 table(out)
 15/(15+284) #5% DE genes mediated significantly by contact.
 
-#Visualize for DE genes, Fig S6A:
+#Visualize for DE genes, Fig S6:
 DEdat <- data.frame(bf=fit_de$tau, af=fit_de$tau_prime, significance=out)
 DEdat$color <- ifelse(DEdat$significance==TRUE, "red", "black")
 plot(x=DEdat$bf, y=DEdat$af, ylab="Effect Size After Controlling for Contact", xlab="Effect Size Before Controlling for Contact", main="Effect of Contact on Expression Divergence in DE genes", col=alpha(DEdat$color, 0.6), pch=16, cex=0.6, xlim=c(-5, 5), ylim=c(-5,5))
@@ -912,7 +912,7 @@ out <- sapply(1:ngenes, function(g) {
 table(out)
 31/(31+1300) #2% non-DE genes appear mediated by contact
 
-#Visualize for non-DE genes, Fig S6B:
+#Visualize for non-DE genes:
 noDEdat <- data.frame(bf=fit_node$tau, af=fit_node$tau_prime, significance=out)
 noDEdat$color <- ifelse(noDEdat$significance==TRUE, "red", "black")
 plot(x=noDEdat$bf, y=noDEdat$af, ylab="Effect Size After Controlling for Contact", xlab="Effect Size Before Controlling for Contact", main="Effect of Contact on Expression Divergence in non-DE genes", col=alpha(noDEdat$color, 0.6), pch=16, cex=0.6, xlim=c(-5, 5), ylim=c(-5,5), adj=0.6)

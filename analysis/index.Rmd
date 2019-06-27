@@ -12,8 +12,8 @@ This website details computational analyses done for the paper "Reorganization o
 *  [Reading in of the data, normalization, and initial quality control metrics--Figures 1, S7, S8](initial_QC.html)
 *  [Linear modeling of the data to find quantitative contact differences between humans and chimpanzees--No figures here, but useful for understanding Figures 2 & S9](linear_modeling.html)
 *  [Quality control on the linear modeling, to account for p-value inflation and volcano plot asymmetry--Figures 2, S9](linear_modeling_QC.html)
-*  [Orthogonal analysis with gene expression data collected from the same cell lines--Figures 6, S14, S15, S19](gene_expression.html)
-*  [Epigenetic annotation enrichment analyses on the linear-modeling significant Hi-C hits--Figures 7, S16, S17, S18](enrichment.html)
+*  [Orthogonal analysis with gene expression data collected from the same cell lines--Figures 6, S15, S16, S20](gene_expression.html)
+*  [Epigenetic annotation enrichment analyses on the linear-modeling significant Hi-C hits--Figures 7, S17, S18, S19](enrichment.html)
 
 #### Analyses Utilizing Juicer
 *  [Reading in of the data, normalization, and initial quality control metrics--Figure S1](juicer_initial_QC.html)
@@ -23,7 +23,7 @@ This website details computational analyses done for the paper "Reorganization o
 *  [Enrichment analyses on the linear-modeling significant Hi-C hits--Figures S4, S5](juicer_enrichment.html)
 
 #### TAD Analyses
-*  [TAD Analyses--Figures 4, S11, S12, S13](TADs.html)
+*  [TAD Analyses--Figures 4, S11, S12, S13, S14](TADs.html)
 
 #### License
 Copyright (c) 2019, Ittai Eres, Kaixuan Luo, Chiaowen Joyce Hsiao, Lauren E. Blake, and Yoav Gilad.
