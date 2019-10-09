@@ -9,4 +9,4 @@ A [workflowr][] project.
 [workflowr]: https://github.com/jdblischak/workflowr
 [here]: https://ittaieres.github.io/HiCiPSC/
 [the preprint]: https://www.biorxiv.org/content/10.1101/474841v1.article-info
-[the paper]: https://lmgtfy.com/?q=coming+soon
+[the paper]: https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1008278
