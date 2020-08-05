@@ -4,7 +4,6 @@ author: "Ittai Eres"
 date: "2019-03-12"
 output: workflowr::wflow_html
 ---
-
 First, load necessary libraries: limma, plyr, tidyr, data.table, reshape2, cowplot, plotly, dplyr, Hmisc, gplots, stringr, heatmaply, RColorBrewer, edgeR, tidyverse, and compiler
 ```{r library loading, echo=FALSE, include=FALSE}
 #Load in necessary packages
@@ -29,7 +28,7 @@ library(compiler)
 enableJIT(3)
 ```
 
-#Initial Data read-in and quality control; Fig S8
+# Initial Data read-in and quality control; Fig S8
 First, I read in the data and normalize it with cyclic pairwise loess normalization. These data have come from compiling all of the significant contacts in any individual across species as called by Homer (p<0.01), and then extracting the interaction frequency values for each contact across all individuals. LiftOver was used to convert coordinates between species, with bins being rounded to the nearest 10kb. Here, I look at histograms of the distributions of the contact frequencies on an individual-by-individual basis, to see if they are comparable. I also look at a plot of the mean vs. the variance as an additional quality control metric; this is typically done on RNA-seq count data. In that case, it's done to check if the normalized data are distributed in a particular fashion (e.g. a poisson model would have a linear mean-variance relationship). In the limma/voom pipeline, count data are log-cpm transformed and a loess trend line of variance vs. mean is then fit to create weights for individual genes to be fed into linear modeling with limma. Since this is not a QC metric typically used for Hi-C data, the only thing I hope to see is no particularly strong relationship between variance and mean.
 ```{r Initial Hi-C Data Read-in and QC}
 ###Read in data, normalize it with cyclic loess (pairwise), clean it from any rows that have missing values.
@@ -73,7 +72,7 @@ summary(lm(full.data$ALLmean~full.data$ALLvar))$adj.r.squared
 ```
 On the whole, the distributions look fairly comparable across individuals and species, and the mean vs. variance plots show weak correlation at best between the two metrics. An actual check of the r squared also shows it to be low, at ~0.11. Now knowing the data are comparable in this sense, the next question would be whether they are different enough between the species to separate them from one another with unsupervised clustering and PCA methods.
 
-#Data clustering with Principal Components Analysis (PCA) and correlation heatmap clustering.
+# Data clustering with Principal Components Analysis (PCA) and correlation heatmap clustering.
 Now I use PCA, breaking down the interaction frequency values into principal components that best represent the variability within the data. This technique uses orthogonal transformation to convert the many dimensions in variability of this dataset into a lower-dimensional picture that can be used to separate out functional groups in the data. In this case, the expectation is that the strongest principal component, representing the plurality of the variance, will separate out humans and chimps along its axis, grouping the two species independently, as we expect their interaction frequency values to cluster together. I then also compute pairwise pearson correlations between each of the individuals across all Hi-C contacts, and use unsupervised hierarchical clustering to create a heatmap that once again will group individuals based on similarity in interaction frequency values. Again, I would expect this technique to separate out the species very distinctly from one another.
 ```{r Clustering w/ PCA and Heatmaps}
 ###Now do principal components analysis (PCA) on these data to see how they separate:
@@ -95,7 +94,7 @@ heatmaply(corheat, main="Pairwise Pearson Correlation @ 10kb", k_row=2, k_col=2,
 #We can see that all the humans cluster together, as do all the chimps. This is very good, despite the fact that the correlations are fairly low.
 ```
 
-#Variance exploration; Fig S7
+# Variance exploration; Fig S7
 Now I look at several metrics to assess variance in the data, checking which species hits were discovered as significant in and how many individuals a given hit was discovered in. I look at this to understand if there are some cutoffs that should be made to reduce the noisiness of the data and maximize the significance of further findings.
 ```{r Variance QC}
 ###Add columns to full.data to indicate species of discovery and number of individuals discovered in. These pieces of information are good to know about each of the hits generally, but can also be used to make decisions about filtering out certain classes of hits if variance is associated with any of these metrics.  
@@ -125,7 +124,7 @@ save_plot("~/Desktop/FIGS7A.eps", FIGS7)
 ```
 From this, it would appear that variance drops off drastically after discovery in at least 4 individuals. I observed a similar pattern when looking at number of individuals a hit is discovered in vs. species-specific variances, as well as similar reductions when looking at variance in hits within species vs. number of individuals discovered in (not shown). Hence I now repeat all of the QC analyses done above, but this time conditioned upon discovery in 4 individuals. Moving forward I will ultimately filter out all the hits that were not found in at least 4 individuals, though I sometimes check the full dataset as well just for sanity's sake.
 
-#Initial Quality Control Analyses Conditioned Upon Discovery in at Least 4 Individuals; Fig 1
+# Initial Quality Control Analyses Conditioned Upon Discovery in at Least 4 Individuals; Fig 1
 Given the results just seen for variance, I now repeat all the analyses I carried out previously on the data conditioned upon homer discovering a hit as significant in at least 4 individuals. Based upon a reviewer concern, I also check these things for hits that were discovered as significant in all 4 individuals within a given species (i.e. significant contacts that are not "polymorphic")
 ```{r QC | 4 Individuals}
 #Repeating all QC with the condition of discovery in 4 individuals:
@@ -230,8 +229,13 @@ corheat4 <- cor(data.4[,304:311], use="complete.obs", method="pearson") #Corheat
 colnames(corheat4) <- c("H_F1", "H_M1", "C_M1", "C_F1", "H_M2", "H_F2", "C_M2", "C_F2") #Better for presentation
 rownames(corheat4) <- colnames(corheat4)
 
+#Change path to make sure orca can be found (in conda path); set mapbox token for orca export.
+Sys.setenv(PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/Library/TeX/texbin:/opt/local/bin:/Users/ittaieres/miniconda3/bin/")
+Sys.setenv('MAPBOX_TOKEN'='pk.eyJ1IjoiaXR0YWllcmVzIiwiYSI6ImNqeHVwanphejE3bjIzcHFmY2FvYXIxZXUifQ.rs3I8LoxJcqWBsIhVDiJCQ')
 #FIG1B
-heatmaply(corheat4, main="Pairwise Pearson Correlation Clustering @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30), cellnote_size=10)#, scale_fill_gradient_fun = ggplot2::scale_fill_gradient2(low = "yellow", high = "blue", midpoint = 0.5, limits = c(0, 1)))
+heatmaply(corheat4, main="Pairwise Pearson Correlation Clustering @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30), cellnote_size=10, fontsize_row=10, fontsize_col=10, file="~/Desktop/Fig1B.pdf")#, scale_fill_gradient_fun = ggplot2::scale_fill_gradient2(low = "yellow", high = "blue", midpoint = 0.5, limits = c(0, 1)))
+dis <- heatmaply(corheat4, main="Pairwise Pearson Correlation Clustering @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30), cellnote_size=10, fontsize_row=10, fontsize_col=10)
+orca(dis, file="~/Desktop/Fig1B.pdf") #Note that this just created a ~ folder in the hicipsc directory, didn't redirect to home folder.
 #Indeed, we can again see that all the humans cluster together, as do all the chimps. This is very good, and given this new condition, we also see higher within-species correlations for the significant hits, in the 0.6-0.7 range (was much closer to 0.3 before).
 FIG1B <- heatmaply(corheat4, main="Pairwise Pearson Correlation Clustering @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30), plot_method = "ggplot", return_ppxpy = TRUE)
 
@@ -354,7 +358,7 @@ fwrite(data.4, "output/data.4.init.QC", quote=FALSE, sep="\t", row.names=FALSE, 
 fwrite(data.4.fixed, "output/data.4.fixed.init.QC", quote=FALSE, sep="\t", row.names=FALSE, col.names=TRUE, na="NA", showProgress = FALSE)
 ```
 
-#Homer-specific QC
+# Homer-specific QC
 ```{r HOMER-specific QC Metrics}
 #Read in pre-prepped tables of this information.
 rand.frag <- fread("~/Desktop/Hi-C/homer_QCs/petag.Local.ALL.distn", header=TRUE, stringsAsFactors = FALSE, data.table=FALSE)
