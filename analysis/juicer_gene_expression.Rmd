@@ -5,9 +5,6 @@ date: 2018-09-14
 output: workflowr::wflow_html
 ---
 
-
-
-
 ```{r library loading, include=FALSE, echo=FALSE}
 #First, get necessary packages.
 library(limma)
@@ -34,7 +31,7 @@ library(medinome)
 library(glmnet)
 enableJIT(3)
 ```
-### Preparing the gene expression data
+# Preparing the gene expression data
 Here I read in a dataframe of counts summarized at the gene-level, then do some pre-processing and normalization to obtain a voom object to later run linear modeling analyses on. This is identical code to what was done in the case with HOMER, since this gene expression analysis is completely orthogonal to the Hi-C normalization and significance calling schemes employed.
 ```{r Prepping gene expression data}
 #Read in counts data, create DGEList object out of them and convert to log counts per million (CPM). Also read in metadata.
@@ -232,7 +229,7 @@ saveRDS(RPKM, file="output/juicer.IEE.RPKM.RDS") #Should be identical to non-jui
 saveRDS(weighted.data, file="output/juicer.IEE_voom_object.RDS") #write this object out, can then be read in with readRDS.
 ```
 
-### Overlap Between Juicer Data and Orthogonal Gene Expression Data
+# Overlap Between Juicer Data and Orthogonal Gene Expression Data
 In this section I find the overlap between the 2 final filtered set of Hi-C Juicer significant hits and genes picked up on by an orthogonal RNA-seq experiment in the same set of cell lines. I utilize an in-house curated set of orthologous genes between humans and chimpanzees. Given that the resolution of the data is 10kb, I choose a simple and conservative approach and use a 1-nucleotide interval at the start of each gene as a proxy for the promoter. I then take a conservative pass and only use genes that had direct overlap with a bin from the Hi-C significant hits data, with more motivation explained below.
 ```{r Overlap between Hi-C data and orthogonal gene expression data}
 #Now, read in filtered data from linear_modeling_QC.Rmd.
@@ -334,7 +331,7 @@ sum(hgene.hic.VC$V10==0&(!hgene.hic.VC$V4 %in% DEgenes)&(!hgene.hic.VC$V4 %in% n
 ```
 
 
-### Linear Modeling Annotation
+# Linear Modeling Annotation
 In this next section I simply add information obtained from linear modeling on the Hi-C interaction frequencies to the appropriate genes having overlap with Hi-C bins. Because one Hi-C bin frequently shows up many times in the data, this means I must choose some kind of summary for Hi-C contact frequencies and linear modeling annotations for each gene. I toy with a variety of these summaries here, including choosing the minimum FDR contact, the maximum beta contact, the upstream contact, or summarizing all a bin's contacts with the weighted Z-combine method or median FDR values.
 ```{r Linear Modeling Annotation}
 hgene.hic.overlap.KR <- filter(hgene.hic.KR, V10==0) #Still leaves a solid ~4k genes.
@@ -465,7 +462,7 @@ saveRDS(gene.hic.KR, "output/gene.hic.filt.KR.RDS")
 saveRDS(gene.hic.VC, "output/gene.hic.filt.VC.RDS")
 ```
 
-### Differential Expression-Differential Hi-C Enrichment Analyses 
+# Differential Expression-Differential Hi-C Enrichment Analyses 
 Now I look for enrichment of DHi-C in DE genes using a variety of different metrics to call DHi-C.
 I now look to see if genes that are differentially expressed are also differential in Hi-C contacts (DHi-C). That is to say, are differentially expressed genes enriched in their overlapping bins for Hi-C contacts that are also differential between the species? To do this I utilize p-values from my prior linear modeling as well as previous RNA-seq analysis. I construct a function to calculate proportions of DE and DHi-C genes, as well as a function to plot this out in a variety of different ways.
 ```{r Differential Expression-Differential Hi-C Enrichment Analyses}
@@ -561,7 +558,7 @@ save_plot("~/Desktop/FIGS3.png", FIGS3, nrow=2, ncol=2)
 ```
 Now that I've seen some enrichment of differential contact (DC) in differential expression (DE) based on my linear modeling results from before, I would like to further quantify this effect. In order to do so, I now extract log2 observed/expected homer-normalized contact frequency values and RPKM expression values for each gene/bin set, so I can look at correlations of these values and assess their explanatory power.
 
-### Contact Frequency Extraction
+# Contact Frequency Extraction
 In this section, I proceed to create a function in order to extract the Hi-C interaction frequency values for the different types of summaries I've made gene overlaps with above. This allows for operations to be performed separately utilizing different summaries of Hi-C contacts.
 ```{r Contact frequency extraction}
 ######Get a df with the H and C coordinates of the hits, and the IF values from homer. This subset df makes things easier to extract. Both for VC and KR.
@@ -671,7 +668,7 @@ fwrite(h_minFDR_DE.VC, "data/old_mediation_permutations/HiC_covs/juicer/h_minFDR
 Now I use these data frames and join each again on the RPKM table by genes, in order to obtain RPKM expression values for each gene-Hi-C bin set.
 
 
-### Merging contact frequency values with expression values.
+# Merging contact frequency values with expression values.
 In this next section I join each of the data frames created above on the RPKM table by genes, in order to have a merged table with expression values and contact frequencies for each gene-Hi-C bin set. I move then to explore correlations between the values.
 ```{r Merging Expression and Hi-C; Followed by correlation exploration}
 #Join all of the previously-made Hi-C interaction frequency tables to the RPKM table by genes, to obtain RPKM values in concert with contact frequency values.
@@ -767,7 +764,7 @@ ggplot(data=filter(ggcorsVC, type=="all"|type=="DE"|type=="non-DE")) + stat_dens
 ```
 Now that I've seen some nice effects in the correlation between expression and contact for different sets of genes, and for permutations on those sets, I move to see what kind of quantitiative explanatory power differential contact (DC) might actually have for differential expression (DE).
 
-### How well does Hi-C data explain expression data?
+# How well does Hi-C data explain expression data?
 In this next section I "regress out" the effect of Hi-C contacts from their overlapping genes' RPKM expression values, comparing a linear model run on the base values to one run on the residuals of expression after regressing out Hi-C data. Comparing the p-values before and after this regression can give some sense of whether the DE is being driven by differential Hi-C contacts (DC).
 ```{r Mediation effect by "regressing out" Hi-C effects from Expression Data}
 ###A function to calculate gene-wise correlations between Hi-C data and expression data, but for spearman correlations. Pearson correlation calculator function is in the chunk above.

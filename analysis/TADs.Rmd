@@ -5,7 +5,7 @@ date: "2019-03-14"
 output: workflowr::wflow_html
 ---
 
-## Introduction
+# Introduction
 This file is provided as an overview of the many different TAD analyses that have gone into checking the robustness of the results presented in the paper. It includes many different types of analyses across a wide variety of different normalization and TAD calling parameters.
 
 ```{r library loading, echo=FALSE, include=FALSE}
@@ -34,7 +34,7 @@ library(UpSetR)
 enableJIT(3)
 ```
 
-## Juicer_Mega Analyses
+# Juicer_Mega Analyses
 These analyses represent those run on two "consensus" Hi-C maps--one for each species. These maps were built from the juicer .hic files from each individual, as described here: https://groups.google.com/forum/#!searchin/3d-genomics/mega|sort:date/3d-genomics/N95zVXHThSw/66Afq3NlBQAJ
 Note I had to tinker with some things in command line to get it to work for me on our cluster: https://groups.google.com/forum/#!searchin/3d-genomics/mega%7Csort:date/3d-genomics/dgqNM32cEmQ/0H0kZtd-CQAJ
 ```{r Juicer Mega Domain and Boundary Characteristics}
@@ -429,6 +429,8 @@ bounds.chromos$V1 <- factor(bounds.chromos$V1, levels=c("chr1", "chr2", "chr2A",
 ggplot(data=bounds.chromos, aes(x=V1, fill=species)) + geom_histogram(stat="count", position="dodge") + ggtitle("Chromosomal Distribution of Ortho. TAD Boundaries") + xlab("Chromosome") + ylab("Boundary Count")
 ```
 
+# Interspecies TAD Boundary Conservation on Juicer Merged Data
+
 ```{r Juicer Mega Interspecies Boundary Conservation}
 ###Interspecies TAD boundary overlap with bedtools merged files###
 
@@ -512,8 +514,12 @@ mybounds$chimp.perc <- mybounds$Chimpanzee/mybounds$totals
 ggbounds <- melt(mybounds[,1:4])
 ggbounds$Resolution <- factor(ggbounds$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
 colnames(ggbounds) <- c("Resolution", "Species", "count")
+
+#For paper
+theme_set(theme_cowplot(font_size=20))
 ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
 #FIG4B
+
 
 ###Interspecies TAD boundary Rao Style Overlaps###
 
@@ -572,6 +578,7 @@ colnames(ggbounds) <- c("Resolution", "Species", "count")
 ggplot(data=ggbounds) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Boundary Count") + ggtitle("Interspecies TAD Boundary Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))
 ```
 
+# Interspecies TAD Body Conservation on Juicer Merged Data
 ```{r Juicer Mega Interspecies Domain Conservation}
 ###Interspecies Domain Conservation using Rao et al. Method###
 #First, define a function to call domain conservation as was performed in Rao et al. 2014.
@@ -642,7 +649,7 @@ test2$disc_species <- "Chimp"
 S13.sub <- cbind(test, test2)
 
 S13.final <- rbind(S13, S13.sub)
-fwrite(S13.final, "~/Desktop/Paper Drafts/PLOS/Revision/Revision_2/Final?/FINAL/supptables/S13 Table.txt", quote=F, sep="\t")
+#fwrite(S13.final, "~/Desktop/Paper Drafts/PLOS/Revision/Revision_2/Final?/FINAL/supptables/S13 Table.txt", quote=F, sep="\t")
 #group_by(myH, ID) %>% summarise(., Hchr=unique(Hchr), Hstart=unique(Hstart), Hend=unique(Hend), Cchr=unique(Cchr), Cstart=unique(Cstart), Cend=unique(Cend), conserved=paste(conserved, collapse=","))
 ####
 
@@ -711,10 +718,13 @@ mydomains$chimp.perc <- mydomains$Chimpanzee/mydomains$totals
 ggdomains <- melt(mydomains[,1:4])
 ggdomains$Resolution <- factor(ggdomains$Resolution, levels=c("10kb", "25kb", "50kb", "100kb", "250kb", "500kb"))
 colnames(ggdomains) <- c("Resolution", "Species", "count")
+
+#For the sake of the paper:
+theme_set(theme_cowplot(font_size=20))
 ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Interspecies TAD Domain Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#+ geom_text()#Need to add percentages here
 #FIG4A
 ```
-
+# Inter- and intra-species TAD Boundary Variance on Individual-level Arrowhead Inferences
 ```{r Boundary Conservation with Individual Level Arrowhead Inferences}
 ###Intraspecies Variance in TAD Boundaries###
 #First, I look at within-species variance of TAD boundaries, both on the full set of boundaries and on the set that could be orthologously lifted over between species. This is done by taking the boundary files from both these situations across all individuals within a species, adding a column to identify the individual it came from, appending these files onto one another, and then using bedtools merge and collapsing on the identifier column to assess how many unique boundaries are found and how many individuals each is found in.
@@ -958,6 +968,12 @@ heatmaply(test, main="Pairwise Proportions of Shared TAD Boundaries @ 10kb", k_r
 #heatmaply(test2, main="TAD Boundary Pairwise Pearson Correlations @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
 
 #FIG4D
+#Change path to make sure orca can be found (in conda path); set mapbox token for orca export.
+Sys.setenv(PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/Library/TeX/texbin:/opt/local/bin:/Users/ittaieres/miniconda3/bin/")
+Sys.setenv('MAPBOX_TOKEN'='pk.eyJ1IjoiaXR0YWllcmVzIiwiYSI6ImNqeHVwanphejE3bjIzcHFmY2FvYXIxZXUifQ.rs3I8LoxJcqWBsIhVDiJCQ')
+#FIG4C
+dis <- heatmaply(test, main="Pairwise Proportions of Shared TAD Boundaries @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30), cellnote_size=10, fontsize_row=18, fontsize_col=18)
+orca(dis, file="~/Desktop/Fig4D.pdf") #Note that this just created a ~ folder in the hicipsc directory, didn't redirect to home folder.
 ####
 
 bounds.indi.clust <- function(resolution){
@@ -1046,6 +1062,7 @@ rownames(jacs.10) <- colnames(jacs.10)
 heatmaply(jacs.10, main="Pairwise Jaccard Index @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
 ```
 
+# Inter- and intra-species TAD Body Variance on Individual-level Arrowhead Inferences
 ```{r Domain Conservation with Individual Level Arrowhead Inferences}
 #Domains are considerably more complex to analyze, primarily due to the fact that the Arrowhead domain output can be nested. As a result, this analysis is a bit more coarse-grained. By this I mean to say that the nested TADs cannot simply be merged across all individuals to determine which are shared, so this must be done on an individual-by-individual basis to infer specific relationships while maintaining the number of discoveries of TADs for each individual. Thus, the average of many statistics across individuals is taken here.
 #Function to get a given individual's statistics on TAD conservation, intra and inter species.
@@ -1117,7 +1134,14 @@ rownames(domainclust) <- rownames(clust2) <- colnames(domainclust)
 
 heatmaply(domainclust, main="Pairwise Proportions of Shared TADs @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
 heatmaply(clust2, main="Pairwise Proportions of Shared TADs @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))
+#FIG4C:
+
+#Change path to make sure orca can be found (in conda path); set mapbox token for orca export.
+Sys.setenv(PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/Library/TeX/texbin:/opt/local/bin:/Users/ittaieres/miniconda3/bin/")
+Sys.setenv('MAPBOX_TOKEN'='pk.eyJ1IjoiaXR0YWllcmVzIiwiYSI6ImNqeHVwanphejE3bjIzcHFmY2FvYXIxZXUifQ.rs3I8LoxJcqWBsIhVDiJCQ')
 #FIG4C
+dis <- heatmaply(clust2, main="Pairwise Proportions of Shared TADs @ 10kb", k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30), cellnote_size=10, fontsize_row=18, fontsize_col=18)
+orca(dis, file="~/Desktop/Fig4C.pdf") #Note that this just created a ~ folder in the hicipsc directory, didn't redirect to home folder.
 
 
 
@@ -1232,7 +1256,7 @@ domain.plotter <- function(type, intra.ymax=8000, inter.ymax=8200){
 domain.plotter("rao", intra.ymax = 10000, inter.ymax = 8200) #FigS12A&B
 domain.plotter("loj", intra.ymax= 11000, inter.ymax=8200) #Alternative, highly similar, slightly less conserved.
 ```
-
+# Inter- and intra-species TAD Boundary Variance on Individual-level TopDom Inferences
 ```{r Boundary Inferences using Individual TopDom Data}
 ###Intraspecies Variance in TAD Boundaries###
 #First, I look at within-sepcies variance of TAD boundaries, both on the full set of boundaries and on the set that could be orthologously lifted over between species. This is done by taking the boundary files from both these situations across all individuals within a species, adding a column to identify the individual it came from, appending these files onto one another, and then using bedtools merge and collapsing on the identifier column to assess how many unique boundaries are found and how many individuals each is found in.
@@ -1501,7 +1525,7 @@ jac.inter <- function(resolution){
 }
 jac.inter(10000) #Can be clustered upon later.
 ```
-
+# Inter- and intra-species TAD Body Variance on Individual-level TopDom Inferences
 ```{r Domain Inferences Using Individual TopDom Data}
 domain.compare <- function(resolution, letter, species, type, clust=F){
   df <- fread(paste("data/TADs/TopDom/", resolution, "_compare/inter.", letter, ".", type, sep=""))
@@ -1721,7 +1745,7 @@ rao.overlapper("data/TADs/overlaps_rao_style/10kb.10percent.CH.closest.hg38") #~
 rao.overlapper("data/TADs/overlaps_rao_style/10kb.20percent.CH.closest.hg38") #~83%, 1556/1876
 rao.overlapper("data/TADs/overlaps_rao_style/10kb.30percent.CH.closest.hg38") #~81%, 2293/2814
 ```
-
+# TAD Comparisons with data from Rao et al. 2014
 ```{r Juicer_mega hg38 v PT6 interspecies comparison}
 #First, examine boundaries between hg38 and PT6 mega maps:
 bounder <- function(resolution, species="H"){
@@ -1960,7 +1984,7 @@ colnames(ggdomains) <- c("Resolution", "Species", "count")
 ggplot(data=ggdomains) + geom_col(aes(x=Resolution, y=count, fill=Species)) + xlab("Resolution of Analysis") + ylab("Domain Count") + ggtitle("Interspecies TAD domain Conservation") + scale_fill_manual(name="Conservation", values=c("#F8766D", "#619CFF","#00BA38"), labels=c("Shared", "Human", "Chimpanzee"))#
 ```
 
-#Human-Chimp large-scale linear interval synteny analysis
+# Human-Chimp large-scale linear interval synteny analysis
 ```{r}
 #Obtained these data from running the reciprocal best hits liftOver method on genome-wide windows of varying sizes created with bedtools makewindows. I then ran wc -l to look at line counts of the resultant files to see how many intervals were retained.
 #FigS11A
