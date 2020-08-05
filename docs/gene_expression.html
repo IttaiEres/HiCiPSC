@@ -429,7 +429,7 @@ div.section {
 
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
-<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
 </button>
 </p>
 <div id="workflowr-report" class="collapse">
@@ -438,7 +438,7 @@ div.section {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#report"> Report <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -447,21 +447,21 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-06-26
+<strong>Last updated:</strong> 2020-08-05
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>HiCiPSC/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
 </p>
 <p>
 This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
-  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.2.0). The <em>Report</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.4.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
 </p>
 <hr>
 </div>
-<div id="report" class="tab-pane fade">
+<div id="checks" class="tab-pane fade">
 <div id="workflowr-checks" class="panel-group">
 <div class="panel panel-default">
 <div class="panel-heading">
@@ -526,10 +526,46 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtreea15345db7998f1a53058d383564584bd3489b6batargetblanka15345da"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/a15345db7998f1a53058d383564584bd3489b6ba" target="_blank">a15345d</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongabsolute"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>File paths:</strong> absolute </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtreea15345db7998f1a53058d383564584bd3489b6batargetblanka15345da" class="panel-collapse collapse">
+<div id="strongFilepathsstrongabsolute" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Using absolute paths to the files within your workflowr project makes it difficult for you and others to run your code on a different machine. Change the absolute path(s) below to the suggested relative path(s) to make your code more reproducible.
+</p>
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th style="text-align:left;">
+absolute
+</th>
+<th style="text-align:left;">
+relative
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+/Users/ittaieres/HiCiPSC
+</td>
+<td style="text-align:left;">
+.
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree75e11d01cbe3a5a2df035d53298df0101b6c32c4targetblank75e11d0a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/75e11d01cbe3a5a2df035d53298df0101b6c32c4" target="_blank">75e11d0</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree75e11d01cbe3a5a2df035d53298df0101b6c32c4targetblank75e11d0a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -539,9 +575,11 @@ Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    analysis/.DS_Store
+    Ignored:    analysis/.Rhistory
     Ignored:    code/.DS_Store
     Ignored:    data/.DS_Store
     Ignored:    data/TADs/.DS_Store
+    Ignored:    data/TADs/Human_inter_30_KR_contact_domains/.DS_Store
     Ignored:    data/TADs/scripts/.DS_Store
     Ignored:    docs/.DS_Store
     Ignored:    docs/figure/.DS_Store
@@ -863,11 +901,8 @@ Untracked files:
     Untracked:  data/TADs/CH.10kb.closest.panTro5
     Untracked:  data/TADs/CTCF.overlap.computer.sh
     Untracked:  data/TADs/CTCF/
-    Untracked:  data/TADs/Chimp_inter_30_KR_contact_domains/
     Untracked:  data/TADs/HC.10kb.closest.hg38
-    Untracked:  data/TADs/Human_inter_30_KR_contact_domains/
     Untracked:  data/TADs/Human_inter_30_KR_contact_domains_PT6/
-    Untracked:  data/TADs/PT6_inter_30_KR_contact_domains/
     Untracked:  data/TADs/Rao/
     Untracked:  data/TADs/TopDom/
     Untracked:  data/TADs/deprecated/
@@ -920,9 +955,12 @@ Untracked files:
     Untracked:  output/mc_node.rds
     Untracked:  output/mc_node_homer.rds
     Untracked:  output/mc_node_juicer.rds
+    Untracked:  ~/
 
 Unstaged changes:
+    Modified:   analysis/TADs.Rmd
     Deleted:    analysis/alt_mediation.Rmd
+    Modified:   analysis/enrichment.Rmd
 
 </code></pre>
 <p>
@@ -966,13 +1004,47 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/75e11d01cbe3a5a2df035d53298df0101b6c32c4/analysis/gene_expression.Rmd" target="_blank">75e11d0</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+<td>
+Update formatting for headers
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/IttaiEres/HiCiPSC/ae66f6e36a0146a26ecce9affb5e85a5f90e9c33/docs/gene_expression.html" target="_blank">ae66f6e</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-06-27
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/a15345db7998f1a53058d383564584bd3489b6ba/analysis/gene_expression.Rmd" target="_blank">a15345d</a>
 </td>
 <td>
 Ittai Eres
 </td>
 <td>
-2019-06-26
+2019-06-27
 </td>
 <td>
 Update index and corresponding figure references to match final version of paper.
@@ -1040,7 +1112,7 @@ html
 Ittai Eres
 </td>
 <td>
-2019-04-24
+2019-04-25
 </td>
 <td>
 Build site.
@@ -1248,11 +1320,11 @@ for (i in 2:8){
 legend(&quot;topright&quot;, colnames(dge_final[,1:8]), text.col=col, bty=&quot;n&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Prepping%20gene%20expression%20data-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Prepping gene expression data-1">
-Past versions of Prepping gene expression data-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Prepping-gene-expression-data-1">
+Past versions of “Prepping gene expression data-1.png”
 </button>
 </p>
-<div id="fig-Prepping gene expression data-1" class="collapse">
+<div id="fig-no-spaces-Prepping-gene-expression-data-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1295,11 +1367,11 @@ boxplot(normed, las=2, col=col, main=&quot;&quot;)
 title(main=&quot;Normalized data&quot;,ylab=&quot;Log-RPKM&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Prepping%20gene%20expression%20data-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Prepping gene expression data-2">
-Past versions of Prepping gene expression data-2.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Prepping-gene-expression-data-2">
+Past versions of “Prepping gene expression data-2.png”
 </button>
 </p>
-<div id="fig-Prepping gene expression data-2" class="collapse">
+<div id="fig-no-spaces-Prepping-gene-expression-data-2" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1342,11 +1414,11 @@ boxplot(normed, las=2, col=col, main=&quot;&quot;)
 title(main=&quot;Normalized data&quot;,ylab=&quot;Log-RPKM&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Prepping%20gene%20expression%20data-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Prepping gene expression data-3">
-Past versions of Prepping gene expression data-3.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Prepping-gene-expression-data-3">
+Past versions of “Prepping gene expression data-3.png”
 </button>
 </p>
-<div id="fig-Prepping gene expression data-3" class="collapse">
+<div id="fig-no-spaces-Prepping-gene-expression-data-3" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1385,11 +1457,11 @@ par(mfrow=c(1,1))
 plotMDS(dge_final$E[,1:8], labels=species, col=color, main=&quot;MDS Plot&quot;) #Shows separation of the species along the logFC dimension representing the majority of the variance--orthogonal check to PCA, and looks great!</code></pre>
 <p><img src="figure/gene_expression.Rmd/Prepping%20gene%20expression%20data-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Prepping gene expression data-4">
-Past versions of Prepping gene expression data-4.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Prepping-gene-expression-data-4">
+Past versions of “Prepping gene expression data-4.png”
 </button>
 </p>
-<div id="fig-Prepping gene expression data-4" class="collapse">
+<div id="fig-no-spaces-Prepping-gene-expression-data-4" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1430,11 +1502,11 @@ colnames(exp.design) &lt;- c(&quot;Human&quot;, &quot;Chimp&quot;, &quot;Sex&quo
 weighted.data &lt;- voom(dge_final, exp.design, plot=TRUE, normalize.method = &quot;cyclicloess&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Prepping%20gene%20expression%20data-5.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Prepping gene expression data-5">
-Past versions of Prepping gene expression data-5.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Prepping-gene-expression-data-5">
+Past versions of “Prepping gene expression data-5.png”
 </button>
 </p>
-<div id="fig-Prepping gene expression data-5" class="collapse">
+<div id="fig-no-spaces-Prepping-gene-expression-data-5" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1488,11 +1560,11 @@ detable &lt;- topTable(finalfit, coef = 1, adjust.method = &quot;BH&quot;, numbe
 plotSA(efit, main=&quot;Final model: Mean−variance trend&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Prepping%20gene%20expression%20data-6.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Prepping gene expression data-6">
-Past versions of Prepping gene expression data-6.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Prepping-gene-expression-data-6">
+Past versions of “Prepping gene expression data-6.png”
 </button>
 </p>
-<div id="fig-Prepping gene expression data-6" class="collapse">
+<div id="fig-no-spaces-Prepping-gene-expression-data-6" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1658,11 +1730,11 @@ ggoverlap &lt;- rbind(hum.genelap, c.genelap)
 ggplot(data=ggoverlap) + geom_line(aes(x=overlap, y=perc.genes*100, color=type)) + ggtitle(&quot;Percent of Total Genes Picked Up | Min. Distance from TSS&quot;) + xlab(&quot;Distance from TSS&quot;) + ylab(&quot;Percentage of genes in ortho exon trios file (~44k)&quot;) + scale_color_discrete(guide=guide_legend(title=&quot;Species&quot;)) + coord_cartesian(xlim=c(0, 30000)) + scale_x_continuous(breaks=seq(0, 30000, 5000))</code></pre>
 <p><img src="figure/gene_expression.Rmd/Overlap%20between%20Hi-C%20data%20and%20orthogonal%20gene%20expression%20data-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Overlap between Hi-C data and orthogonal gene expression data-1">
-Past versions of Overlap between Hi-C data and orthogonal gene expression data-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Overlap-between-Hi-C-data-and-orthogonal-gene-expression-data-1">
+Past versions of “Overlap between Hi-C data and orthogonal gene expression data-1.png”
 </button>
 </p>
-<div id="fig-Overlap between Hi-C data and orthogonal gene expression data-1" class="collapse">
+<div id="fig-no-spaces-Overlap-between-Hi-C-data-and-orthogonal-gene-expression-data-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1697,11 +1769,11 @@ Ittai Eres
 <pre class="r"><code>ggplot(data=ggoverlap) + geom_line(aes(x=overlap, y=tot.genes, color=type)) + ggtitle(&quot;Total # Genes Picked Up | Min. Distance from TSS&quot;) + xlab(&quot;Distance from TSS&quot;) + ylab(&quot;Total # of Genes Picked up On (of ~44k)&quot;) + scale_color_discrete(guide=guide_legend(title=&quot;Species&quot;)) + coord_cartesian(xlim=c(0, 30000)) + scale_x_continuous(breaks=seq(0, 30000, 5000))</code></pre>
 <p><img src="figure/gene_expression.Rmd/Overlap%20between%20Hi-C%20data%20and%20orthogonal%20gene%20expression%20data-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Overlap between Hi-C data and orthogonal gene expression data-2">
-Past versions of Overlap between Hi-C data and orthogonal gene expression data-2.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Overlap-between-Hi-C-data-and-orthogonal-gene-expression-data-2">
+Past versions of “Overlap between Hi-C data and orthogonal gene expression data-2.png”
 </button>
 </p>
-<div id="fig-Overlap between Hi-C data and orthogonal gene expression data-2" class="collapse">
+<div id="fig-no-spaces-Overlap-between-Hi-C-data-and-orthogonal-gene-expression-data-2" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1962,11 +2034,11 @@ Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code></pre>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-1">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-1">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-1.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-1" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -2011,11 +2083,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-2">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-2.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-2">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-2.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-2" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-2" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -2060,11 +2132,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-3">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-3.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-3">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-3.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-3" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-3" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -2109,11 +2181,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-4">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-4.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-4">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-4.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-4" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-4" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -3166,11 +3238,11 @@ Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code></pre>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-5.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-5">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-5.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-5">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-5.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-5" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-5" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -3215,11 +3287,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-6.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-6">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-6.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-6">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-6.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-6" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-6" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -3264,11 +3336,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-7.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-7">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-7.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-7">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-7.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-7" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-7" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -3313,11 +3385,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-8">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-8.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-8">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-8.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-8" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-8" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -4374,11 +4446,11 @@ Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code></pre>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-9.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-9">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-9.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-9">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-9.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-9" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-9" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -4423,11 +4495,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-10.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-10">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-10.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-10">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-10.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-10" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-10" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -4472,11 +4544,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-11.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-11">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-11.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-11">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-11.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-11" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-11" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -4521,11 +4593,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-12.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-12">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-12.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-12">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-12.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-12" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-12" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -5582,11 +5654,11 @@ Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code></pre>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-13.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-13">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-13.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-13">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-13.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-13" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-13" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -5631,11 +5703,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-14.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-14">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-14.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-14">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-14.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-14" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-14" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -5680,11 +5752,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-15.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-15">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-15.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-15">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-15.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-15" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-15" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -5729,11 +5801,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-16.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-16">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-16.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-16">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-16.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-16" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-16" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -6790,11 +6862,11 @@ Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code></pre>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-17.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-17">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-17.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-17">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-17.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-17" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-17" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -6839,11 +6911,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-18.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-18">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-18.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-18">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-18.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-18" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-18" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -6888,11 +6960,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-19.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-19">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-19.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-19">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-19.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-19" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-19" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -6937,11 +7009,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-20.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-20">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-20.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-20">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-20.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-20" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-20" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -7994,11 +8066,11 @@ Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code></pre>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-21.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-21">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-21.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-21">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-21.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-21" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-21" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -8043,11 +8115,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-22.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-22">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-22.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-22">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-22.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-22" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-22" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -8092,11 +8164,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-23.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-23">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-23.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-23">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-23.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-23" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-23" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -8141,11 +8213,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-24.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-24">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-24.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-24">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-24.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-24" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-24" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -9198,11 +9270,11 @@ Warning in chisq.test(mytable): Chi-squared approximation may be incorrect
 Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code></pre>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-25.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-25">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-25.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-25">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-25.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-25" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-25" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -9247,11 +9319,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-26.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-26">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-26.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-26">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-26.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-26" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-26" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -9296,11 +9368,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-27.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-27">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-27.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-27">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-27.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-27" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-27" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -9345,11 +9417,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-28.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-28">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-28.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-28">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-28.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-28" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-28" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -10397,11 +10469,11 @@ Ittai Eres
 <pre class="r"><code>enrichment.plotter(gene.hic.filt, &quot;weighted_Z.s2post.H&quot;, &quot;adj.P.Val&quot;, &quot;FDR for Weighted p-val Combine of Hi-C Contacts Overlapping Gene, Human&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-29.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-29">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-29.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-29">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-29.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-29" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-29" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -10446,11 +10518,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-30.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-30">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-30.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-30">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-30.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-30" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-30" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -10495,11 +10567,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-31.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-31">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-31.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-31">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-31.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-31" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-31" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -10544,11 +10616,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-32.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-32">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-32.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-32">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-32.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-32" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-32" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -11095,11 +11167,11 @@ Ittai Eres
 <pre class="r"><code>enrichment.plotter(gene.hic.filt, &quot;weighted_Z.s2post.C&quot;, &quot;adj.P.Val&quot;, &quot;FDR for Weighted p-val Combine of Hi-C Contacts Overlapping Gene, Chimp&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-33.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-33">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-33.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-33">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-33.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-33" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-33" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -11144,11 +11216,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-34.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-34">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-34.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-34">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-34.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-34" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-34" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -11193,11 +11265,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-35.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-35">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-35.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-35">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-35.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-35" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-35" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -11242,11 +11314,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-36.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-36">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-36.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-36">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-36.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-36" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-36" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -11795,11 +11867,11 @@ enrichment.plotter(gene.hic.filt, &quot;weighted_Z.ALLvar.H&quot;, &quot;adj.P.V
 <pre><code>Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code></pre>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-37.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-37">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-37.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-37">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-37.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-37" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-37" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -11844,11 +11916,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-38.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-38">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-38.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-38">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-38.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-38" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-38" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -11893,11 +11965,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-39.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-39">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-39.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-39">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-39.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-39" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-39" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -11942,11 +12014,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-40.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-40">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-40.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-40">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-40.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-40" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-40" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -12995,11 +13067,11 @@ Ittai Eres
 <pre><code>Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code></pre>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-41.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-41">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-41.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-41">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-41.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-41" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-41" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -13033,11 +13105,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-42.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-42">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-42.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-42">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-42.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-42" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-42" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -13071,11 +13143,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-43.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-43">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-43.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-43">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-43.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-43" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-43" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -13109,11 +13181,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Differential%20Expression-Differential%20Hi-C%20Enrichment%20Analyses-44.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Differential Expression-Differential Hi-C Enrichment Analyses-44">
-Past versions of Differential Expression-Differential Hi-C Enrichment Analyses-44.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-44">
+Past versions of “Differential Expression-Differential Hi-C Enrichment Analyses-44.png”
 </button>
 </p>
-<div id="fig-Differential Expression-Differential Hi-C Enrichment Analyses-44" class="collapse">
+<div id="fig-no-spaces-Differential-Expression-Differential-Hi-C-Enrichment-Analyses-44" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -14371,11 +14443,11 @@ ggcors &lt;- rbind(fullcors, fullDEcors, fullnoDEcors, quant1cor, quant2cor, qua
 ggplot(data=filter(ggcors, type==&quot;all&quot;|type==&quot;DE&quot;|type==&quot;non-DE&quot;)) + stat_density(aes(x=cor, group=type, color=type, y=..scaled..), position=&quot;identity&quot;, geom=&quot;line&quot;) + ggtitle(&quot;Correlation b/t RPKM Expression and Hi-C Contact Frequency&quot;) + xlab(&quot;Pearson Correlations b/t RPKM Expression and Hi-C Contact Frequency&quot;) + ylab(&quot;Density&quot;) + scale_color_manual(&quot;Gene Set&quot;, values=c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;), labels=c(&quot;All genes&quot;, &quot;DE genes&quot;, &quot;non-DE genes&quot;))</code></pre>
 <p><img src="figure/gene_expression.Rmd/Merging%20Expression%20and%20Hi-C;%20Followed%20by%20correlation%20exploration-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Merging Expression and Hi-C; Followed by correlation exploration-1">
-Past versions of Merging Expression and Hi-C; Followed by correlation exploration-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Merging-Expression-and-Hi-C;-Followed-by-correlation-exploration-1">
+Past versions of “Merging Expression and Hi-C; Followed by correlation exploration-1.png”
 </button>
 </p>
-<div id="fig-Merging Expression and Hi-C; Followed by correlation exploration-1" class="collapse">
+<div id="fig-no-spaces-Merging-Expression-and-Hi-C;-Followed-by-correlation-exploration-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -14421,11 +14493,11 @@ Ittai Eres
 <pre class="r"><code>ggplot(data=ggcors) + stat_density(aes(x=cor, group=type, color=type, y=..scaled..), position=&quot;identity&quot;, geom=&quot;line&quot;) + ggtitle(&quot;Correlation b/t RPKM Expression and Hi-C Contact Frequency&quot;) + xlab(&quot;Pearson Correlations b/t RPKM Expression and Hi-C Contact Frequency&quot;) + ylab(&quot;Density&quot;) + scale_color_manual(&quot;Gene Set&quot;, values=c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;, &quot;purple&quot;, &quot;orange&quot;, &quot;yellow&quot;, &quot;brown&quot;), labels=c(&quot;All genes&quot;, &quot;DE genes&quot;, &quot;non-DE genes&quot;, &quot;expression.quant1&quot;, &quot;expression.quant2&quot;, &quot;expression.quant3&quot;, &quot;expression.quant4&quot;))</code></pre>
 <p><img src="figure/gene_expression.Rmd/Merging%20Expression%20and%20Hi-C;%20Followed%20by%20correlation%20exploration-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Merging Expression and Hi-C; Followed by correlation exploration-2">
-Past versions of Merging Expression and Hi-C; Followed by correlation exploration-2.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Merging-Expression-and-Hi-C;-Followed-by-correlation-exploration-2">
+Past versions of “Merging Expression and Hi-C; Followed by correlation exploration-2.png”
 </button>
 </p>
-<div id="fig-Merging Expression and Hi-C; Followed by correlation exploration-2" class="collapse">
+<div id="fig-no-spaces-Merging-Expression-and-Hi-C;-Followed-by-correlation-exploration-2" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -14471,11 +14543,11 @@ Ittai Eres
 <pre class="r"><code>ggplot(data=filter(ggcors, type==&quot;DE&quot;|type==&quot;non-DE&quot;)) + stat_density(aes(x=cor, group=type, color=type, y=..scaled..), position=&quot;identity&quot;, geom=&quot;line&quot;) + ggtitle(&quot;Correlations between Expression and Hi-C Contact Frequency&quot;) + xlab(&quot;Pearson Correlations, Expression and Hi-C Contact Frequency&quot;) + ylab(&quot;Density&quot;) + scale_color_manual(&quot;Gene Set&quot;, values=c(&quot;red&quot;, &quot;blue&quot;), labels=c(&quot;DE genes&quot;, &quot;non-DE genes&quot;)) + theme(plot.title=element_text(hjust=0.2))</code></pre>
 <p><img src="figure/gene_expression.Rmd/Merging%20Expression%20and%20Hi-C;%20Followed%20by%20correlation%20exploration-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Merging Expression and Hi-C; Followed by correlation exploration-3">
-Past versions of Merging Expression and Hi-C; Followed by correlation exploration-3.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Merging-Expression-and-Hi-C;-Followed-by-correlation-exploration-3">
+Past versions of “Merging Expression and Hi-C; Followed by correlation exploration-3.png”
 </button>
 </p>
-<div id="fig-Merging Expression and Hi-C; Followed by correlation exploration-3" class="collapse">
+<div id="fig-no-spaces-Merging-Expression-and-Hi-C;-Followed-by-correlation-exploration-3" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -14542,11 +14614,11 @@ nonDE.perm &lt;- cor.permuter(nonDEcontacts, nonDEexprs, 10)
 ggplot(data=filter(ggcors, type==&quot;all&quot;|type==&quot;DE&quot;|type==&quot;non-DE&quot;)) + stat_density(aes(x=cor, group=type, color=type, y=..scaled..), position=&quot;identity&quot;, geom=&quot;line&quot;) + stat_density(data=full.perm, aes(x=cor, group=type), geom=&quot;line&quot;, linetype=&quot;dotted&quot;, position=&quot;identity&quot;) + stat_density(data=DE.perm, aes(x=cor, group=type), geom=&quot;line&quot;, linetype=&quot;dashed&quot;, position=&quot;identity&quot;) + stat_density(data=nonDE.perm, aes(x=cor, group=type), geom=&quot;line&quot;, linetype=&quot;twodash&quot;, position=&quot;identity&quot;) + ggtitle(&quot;Correlation b/t RPKM Expression and Hi-C Contact Frequency&quot;) + xlab(&quot;Pearson Correlations, RPKM Expression &amp; Hi-C Contact Frequency&quot;) + ylab(&quot;Density&quot;) + scale_color_manual(&quot;Gene Set&quot;, values=c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;), labels=c(&quot;All genes&quot;, &quot;DE genes&quot;, &quot;non-DE genes&quot;)) + theme(plot.title=element_text(hjust=0.3))#FIGS15</code></pre>
 <p><img src="figure/gene_expression.Rmd/Merging%20Expression%20and%20Hi-C;%20Followed%20by%20correlation%20exploration-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Merging Expression and Hi-C; Followed by correlation exploration-4">
-Past versions of Merging Expression and Hi-C; Followed by correlation exploration-4.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Merging-Expression-and-Hi-C;-Followed-by-correlation-exploration-4">
+Past versions of “Merging Expression and Hi-C; Followed by correlation exploration-4.png”
 </button>
 </p>
-<div id="fig-Merging Expression and Hi-C; Followed by correlation exploration-4" class="collapse">
+<div id="fig-no-spaces-Merging-Expression-and-Hi-C;-Followed-by-correlation-exploration-4" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -14672,11 +14744,11 @@ c_US_pvals &lt;- lmcorrect(weighted.data, cUS[,c(&quot;A-21792&quot;, &quot;B-28
 ggplot(data=h_minFDR_pvals$stats, aes(x=-log10(pval.before), y=-log10(pval.after), color=abs(cor.pear))) + geom_point(size=0.01) + geom_hline(yintercept=-log10(0.05), color=&quot;red&quot;) + geom_vline(xintercept=-log10(0.05), color=&quot;red&quot;) + geom_abline(slope=1, intercept=0, color=&quot;green&quot;, linetype=&quot;dashed&quot;) + ggtitle(&quot;Evidence for DE before vs. after regressing out Hi-C contact frequency&quot;) + xlab(&quot;-log10(p-value of DE before Hi-C regression)&quot;) + ylab(&quot;-log10(p-value of DE after Hi-C regression&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Mediation effect by "regressing out" Hi-C effects from Expression Data-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-1">
-Past versions of Mediation effect by “regressing out” Hi-C effects from Expression Data-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Mediation-effect-by-&quot;regressing-out&quot;-Hi-C-effects-from-Expression-Data-1">
+Past versions of “Mediation effect by”regressing out&quot; Hi-C effects from Expression Data-1.png&quot;
 </button>
 </p>
-<div id="fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-1" class="collapse">
+<div id="fig-no-spaces-Mediation-effect-by-&quot;regressing-out&quot;-Hi-C-effects-from-Expression-Data-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -14722,11 +14794,11 @@ Ittai Eres
 <pre class="r"><code>ggplot(data=h_minFDR_pvals$stats, aes(x=-log10(pval.before), y=-log10(pval.after))) + geom_point(size=0.01) + geom_hline(yintercept=-log10(0.05), color=&quot;red&quot;) + geom_vline(xintercept=-log10(0.05), color=&quot;red&quot;) + geom_abline(slope=1, intercept=0, color=&quot;green&quot;, linetype=&quot;dashed&quot;) + ggtitle(&quot;Evidence for DE Before vs. After Regressing out Hi-C Contact Frequency&quot;) + xlab(&quot;-log10(p-value of DE before Hi-C regression)&quot;) + ylab(&quot;-log10(p-value of DE after Hi-C regression)&quot;) + theme(plot.title=element_text(hjust=1)) #Slightly cleaner, for MindBytes 2018 poster</code></pre>
 <p><img src="figure/gene_expression.Rmd/Mediation effect by "regressing out" Hi-C effects from Expression Data-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-2">
-Past versions of Mediation effect by “regressing out” Hi-C effects from Expression Data-2.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Mediation-effect-by-&quot;regressing-out&quot;-Hi-C-effects-from-Expression-Data-2">
+Past versions of “Mediation effect by”regressing out&quot; Hi-C effects from Expression Data-2.png&quot;
 </button>
 </p>
-<div id="fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-2" class="collapse">
+<div id="fig-no-spaces-Mediation-effect-by-&quot;regressing-out&quot;-Hi-C-effects-from-Expression-Data-2" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -14772,11 +14844,11 @@ Ittai Eres
 <pre class="r"><code>ggplot(data=h_maxB_pvals$stats, aes(x=-log10(pval.before), y=-log10(pval.after), color=abs(cor.pear))) + geom_point(size=0.01) + geom_hline(yintercept=-log10(0.05), color=&quot;red&quot;) + geom_vline(xintercept=-log10(0.05), color=&quot;red&quot;) + geom_abline(slope=1, intercept=0, color=&quot;green&quot;, linetype=&quot;dashed&quot;) + ggtitle(&quot;Evidence for DE before vs. after regressing out Hi-C max beta (H)&quot;) + xlab(&quot;-log10(p-value of DE before Hi-C regression)&quot;) + ylab(&quot;-log10(p-value of DE after Hi-C regression&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Mediation effect by "regressing out" Hi-C effects from Expression Data-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-3">
-Past versions of Mediation effect by “regressing out” Hi-C effects from Expression Data-3.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Mediation-effect-by-&quot;regressing-out&quot;-Hi-C-effects-from-Expression-Data-3">
+Past versions of “Mediation effect by”regressing out&quot; Hi-C effects from Expression Data-3.png&quot;
 </button>
 </p>
-<div id="fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-3" class="collapse">
+<div id="fig-no-spaces-Mediation-effect-by-&quot;regressing-out&quot;-Hi-C-effects-from-Expression-Data-3" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -14822,11 +14894,11 @@ Ittai Eres
 <pre class="r"><code>ggplot(data=h_US_pvals$stats, aes(x=-log10(pval.before), y=-log10(pval.after), color=abs(cor.spear))) + geom_point(size=0.01) + geom_hline(yintercept=-log10(0.05), color=&quot;red&quot;) + geom_vline(xintercept=-log10(0.05), color=&quot;red&quot;) + geom_abline(slope=1, intercept=0, color=&quot;green&quot;, linetype=&quot;dashed&quot;) + ggtitle(&quot;Evidence for DE before vs. after regressing out Hi-C US bin FDR (H)&quot;) + xlab(&quot;-log10(p-value of DE before Hi-C regression)&quot;) + ylab(&quot;-log10(p-value of DE after Hi-C regression&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Mediation effect by "regressing out" Hi-C effects from Expression Data-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-4">
-Past versions of Mediation effect by “regressing out” Hi-C effects from Expression Data-4.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Mediation-effect-by-&quot;regressing-out&quot;-Hi-C-effects-from-Expression-Data-4">
+Past versions of “Mediation effect by”regressing out&quot; Hi-C effects from Expression Data-4.png&quot;
 </button>
 </p>
-<div id="fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-4" class="collapse">
+<div id="fig-no-spaces-Mediation-effect-by-&quot;regressing-out&quot;-Hi-C-effects-from-Expression-Data-4" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -14872,11 +14944,11 @@ Ittai Eres
 <pre class="r"><code>ggplot(data=c_minFDR_pvals$stats, aes(x=-log10(pval.before), y=-log10(pval.after), color=abs(cor.pear))) + geom_point(size=0.01) + geom_hline(yintercept=-log10(0.05), color=&quot;red&quot;) + geom_vline(xintercept=-log10(0.05), color=&quot;red&quot;) + geom_abline(slope=1, intercept=0, color=&quot;green&quot;, linetype=&quot;dashed&quot;) + ggtitle(&quot;Evidence for DE before vs. after regressing out Hi-C min. FDR (C)&quot;) + xlab(&quot;-log10(p-value of DE before Hi-C regression)&quot;) + ylab(&quot;-log10(p-value of DE after Hi-C regression&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Mediation effect by "regressing out" Hi-C effects from Expression Data-5.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-5">
-Past versions of Mediation effect by “regressing out” Hi-C effects from Expression Data-5.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Mediation-effect-by-&quot;regressing-out&quot;-Hi-C-effects-from-Expression-Data-5">
+Past versions of “Mediation effect by”regressing out&quot; Hi-C effects from Expression Data-5.png&quot;
 </button>
 </p>
-<div id="fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-5" class="collapse">
+<div id="fig-no-spaces-Mediation-effect-by-&quot;regressing-out&quot;-Hi-C-effects-from-Expression-Data-5" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -14922,11 +14994,11 @@ Ittai Eres
 <pre class="r"><code>ggplot(data=c_maxB_pvals$stats, aes(x=-log10(pval.before), y=-log10(pval.after), color=abs(cor.pear))) + geom_point(size=0.01) + geom_hline(yintercept=-log10(0.05), color=&quot;red&quot;) + geom_vline(xintercept=-log10(0.05), color=&quot;red&quot;) + geom_abline(slope=1, intercept=0, color=&quot;green&quot;, linetype=&quot;dashed&quot;) + ggtitle(&quot;Evidence for DE before vs. after regressing out Hi-C max beta (C)&quot;) + xlab(&quot;-log10(p-value of DE before Hi-C regression)&quot;) + ylab(&quot;-log10(p-value of DE after Hi-C regression&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Mediation effect by "regressing out" Hi-C effects from Expression Data-6.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-6">
-Past versions of Mediation effect by “regressing out” Hi-C effects from Expression Data-6.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Mediation-effect-by-&quot;regressing-out&quot;-Hi-C-effects-from-Expression-Data-6">
+Past versions of “Mediation effect by”regressing out&quot; Hi-C effects from Expression Data-6.png&quot;
 </button>
 </p>
-<div id="fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-6" class="collapse">
+<div id="fig-no-spaces-Mediation-effect-by-&quot;regressing-out&quot;-Hi-C-effects-from-Expression-Data-6" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -14972,11 +15044,11 @@ Ittai Eres
 <pre class="r"><code>ggplot(data=c_US_pvals$stats, aes(x=-log10(pval.before), y=-log10(pval.after), color=abs(cor.pear))) + geom_point(size=0.01) + geom_hline(yintercept=-log10(0.05), color=&quot;red&quot;) + geom_vline(xintercept=-log10(0.05), color=&quot;red&quot;) + geom_abline(slope=1, intercept=0, color=&quot;green&quot;, linetype=&quot;dashed&quot;) + ggtitle(&quot;Evidence for DE before vs. after regressing out Hi-C US bin FDR (C)&quot;) + xlab(&quot;-log10(p-value of DE before Hi-C regression)&quot;) + ylab(&quot;-log10(p-value of DE after Hi-C regression&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Mediation effect by "regressing out" Hi-C effects from Expression Data-7.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-7">
-Past versions of Mediation effect by “regressing out” Hi-C effects from Expression Data-7.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Mediation-effect-by-&quot;regressing-out&quot;-Hi-C-effects-from-Expression-Data-7">
+Past versions of “Mediation effect by”regressing out&quot; Hi-C effects from Expression Data-7.png&quot;
 </button>
 </p>
-<div id="fig-Mediation effect by &quot;regressing out&quot; Hi-C effects from Expression Data-7" class="collapse">
+<div id="fig-no-spaces-Mediation-effect-by-&quot;regressing-out&quot;-Hi-C-effects-from-Expression-Data-7" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15021,6 +15093,73 @@ Ittai Eres
 </div>
 <p>Critically, here I see that “regressing out” Hi-C data and trying to model expression again moves many genes from being significantly differentially expressed (at FDR of 5%) to no longer showing differential expression. Seeing most of the hits in the bottom right corner of these visualizations is what confirms this. Reassuringly, I also see stronger correlations between RPKM expression values and normalized Hi-C interaction frequency values for points farther away from the diagonal green line of expectation. However, since this is not a statistical test, I have no assessment of significance. To accomplish this, I compare these results to running the same kind of analysis on permuted data in the next section.</p>
 </div>
+<div id="find-the-contacts-and-de-genes-that-are-most-highly-correlated" class="section level3">
+<h3>Find the contacts and DE genes that are most highly correlated:</h3>
+<pre class="r"><code>hmin_full &lt;- cbind(hmin, h_minFDR_pvals$stats) %&gt;% select(., genes, logFC, AveExpr, adj.P.Val, B, genepos.H, HID, min_FDR_bin.H, min_FDR_pval, min_FDR_B.H, genepos.C, CID, min_FDR_bin.C, min_FDR.C, min_FDR_B.C, &quot;A_21792_HIC&quot;, &quot;B_28126_HIC&quot;, C_3649_HIC, D_40300_HIC, E_28815_HIC, F_28834_HIC, G_3624_HIC, H_3651_HIC, &quot;A-21792&quot;, &quot;B-28126&quot;, &quot;C-3649&quot;, &quot;D-40300&quot;, &quot;E-28815&quot;, &quot;F-28834&quot;, &quot;G-3624&quot;, &quot;H-3651&quot;, cor.pear, cor.spear)
+hmin_ranked &lt;- hmin_full[order(-hmin_full$cor.pear),] #Rank by correlation between contact and expression
+hmin_ranked_DE &lt;- filter(hmin_full, adj.P.Val&lt;=0.05&amp;min_FDR_pval&lt;=0.05) #Subset to just DE genes and DC contacts.
+hmin_final &lt;- hmin_ranked_DE[complete.cases(hmin_ranked_DE),] #Get rid of NA rows.
+
+#I am looking for a scenario where chimps have a contact with an enhancer-like element that strongly increases expression, and humans do not have that same contact, presumably because of a CTCF insulation site in between. Hence I want stronger contact leading to increased expression, so subset to only positive correlations between the two:
+hmin_final &lt;- filter(hmin_final, cor.pear&gt;0)
+hmin_final &lt;- hmin_final[order(hmin_final$cor.pear, decreasing = T),]
+
+#Get distances between promoter and contact that is DC:
+hmin_final$Hdist &lt;- hmin_final$genepos.H-as.numeric(gsub(&quot;.*-&quot;, &quot;&quot;,hmin_final$min_FDR_bin.H))
+hmin_final$Cdist &lt;- hmin_final$genepos.C-as.numeric(gsub(&quot;.*-&quot;, &quot;&quot;, hmin_final$min_FDR_bin.C))
+
+#Subset down to only those that are 60kb apart in both species or less:
+hmin_final &lt;- filter(hmin_final, abs(Hdist)&lt;=100000&amp;abs(Cdist&lt;=100000)&amp;abs(Hdist)&gt;=20000&amp;abs(Cdist&gt;=20000))
+
+#Realistically, it will be easier to find the CTCF element in humans. This means I am looking for DC regions where the Beta is negative, and expression is lower in humans as a result of less contact than in chimps (same filtering, really).
+hmin_final &lt;- filter(hmin_final, min_FDR_B.H&lt;0)
+
+#Prepare a BED file of the contacts being made in this final DF to check between them for CTCF binding:
+options(scipen=999)
+myBED &lt;- data.frame(hchr=gsub(&quot;-.*&quot;, &quot;&quot;, hmin_final$min_FDR_bin.H), hgene=as.integer(gsub(&quot;.*-&quot;, &quot;&quot;, hmin_final$HID)), hcontact=as.integer(gsub(&quot;.*-&quot;, &quot;&quot;, hmin_final$min_FDR_bin.H)), cchr=gsub(&quot;-.*&quot;, &quot;&quot;, hmin_final$min_FDR_bin.C), cgene=as.integer(gsub(&quot;.*-&quot;, &quot;&quot;, hmin_final$CID)), ccontact=as.integer(gsub(&quot;.*-&quot;, &quot;&quot;, hmin_final$min_FDR_bin.C)), geneID=hmin_final$genes, cor.pear=hmin_final$cor.pear, cor.spear=hmin_final$cor.spear)
+myBED$hstart &lt;- ifelse(myBED$hgene&lt;myBED$hcontact, myBED$hgene, myBED$hcontact)
+myBED$hend &lt;- ifelse(myBED$hcontact&gt;myBED$hgene, myBED$hcontact, myBED$hgene)
+myBED$DE_beta &lt;- hmin_final$logFC
+myBED$DC_beta &lt;- hmin_final$min_FDR_B.H
+myBED$dist &lt;- hmin_final$Hdist
+#myBED &lt;- as.data.frame(myBED)
+fwrite(myBED, quote = FALSE, &quot;/Users/ittaieres/Desktop/Insulator_Experiment/insulator.candidates.bed&quot;, sep=&quot;\t&quot;, row.names=F, col.names=F)
+#write.table(as.matrix(myBED), quote=FALSE, &quot;/Users/ittaieres/Desktop/Insulator_Experiment/insulator.candidates.bed&quot;, sep=&quot;\t&quot;, col.names=F, row.names=F)
+
+candidates &lt;- fread(&quot;/Users/ittaieres/Desktop/Insulator_Experiment/CTCF.filtered.candidates.bed&quot;, sep=&quot;\t&quot;, header=F, data.table=F)
+candidates$ID &lt;- paste(candidates$V1, candidates$V2, candidates$V3, sep=&quot;_&quot;)
+myBED$ID &lt;- paste(myBED$hchr, myBED$hstart, myBED$hend, sep=&quot;_&quot;)
+final.merge &lt;- left_join(candidates, myBED, by=&quot;ID&quot;)
+
+#Write out human and chimp BED files for extracting FASTA sequences so I can check for CTCF motif.
+human.coords &lt;- select(final.merge, hchr, hstart, hend) #Sorted by earlier coords coming first. Need to do this sorting for chimp:
+final.merge$cstart &lt;- ifelse(final.merge$cgene&lt;final.merge$ccontact, final.merge$cgene, final.merge$ccontact)
+final.merge$cend &lt;- ifelse(final.merge$ccontact&gt;final.merge$cgene, final.merge$ccontact, final.merge$cgene)
+chimp.coords &lt;- select(final.merge, cchr, cstart, cend)
+
+fwrite(human.coords, quote=F, &quot;/Users/ittaieres/Desktop/Insulator_Experiment/human.CTCF.filtered.candidates.bed&quot;, sep=&quot;\t&quot;, row.names=F, col.names=F)
+fwrite(chimp.coords, quote=F, &quot;/Users/ittaieres/Desktop/Insulator_Experiment/chimp.CTCF.filtered.candidates.bed&quot;, sep=&quot;\t&quot;, row.names=F, col.names=F)
+
+#Make an average RPKM file for the genes:
+hmin_final$ave.expr.H &lt;- rowMeans(select(hmin_final, &quot;A-21792&quot;, &quot;B-28126&quot;, &quot;E-28815&quot;, &quot;F-28834&quot;))
+hmin_final$ave.expr.C &lt;- rowMeans(select(hmin_final, &quot;C-3649&quot;, &quot;D-40300&quot;, &quot;G-3624&quot;, &quot;H-3651&quot;))
+hgenes &lt;- data.frame(chr=gsub(&quot;-.*&quot;, &quot;&quot;, hmin_final$min_FDR_bin.H), hgene=as.integer(hmin_final$genepos.H), hgene.end=hmin_final$genepos.H+250, hexpr=hmin_final$ave.expr.H, cexpr=hmin_final$ave.expr.C)
+cgenes &lt;- data.frame(chr=gsub(&quot;-.*&quot;, &quot;&quot;, hmin_final$min_FDR_bin.C), cgene=as.integer(hmin_final$genepos.C), cgene.end=hmin_final$genepos.C+250, cexpr=hmin_final$ave.expr.C, hexpr=hmin_final$ave.expr.H)
+hgenes$cstart &lt;- hgenes$hgene+250
+hgenes$cend &lt;- hgenes$hgene.end+250
+cgenes$hstart &lt;- cgenes$cgene+250
+cgenes$hend &lt;- cgenes$cgene.end+250
+
+hgene.h.bedgraph &lt;- select(hgenes, chr, hgene, hgene.end, hexpr)
+hgene.c.bedgraph &lt;- select(hgenes, chr, cstart, cend, cexpr)
+cgene.c.bedgraph &lt;- select(cgenes, chr, cgene, cgene.end, cexpr)
+cgene.h.bedgraph &lt;- select(cgenes, chr, hstart, hend, hexpr)
+
+fwrite(hgene.h.bedgraph, quote=FALSE, &quot;/Users/ittaieres/Desktop/Insulator_Experiment/hgene.h.bedgraph&quot;, sep=&quot;\t&quot;, row.names=F, col.names = F)
+fwrite(hgene.c.bedgraph, quote=FALSE, &quot;/Users/ittaieres/Desktop/Insulator_Experiment/hgene.c.bedgraph&quot;, sep=&quot;\t&quot;, row.names=F, col.names = F)
+fwrite(cgene.c.bedgraph, quote=FALSE, &quot;/Users/ittaieres/Desktop/Insulator_Experiment/cgene.c.bedgraph&quot;, sep=&quot;\t&quot;, row.names=F, col.names = F)
+fwrite(cgene.h.bedgraph, quote=FALSE, &quot;/Users/ittaieres/Desktop/Insulator_Experiment/cgene.h.bedgraph&quot;, sep=&quot;\t&quot;, row.names=F, col.names = F)</code></pre>
+</div>
 <div id="permutation-visualizations" class="section level3">
 <h3>Permutation Visualizations</h3>
 <p>Here, I visualize the difference in classes of DE hits changing (either gaining, losing, or maintaining DE status) after “regressing out” the effect of Hi-C from expression. I show distributions of these percentages across 10000 permutations of the data, as compared to the observed percentages.</p>
@@ -15059,11 +15198,11 @@ perm.vis &lt;- function(categories.df.file, df, metadata, hictype, DE=FALSE){
 perm.vis(&quot;permout_h_minFDR&quot;, hmin, meta.data, &quot;(min FDR contact, Humans)&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-1">
-Past versions of Permutation Visualizations-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-1">
+Past versions of “Permutation Visualizations-1.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-1" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15108,11 +15247,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-2">
-Past versions of Permutation Visualizations-2.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-2">
+Past versions of “Permutation Visualizations-2.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-2" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-2" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15157,11 +15296,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-3">
-Past versions of Permutation Visualizations-3.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-3">
+Past versions of “Permutation Visualizations-3.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-3" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-3" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15206,11 +15345,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-4">
-Past versions of Permutation Visualizations-4.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-4">
+Past versions of “Permutation Visualizations-4.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-4" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-4" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15256,11 +15395,11 @@ Ittai Eres
 <pre class="r"><code>perm.vis(&quot;permout_h_maxB&quot;, hmaxB, meta.data,  &quot;(max beta contact, Humans)&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-5.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-5">
-Past versions of Permutation Visualizations-5.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-5">
+Past versions of “Permutation Visualizations-5.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-5" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-5" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15305,11 +15444,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-6.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-6">
-Past versions of Permutation Visualizations-6.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-6">
+Past versions of “Permutation Visualizations-6.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-6" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-6" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15354,11 +15493,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-7.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-7">
-Past versions of Permutation Visualizations-7.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-7">
+Past versions of “Permutation Visualizations-7.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-7" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-7" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15403,11 +15542,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-8">
-Past versions of Permutation Visualizations-8.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-8">
+Past versions of “Permutation Visualizations-8.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-8" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-8" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15453,11 +15592,11 @@ Ittai Eres
 <pre class="r"><code>perm.vis(&quot;permout_h_US&quot;, hUS, meta.data, &quot;(upstream contact, Humans)&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-9.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-9">
-Past versions of Permutation Visualizations-9.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-9">
+Past versions of “Permutation Visualizations-9.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-9" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-9" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15502,11 +15641,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-10.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-10">
-Past versions of Permutation Visualizations-10.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-10">
+Past versions of “Permutation Visualizations-10.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-10" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-10" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15551,11 +15690,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-11.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-11">
-Past versions of Permutation Visualizations-11.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-11">
+Past versions of “Permutation Visualizations-11.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-11" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-11" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15600,11 +15739,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-12.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-12">
-Past versions of Permutation Visualizations-12.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-12">
+Past versions of “Permutation Visualizations-12.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-12" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-12" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15650,11 +15789,11 @@ Ittai Eres
 <pre class="r"><code>perm.vis(&quot;permout_c_minFDR&quot;, cmin, meta.data, &quot;(min FDR contact, Chimps)&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-13.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-13">
-Past versions of Permutation Visualizations-13.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-13">
+Past versions of “Permutation Visualizations-13.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-13" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-13" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15699,11 +15838,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-14.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-14">
-Past versions of Permutation Visualizations-14.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-14">
+Past versions of “Permutation Visualizations-14.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-14" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-14" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15748,11 +15887,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-15.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-15">
-Past versions of Permutation Visualizations-15.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-15">
+Past versions of “Permutation Visualizations-15.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-15" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-15" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15797,11 +15936,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-16.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-16">
-Past versions of Permutation Visualizations-16.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-16">
+Past versions of “Permutation Visualizations-16.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-16" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-16" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15847,11 +15986,11 @@ Ittai Eres
 <pre class="r"><code>perm.vis(&quot;permout_c_maxB&quot;, cmaxB, meta.data, &quot;(max beta contact, Chimps)&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-17.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-17">
-Past versions of Permutation Visualizations-17.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-17">
+Past versions of “Permutation Visualizations-17.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-17" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-17" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15896,11 +16035,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-18.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-18">
-Past versions of Permutation Visualizations-18.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-18">
+Past versions of “Permutation Visualizations-18.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-18" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-18" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15945,11 +16084,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-19.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-19">
-Past versions of Permutation Visualizations-19.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-19">
+Past versions of “Permutation Visualizations-19.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-19" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-19" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -15994,11 +16133,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-20.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-20">
-Past versions of Permutation Visualizations-20.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-20">
+Past versions of “Permutation Visualizations-20.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-20" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-20" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16044,11 +16183,11 @@ Ittai Eres
 <pre class="r"><code>perm.vis(&quot;permout_c_US&quot;, cUS, meta.data, &quot;(upstream contact, Chimps)&quot;)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-21.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-21">
-Past versions of Permutation Visualizations-21.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-21">
+Past versions of “Permutation Visualizations-21.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-21" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-21" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16093,11 +16232,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-22.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-22">
-Past versions of Permutation Visualizations-22.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-22">
+Past versions of “Permutation Visualizations-22.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-22" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-22" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16142,11 +16281,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-23.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-23">
-Past versions of Permutation Visualizations-23.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-23">
+Past versions of “Permutation Visualizations-23.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-23" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-23" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16191,11 +16330,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-24.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-24">
-Past versions of Permutation Visualizations-24.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-24">
+Past versions of “Permutation Visualizations-24.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-24" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-24" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16241,11 +16380,11 @@ Ittai Eres
 <pre class="r"><code>perm.vis(&quot;permout_h_minFDR_DE&quot;, hminDE, meta.data, &quot;(min FDR contact, Humans)&quot;, DE=TRUE)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-25.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-25">
-Past versions of Permutation Visualizations-25.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-25">
+Past versions of “Permutation Visualizations-25.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-25" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-25" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16279,11 +16418,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-26.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-26">
-Past versions of Permutation Visualizations-26.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-26">
+Past versions of “Permutation Visualizations-26.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-26" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-26" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16328,11 +16467,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-27.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-27">
-Past versions of Permutation Visualizations-27.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-27">
+Past versions of “Permutation Visualizations-27.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-27" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-27" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16366,11 +16505,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-28.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-28">
-Past versions of Permutation Visualizations-28.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-28">
+Past versions of “Permutation Visualizations-28.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-28" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-28" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16416,11 +16555,11 @@ Ittai Eres
 <pre class="r"><code>perm.vis(&quot;permout_h_maxB_DE&quot;, hmaxBDE, meta.data,  &quot;(max beta contact, Humans)&quot;, DE=TRUE)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-29.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-29">
-Past versions of Permutation Visualizations-29.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-29">
+Past versions of “Permutation Visualizations-29.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-29" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-29" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16454,11 +16593,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-30.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-30">
-Past versions of Permutation Visualizations-30.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-30">
+Past versions of “Permutation Visualizations-30.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-30" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-30" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16503,11 +16642,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-31.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-31">
-Past versions of Permutation Visualizations-31.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-31">
+Past versions of “Permutation Visualizations-31.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-31" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-31" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16541,11 +16680,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-32.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-32">
-Past versions of Permutation Visualizations-32.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-32">
+Past versions of “Permutation Visualizations-32.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-32" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-32" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16591,11 +16730,11 @@ Ittai Eres
 <pre class="r"><code>perm.vis(&quot;permout_h_US_DE&quot;, hUSDE, meta.data, &quot;(upstream contact, Humans)&quot;, DE=TRUE)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-33.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-33">
-Past versions of Permutation Visualizations-33.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-33">
+Past versions of “Permutation Visualizations-33.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-33" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-33" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16629,11 +16768,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-34.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-34">
-Past versions of Permutation Visualizations-34.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-34">
+Past versions of “Permutation Visualizations-34.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-34" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-34" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16678,11 +16817,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-35.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-35">
-Past versions of Permutation Visualizations-35.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-35">
+Past versions of “Permutation Visualizations-35.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-35" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-35" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16716,11 +16855,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-36.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-36">
-Past versions of Permutation Visualizations-36.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-36">
+Past versions of “Permutation Visualizations-36.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-36" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-36" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16766,11 +16905,11 @@ Ittai Eres
 <pre class="r"><code>perm.vis(&quot;permout_c_minFDR_DE&quot;, cminDE, meta.data, &quot;(min FDR contact, Chimps)&quot;, DE=TRUE)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-37.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-37">
-Past versions of Permutation Visualizations-37.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-37">
+Past versions of “Permutation Visualizations-37.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-37" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-37" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16804,11 +16943,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-38.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-38">
-Past versions of Permutation Visualizations-38.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-38">
+Past versions of “Permutation Visualizations-38.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-38" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-38" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16853,11 +16992,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-39.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-39">
-Past versions of Permutation Visualizations-39.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-39">
+Past versions of “Permutation Visualizations-39.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-39" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-39" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16891,11 +17030,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-40.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-40">
-Past versions of Permutation Visualizations-40.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-40">
+Past versions of “Permutation Visualizations-40.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-40" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-40" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16941,11 +17080,11 @@ Ittai Eres
 <pre class="r"><code>perm.vis(&quot;permout_c_maxB_DE&quot;, cmaxBDE, meta.data, &quot;(max beta contact, Chimps)&quot;, DE=TRUE)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-41.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-41">
-Past versions of Permutation Visualizations-41.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-41">
+Past versions of “Permutation Visualizations-41.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-41" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-41" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -16979,11 +17118,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-42.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-42">
-Past versions of Permutation Visualizations-42.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-42">
+Past versions of “Permutation Visualizations-42.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-42" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-42" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -17028,11 +17167,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-43.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-43">
-Past versions of Permutation Visualizations-43.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-43">
+Past versions of “Permutation Visualizations-43.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-43" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-43" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -17066,11 +17205,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-44.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-44">
-Past versions of Permutation Visualizations-44.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-44">
+Past versions of “Permutation Visualizations-44.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-44" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-44" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -17116,11 +17255,11 @@ Ittai Eres
 <pre class="r"><code>perm.vis(&quot;permout_c_US_DE&quot;, cUSDE, meta.data, &quot;(upstream contact, Chimps)&quot;, DE=TRUE)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-45.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-45">
-Past versions of Permutation Visualizations-45.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-45">
+Past versions of “Permutation Visualizations-45.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-45" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-45" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -17154,11 +17293,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-46.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-46">
-Past versions of Permutation Visualizations-46.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-46">
+Past versions of “Permutation Visualizations-46.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-46" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-46" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -17203,11 +17342,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-47.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-47">
-Past versions of Permutation Visualizations-47.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-47">
+Past versions of “Permutation Visualizations-47.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-47" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-47" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -17241,11 +17380,11 @@ Ittai Eres
 </div>
 <p><img src="figure/gene_expression.Rmd/Permutation%20Visualizations-48.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Permutation Visualizations-48">
-Past versions of Permutation Visualizations-48.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Permutation-Visualizations-48">
+Past versions of “Permutation Visualizations-48.png”
 </button>
 </p>
-<div id="fig-Permutation Visualizations-48" class="collapse">
+<div id="fig-no-spaces-Permutation-Visualizations-48" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -17357,11 +17496,11 @@ abline(h=0)
 abline(v=0)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Mediation%20test-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Mediation test-1">
-Past versions of Mediation test-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Mediation-test-1">
+Past versions of “Mediation test-1.png”
 </button>
 </p>
-<div id="fig-Mediation test-1" class="collapse">
+<div id="fig-no-spaces-Mediation-test-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -17418,11 +17557,11 @@ abline(h=0)
 abline(v=0)</code></pre>
 <p><img src="figure/gene_expression.Rmd/Mediation%20test-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Mediation test-2">
-Past versions of Mediation test-2.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Mediation-test-2">
+Past versions of “Mediation test-2.png”
 </button>
 </p>
-<div id="fig-Mediation test-2" class="collapse">
+<div id="fig-no-spaces-Mediation-test-2" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -17470,12 +17609,12 @@ Ittai Eres
 <p><span class="math inline">\(~\)</span></p>
 <p>Notations:</p>
 <p><span class="math inline">\(Y_g\)</span>: length-<span class="math inline">\(N\)</span> gene expression vector for gene <span class="math inline">\(g\)</span>.</p>
-<p><span class="math inline">\(X^M_g\)</span>: length-<span class="math inline">\(N\)</span> vector for methylation measurements corresponding to samples at gene <span class="math inline">\(g\)</span>.</p>
-<p><span class="math inline">\(X^P\)</span>: length-<span class="math inline">\(N\)</span> vector for sample phenotype labels.</p>
-<p><span class="math inline">\(\tau\)</span>: estimated total effect of phenotype <span class="math inline">\(X^P\)</span> on expression <span class="math inline">\(Y_g\)</span>.</p>
-<p><span class="math inline">\(\tau^{\prime}\)</span>: estimated effect of phenotype <span class="math inline">\(X^P\)</span> on expression <span class="math inline">\(Y_g\)</span> after controlling for <span class="math inline">\(X^M_g\)</span>, or the direct effect of phenotype on expression.</p>
-<p><span class="math inline">\(\alpha\)</span>: estimated effect of phenotype<span class="math inline">\(X^P\)</span> on the methylation <span class="math inline">\(X^M_g\)</span>.</p>
-<p><span class="math inline">\(\beta\)</span>: estimated effect of methylation <span class="math inline">\(X^M_g\)</span> on expression <span class="math inline">\(Y_g\)</span> after controlling for phenotype differences.</p>
+<p><span class="math inline">\(X^M_g\)</span>: length-<span class="math inline">\(N\)</span> vector for chromatin contact measurements corresponding to samples at gene <span class="math inline">\(g\)</span>.</p>
+<p><span class="math inline">\(X^P\)</span>: length-<span class="math inline">\(N\)</span> vector for sample phenotype labels (species).</p>
+<p><span class="math inline">\(\tau\)</span>: estimated total effect of phenotype (species) <span class="math inline">\(X^P\)</span> on expression <span class="math inline">\(Y_g\)</span>.</p>
+<p><span class="math inline">\(\tau^{\prime}\)</span>: estimated effect of phenotype (species) <span class="math inline">\(X^P\)</span> on expression <span class="math inline">\(Y_g\)</span> after controlling for contact, <span class="math inline">\(X^M_g\)</span>, or the direct effect of phenotype (species) on expression.</p>
+<p><span class="math inline">\(\alpha\)</span>: estimated effect of phenotype (species) <span class="math inline">\(X^P\)</span> on the chromatin contacts <span class="math inline">\(X^M_g\)</span>.</p>
+<p><span class="math inline">\(\beta\)</span>: estimated effect of chromatin contacts <span class="math inline">\(X^M_g\)</span> on expression <span class="math inline">\(Y_g\)</span> after controlling for phenotype (species) differences.</p>
 <p><span class="math inline">\(\gamma_1, \gamma_2, \gamma_3\)</span>: intercepts</p>
 <p><span class="math inline">\(\epsilon_1, \epsilon_2, \epsilon_3\)</span>: error terms in each model. Each assumed to be iid and follows normal distributions with mean 0 and variance <span class="math inline">\(\sigma^2_1, \sigma^2_2, \sigma^2_3\)</span>.</p>
 <p><span class="math inline">\(~\)</span></p>
@@ -17715,7 +17854,7 @@ summary(lm(human.high.nonDE$logFC~human.high.nonDE$min_FDR_B.H))$adj.r.squared</
 <pre><code>[1] 0.0004172514</code></pre>
 <pre class="r"><code>summary(lm(chimp.high.DE$logFC~chimp.high.DE$min_FDR_B.H))$adj.r.squared</code></pre>
 <pre><code>[1] 0.0008310352</code></pre>
-<br> <br>
+<br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
@@ -17725,7 +17864,7 @@ summary(lm(human.high.nonDE$logFC~human.high.nonDE$min_FDR_B.H))$adj.r.squared</
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 3.4.0 (2017-04-21)
 Platform: x86_64-apple-darwin15.6.0 (64-bit)
-Running under: OS X El Capitan 10.11.6
+Running under: macOS  10.14.6
 
 Matrix products: default
 BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
@@ -17740,51 +17879,48 @@ attached base packages:
 
 other attached packages:
  [1] VennDiagram_1.6.20  futile.logger_1.4.3 glmnet_2.0-16      
- [4] foreach_1.4.4       Matrix_1.2-15       medinome_0.0.1     
+ [4] foreach_1.4.7       Matrix_1.2-17       medinome_0.0.1     
  [7] vashr_0.99.1        qvalue_2.10.0       SQUAREM_2017.10-1  
 [10] ashr_2.2-32         forcats_0.4.0       purrr_0.3.2        
-[13] readr_1.3.1         tibble_2.1.1        tidyverse_1.2.1    
-[16] edgeR_3.20.9        RColorBrewer_1.1-2  heatmaply_0.15.2   
+[13] readr_1.3.1         tibble_2.1.3        tidyverse_1.2.1    
+[16] edgeR_3.20.9        RColorBrewer_1.1-2  heatmaply_0.16.0   
 [19] viridis_0.5.1       viridisLite_0.3.0   stringr_1.4.0      
 [22] gplots_3.0.1.1      Hmisc_4.2-0         Formula_1.2-3      
-[25] survival_2.44-1     lattice_0.20-38     dplyr_0.8.0.1      
-[28] plotly_4.8.0        cowplot_0.9.4       ggplot2_3.1.0      
-[31] reshape2_1.4.3      data.table_1.12.0   tidyr_0.8.3        
+[25] survival_2.44-1.1   lattice_0.20-38     dplyr_0.8.3        
+[28] plotly_4.9.0        cowplot_0.9.4       ggplot2_3.2.1      
+[31] reshape2_1.4.3      data.table_1.12.0   tidyr_1.0.0        
 [34] plyr_1.8.4          limma_3.34.9       
 
 loaded via a namespace (and not attached):
- [1] colorspace_1.4-1     class_7.3-15         modeltools_0.2-22   
- [4] mclust_5.4.3         rprojroot_1.3-2      htmlTable_1.13.1    
- [7] base64enc_0.1-3      fs_1.2.7             rstudioapi_0.10     
-[10] flexmix_2.3-15       mvtnorm_1.0-8        lubridate_1.7.4     
-[13] xml2_1.2.0           codetools_0.2-16     splines_3.4.0       
-[16] pscl_1.5.2           doParallel_1.0.14    robustbase_0.92-8   
-[19] knitr_1.22           jsonlite_1.6         workflowr_1.2.0     
-[22] broom_0.5.1          cluster_2.0.7-1      kernlab_0.9-27      
-[25] httr_1.4.0           backports_1.1.3      assertthat_0.2.1    
-[28] lazyeval_0.2.2       cli_1.1.0            formatR_1.6         
-[31] acepack_1.4.1        htmltools_0.3.6      tools_3.4.0         
-[34] gtable_0.3.0         glue_1.3.1           Rcpp_1.0.1          
-[37] cellranger_1.1.0     trimcluster_0.1-2.1  gdata_2.18.0        
-[40] nlme_3.1-137         iterators_1.0.10     fpc_2.1-11.1        
-[43] xfun_0.5             rvest_0.3.2          gtools_3.8.1        
-[46] dendextend_1.10.0    DEoptimR_1.0-8       MASS_7.3-51.1       
-[49] scales_1.0.0         TSP_1.1-6            hms_0.4.2           
-[52] parallel_3.4.0       lambda.r_1.2.3       yaml_2.2.0          
-[55] gridExtra_2.3        rpart_4.1-13         latticeExtra_0.6-28 
-[58] stringi_1.4.3        gclus_1.3.2          checkmate_1.9.1     
-[61] seriation_1.2-3      caTools_1.17.1.2     truncnorm_1.0-8     
-[64] rlang_0.3.3          pkgconfig_2.0.2      prabclus_2.2-7      
-[67] bitops_1.0-6         evaluate_0.13        labeling_0.3        
-[70] htmlwidgets_1.3      tidyselect_0.2.5     magrittr_1.5        
-[73] R6_2.4.0             generics_0.0.2       pillar_1.3.1        
-[76] haven_2.1.0          whisker_0.3-2        foreign_0.8-71      
-[79] withr_2.1.2          mixsqp_0.1-97        nnet_7.3-12         
-[82] modelr_0.1.4         crayon_1.3.4         futile.options_1.0.1
-[85] KernSmooth_2.23-15   rmarkdown_1.12       locfit_1.5-9.1      
-[88] readxl_1.3.1         git2r_0.25.2         digest_0.6.18       
-[91] diptest_0.75-7       webshot_0.5.1        stats4_3.4.0        
-[94] munsell_0.5.0        registry_0.5-1      </code></pre>
+ [1] colorspace_1.4-1     rprojroot_1.3-2      htmlTable_1.13.2    
+ [4] base64enc_0.1-3      fs_1.3.1             rstudioapi_0.10     
+ [7] lubridate_1.7.4      xml2_1.2.2           codetools_0.2-16    
+[10] splines_3.4.0        pscl_1.5.2           doParallel_1.0.15   
+[13] knitr_1.22           zeallot_0.1.0        jsonlite_1.6        
+[16] workflowr_1.4.0      broom_0.5.2          cluster_2.0.7-1     
+[19] httr_1.4.1           backports_1.1.4      assertthat_0.2.1    
+[22] lazyeval_0.2.2       cli_1.1.0            formatR_1.7         
+[25] acepack_1.4.1        htmltools_0.3.6      tools_3.4.0         
+[28] gtable_0.3.0         glue_1.3.1           Rcpp_1.0.1          
+[31] cellranger_1.1.0     vctrs_0.2.0          gdata_2.18.0        
+[34] nlme_3.1-137         iterators_1.0.12     xfun_0.5            
+[37] rvest_0.3.4          lifecycle_0.1.0      gtools_3.8.1        
+[40] dendextend_1.12.0    MASS_7.3-51.4        scales_1.0.0        
+[43] TSP_1.1-7            hms_0.5.1            parallel_3.4.0      
+[46] lambda.r_1.2.4       yaml_2.2.0           gridExtra_2.3       
+[49] rpart_4.1-15         latticeExtra_0.6-28  stringi_1.4.3       
+[52] highr_0.8            gclus_1.3.2          checkmate_1.9.4     
+[55] seriation_1.2-3      caTools_1.17.1.2     truncnorm_1.0-8     
+[58] rlang_0.4.0          pkgconfig_2.0.3      bitops_1.0-6        
+[61] evaluate_0.13        labeling_0.3         htmlwidgets_1.3     
+[64] tidyselect_0.2.5     magrittr_1.5         R6_2.4.0            
+[67] generics_0.0.2       pillar_1.4.2         haven_2.1.1         
+[70] whisker_0.4          foreign_0.8-72       withr_2.1.2         
+[73] mixsqp_0.1-97        nnet_7.3-12          modelr_0.1.5        
+[76] crayon_1.3.4         futile.options_1.0.1 KernSmooth_2.23-15  
+[79] rmarkdown_1.12       locfit_1.5-9.1       readxl_1.3.1        
+[82] git2r_0.26.1         digest_0.6.18        webshot_0.5.1       
+[85] munsell_0.5.0        registry_0.5-1      </code></pre>
 </div>
 </div>
 
