@@ -562,10 +562,10 @@ relative
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree37c244e18e27708d4e851d2a46b0b1f094c2149ctargetblank37c244ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/37c244e18e27708d4e851d2a46b0b1f094c2149c" target="_blank">37c244e</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree01528ab8da65ecf9338ac0dbe7a14d15634b85fftargetblank01528aba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/01528ab8da65ecf9338ac0dbe7a14d15634b85ff" target="_blank">01528ab</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree37c244e18e27708d4e851d2a46b0b1f094c2149ctargetblank37c244ea" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree01528ab8da65ecf9338ac0dbe7a14d15634b85fftargetblank01528aba" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -576,6 +576,7 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    analysis/.DS_Store
     Ignored:    analysis/.Rhistory
+    Ignored:    analysis/figure/
     Ignored:    code/.DS_Store
     Ignored:    data/.DS_Store
     Ignored:    data/TADs/.DS_Store
@@ -958,7 +959,6 @@ Untracked files:
     Untracked:  ~/
 
 Unstaged changes:
-    Modified:   analysis/TADs.Rmd
     Deleted:    analysis/alt_mediation.Rmd
     Modified:   analysis/enrichment.Rmd
 
@@ -999,6 +999,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/IttaiEres/HiCiPSC/ae99285df38991bdd385061b73384291aa9bb827/docs/juicer_gene_expression.html" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1176,8 +1193,8 @@ Add variety of juicer analyses into website files.
 </div>
 </div>
 </div>
-<div id="preparing-the-gene-expression-data" class="section level3">
-<h3>Preparing the gene expression data</h3>
+<div id="preparing-the-gene-expression-data" class="section level1">
+<h1>Preparing the gene expression data</h1>
 <p>Here I read in a dataframe of counts summarized at the gene-level, then do some pre-processing and normalization to obtain a voom object to later run linear modeling analyses on. This is identical code to what was done in the case with HOMER, since this gene expression analysis is completely orthogonal to the Hi-C normalization and significance calling schemes employed.</p>
 <pre class="r"><code>#Read in counts data, create DGEList object out of them and convert to log counts per million (CPM). Also read in metadata.
 setwd(&quot;/Users/ittaieres/HiCiPSC&quot;)
@@ -1341,6 +1358,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-1.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-1.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -1386,6 +1414,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-2.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-2.png" target="_blank">b7d82fc</a>
@@ -1435,6 +1474,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-3.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-3.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -1476,6 +1526,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-4.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-4.png" target="_blank">b7d82fc</a>
@@ -1521,6 +1582,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-5.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-5.png" target="_blank">b7d82fc</a>
@@ -1570,6 +1642,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-6.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Prepping gene expression data-6.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -1595,8 +1678,8 @@ rownames(RPKM) &lt;- NULL #Just to match what I had before on midway2, about to 
 saveRDS(RPKM, file=&quot;output/juicer.IEE.RPKM.RDS&quot;) #Should be identical to non-juicer one, but just in case.
 saveRDS(weighted.data, file=&quot;output/juicer.IEE_voom_object.RDS&quot;) #write this object out, can then be read in with readRDS.</code></pre>
 </div>
-<div id="overlap-between-juicer-data-and-orthogonal-gene-expression-data" class="section level3">
-<h3>Overlap Between Juicer Data and Orthogonal Gene Expression Data</h3>
+<div id="overlap-between-juicer-data-and-orthogonal-gene-expression-data" class="section level1">
+<h1>Overlap Between Juicer Data and Orthogonal Gene Expression Data</h1>
 <p>In this section I find the overlap between the 2 final filtered set of Hi-C Juicer significant hits and genes picked up on by an orthogonal RNA-seq experiment in the same set of cell lines. I utilize an in-house curated set of orthologous genes between humans and chimpanzees. Given that the resolution of the data is 10kb, I choose a simple and conservative approach and use a 1-nucleotide interval at the start of each gene as a proxy for the promoter. I then take a conservative pass and only use genes that had direct overlap with a bin from the Hi-C significant hits data, with more motivation explained below.</p>
 <pre class="r"><code>#Now, read in filtered data from linear_modeling_QC.Rmd.
 data.KR &lt;- fread(&quot;output/juicer.filt.KR.final&quot;, header=TRUE, data.table=FALSE, stringsAsFactors = FALSE, showProgress=FALSE)
@@ -1747,8 +1830,8 @@ sum(hgene.hic.KR$V10==0&amp;(hgene.hic.KR$V4 %in% DEgenes)) #263 genes</code></p
 <pre class="r"><code>sum(hgene.hic.VC$V10==0&amp;(!hgene.hic.VC$V4 %in% DEgenes)&amp;(!hgene.hic.VC$V4 %in% nonDEgenes)) #Checking which genes have direct overlap with bins, but were not picked up on in our RNAseq data. 3441</code></pre>
 <pre><code>[1] 3441</code></pre>
 </div>
-<div id="linear-modeling-annotation" class="section level3">
-<h3>Linear Modeling Annotation</h3>
+<div id="linear-modeling-annotation" class="section level1">
+<h1>Linear Modeling Annotation</h1>
 <p>In this next section I simply add information obtained from linear modeling on the Hi-C interaction frequencies to the appropriate genes having overlap with Hi-C bins. Because one Hi-C bin frequently shows up many times in the data, this means I must choose some kind of summary for Hi-C contact frequencies and linear modeling annotations for each gene. I toy with a variety of these summaries here, including choosing the minimum FDR contact, the maximum beta contact, the upstream contact, or summarizing all a bin’s contacts with the weighted Z-combine method or median FDR values.</p>
 <pre class="r"><code>hgene.hic.overlap.KR &lt;- filter(hgene.hic.KR, V10==0) #Still leaves a solid ~4k genes.
 cgene.hic.overlap.KR &lt;- filter(cgene.hic.KR, V10==0) #Still leaves a solid ~4k genes.
@@ -1877,8 +1960,8 @@ gene.hic.KR &lt;- gene.hic.KR[-filt.KR,]
 saveRDS(gene.hic.KR, &quot;output/gene.hic.filt.KR.RDS&quot;)
 saveRDS(gene.hic.VC, &quot;output/gene.hic.filt.VC.RDS&quot;)</code></pre>
 </div>
-<div id="differential-expression-differential-hi-c-enrichment-analyses" class="section level3">
-<h3>Differential Expression-Differential Hi-C Enrichment Analyses</h3>
+<div id="differential-expression-differential-hi-c-enrichment-analyses" class="section level1">
+<h1>Differential Expression-Differential Hi-C Enrichment Analyses</h1>
 <p>Now I look for enrichment of DHi-C in DE genes using a variety of different metrics to call DHi-C. I now look to see if genes that are differentially expressed are also differential in Hi-C contacts (DHi-C). That is to say, are differentially expressed genes enriched in their overlapping bins for Hi-C contacts that are also differential between the species? To do this I utilize p-values from my prior linear modeling as well as previous RNA-seq analysis. I construct a function to calculate proportions of DE and DHi-C genes, as well as a function to plot this out in a variety of different ways.</p>
 <pre class="r"><code>####Enrichment analyses!
 #A function for calculating proportion of DE genes that are DHi-C under a variety of different paradigms. Accounts for when no genes are DHi-C and when all genes are DHi-C. Returns the proportion of DE genes that are also DHi-C, as well as the expected proportion based on conditional probability alone.
@@ -1988,6 +2071,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-1.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-1.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -2024,6 +2118,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-2.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-2.png" target="_blank">b7d82fc</a>
@@ -2064,6 +2169,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-3.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-3.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -2100,6 +2216,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-4.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-4.png" target="_blank">b7d82fc</a>
@@ -2311,6 +2438,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-5.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-5.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -2351,6 +2489,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-6.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-6.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -2389,6 +2538,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-7.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-7.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -2425,6 +2585,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-8.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-8.png" target="_blank">b7d82fc</a>
@@ -2573,6 +2744,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-9.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-9.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -2609,6 +2791,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-10.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-10.png" target="_blank">b7d82fc</a>
@@ -2649,6 +2842,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-11.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-11.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -2685,6 +2889,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-12.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-12.png" target="_blank">b7d82fc</a>
@@ -2827,6 +3042,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-13.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-13.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -2863,6 +3089,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-14.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-14.png" target="_blank">b7d82fc</a>
@@ -2903,6 +3140,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-15.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-15.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -2939,6 +3187,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-16.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-16.png" target="_blank">b7d82fc</a>
@@ -3103,6 +3362,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-17.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-17.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -3139,6 +3409,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-18.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-18.png" target="_blank">b7d82fc</a>
@@ -3179,6 +3460,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-19.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-19.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -3215,6 +3507,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-20.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-20.png" target="_blank">b7d82fc</a>
@@ -3408,6 +3711,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-21.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-21.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -3444,6 +3758,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-22.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-22.png" target="_blank">b7d82fc</a>
@@ -3484,6 +3809,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-23.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-23.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -3520,6 +3856,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-24.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Differential Expression-Differential Hi-C Enrichment Analyses-24.png" target="_blank">b7d82fc</a>
@@ -3778,8 +4125,8 @@ Warning in chisq.test(mytable): Chi-squared approximation may be incorrect</code
 save_plot(&quot;~/Desktop/FIGS3.png&quot;, FIGS3, nrow=2, ncol=2)</code></pre>
 <p>Now that I’ve seen some enrichment of differential contact (DC) in differential expression (DE) based on my linear modeling results from before, I would like to further quantify this effect. In order to do so, I now extract log2 observed/expected homer-normalized contact frequency values and RPKM expression values for each gene/bin set, so I can look at correlations of these values and assess their explanatory power.</p>
 </div>
-<div id="contact-frequency-extraction" class="section level3">
-<h3>Contact Frequency Extraction</h3>
+<div id="contact-frequency-extraction" class="section level1">
+<h1>Contact Frequency Extraction</h1>
 <p>In this section, I proceed to create a function in order to extract the Hi-C interaction frequency values for the different types of summaries I’ve made gene overlaps with above. This allows for operations to be performed separately utilizing different summaries of Hi-C contacts.</p>
 <pre class="r"><code>######Get a df with the H and C coordinates of the hits, and the IF values from homer. This subset df makes things easier to extract. Both for VC and KR.
 ###VC
@@ -3886,8 +4233,8 @@ fwrite(h_minFDR_DE.VC, &quot;data/old_mediation_permutations/HiC_covs/juicer/h_m
 #fwrite(c_US_DE, &quot;~/Desktop/Hi-C/HiC_covs/c_US_DE&quot;, quote = FALSE, sep = &quot;\t&quot;, na = &quot;NA&quot;, col.names = TRUE)</code></pre>
 <p>Now I use these data frames and join each again on the RPKM table by genes, in order to obtain RPKM expression values for each gene-Hi-C bin set.</p>
 </div>
-<div id="merging-contact-frequency-values-with-expression-values." class="section level3">
-<h3>Merging contact frequency values with expression values.</h3>
+<div id="merging-contact-frequency-values-with-expression-values." class="section level1">
+<h1>Merging contact frequency values with expression values.</h1>
 <p>In this next section I join each of the data frames created above on the RPKM table by genes, in order to have a merged table with expression values and contact frequencies for each gene-Hi-C bin set. I move then to explore correlations between the values.</p>
 <pre class="r"><code>#Join all of the previously-made Hi-C interaction frequency tables to the RPKM table by genes, to obtain RPKM values in concert with contact frequency values.
 RPKM &lt;- as.data.frame(weighted.data$E)
@@ -3975,6 +4322,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Merging Expression and Hi-C; Followed by correlation exploration-1.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Merging Expression and Hi-C; Followed by correlation exploration-1.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -4012,6 +4370,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Merging Expression and Hi-C; Followed by correlation exploration-2.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Merging Expression and Hi-C; Followed by correlation exploration-2.png" target="_blank">b7d82fc</a>
@@ -4077,6 +4446,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Merging Expression and Hi-C; Followed by correlation exploration-3.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Merging Expression and Hi-C; Followed by correlation exploration-3.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -4116,6 +4496,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Merging Expression and Hi-C; Followed by correlation exploration-4.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Merging Expression and Hi-C; Followed by correlation exploration-4.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -4132,8 +4523,8 @@ Ittai Eres
 <pre class="r"><code>#See that permuted datasets have a tighter correlation distribution with a strong peak at 0. Reassuring. In the future I will repeat this analysis on Midway2, running 10000 permutations to see the full range of permuted data possible.</code></pre>
 <p>Now that I’ve seen some nice effects in the correlation between expression and contact for different sets of genes, and for permutations on those sets, I move to see what kind of quantitiative explanatory power differential contact (DC) might actually have for differential expression (DE).</p>
 </div>
-<div id="how-well-does-hi-c-data-explain-expression-data" class="section level3">
-<h3>How well does Hi-C data explain expression data?</h3>
+<div id="how-well-does-hi-c-data-explain-expression-data" class="section level1">
+<h1>How well does Hi-C data explain expression data?</h1>
 <p>In this next section I “regress out” the effect of Hi-C contacts from their overlapping genes’ RPKM expression values, comparing a linear model run on the base values to one run on the residuals of expression after regressing out Hi-C data. Comparing the p-values before and after this regression can give some sense of whether the DE is being driven by differential Hi-C contacts (DC).</p>
 <pre class="r"><code>###A function to calculate gene-wise correlations between Hi-C data and expression data, but for spearman correlations. Pearson correlation calculator function is in the chunk above.
 cor.calc.spear &lt;- function(hicdata, exprdata){
@@ -4221,6 +4612,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Mediation effect by "regressing out" Hi-C effects from Expression Data-1.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Mediation effect by "regressing out" Hi-C effects from Expression Data-1.png" target="_blank">b7d82fc</a>
 </td>
 <td>
@@ -4258,6 +4660,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Mediation effect by "regressing out" Hi-C effects from Expression Data-2.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/b7d82fcedada8542a39964036d316c305ed7bf1a/docs/figure/juicer_gene_expression.Rmd/Mediation effect by "regressing out" Hi-C effects from Expression Data-2.png" target="_blank">b7d82fc</a>
@@ -4366,6 +4779,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Mediation testing with Monte Carlo-1.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/5fda2d6be754f4c39dd034fc9972a6665bea0e68/docs/figure/juicer_gene_expression.Rmd/Mediation testing with Monte Carlo-1.png" target="_blank">5fda2d6</a>
 </td>
 <td>
@@ -4425,6 +4849,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/ae99285df38991bdd385061b73384291aa9bb827/docs/figure/juicer_gene_expression.Rmd/Mediation testing with Monte Carlo-2.png" target="_blank">ae99285</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/5fda2d6be754f4c39dd034fc9972a6665bea0e68/docs/figure/juicer_gene_expression.Rmd/Mediation testing with Monte Carlo-2.png" target="_blank">5fda2d6</a>
