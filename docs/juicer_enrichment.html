@@ -438,7 +438,7 @@ div.section {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#report"> Report <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -447,21 +447,21 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-05-05
+<strong>Last updated:</strong> 2020-08-05
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>HiCiPSC/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
 </p>
 <p>
 This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
-  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.2.0). The <em>Report</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.4.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
 </p>
 <hr>
 </div>
-<div id="report" class="tab-pane fade">
+<div id="checks" class="tab-pane fade">
 <div id="workflowr-checks" class="panel-group">
 <div class="panel panel-default">
 <div class="panel-heading">
@@ -526,10 +526,22 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree2419813e256df5fc406fc428d7dbe65320f8c7b3targetblank2419813a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/2419813e256df5fc406fc428d7dbe65320f8c7b3" target="_blank">2419813</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree2419813e256df5fc406fc428d7dbe65320f8c7b3targetblank2419813a" class="panel-collapse collapse">
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree37c244e18e27708d4e851d2a46b0b1f094c2149ctargetblank37c244ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/37c244e18e27708d4e851d2a46b0b1f094c2149c" target="_blank">37c244e</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree37c244e18e27708d4e851d2a46b0b1f094c2149ctargetblank37c244ea" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -539,8 +551,14 @@ Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    analysis/.DS_Store
+    Ignored:    analysis/.Rhistory
     Ignored:    code/.DS_Store
     Ignored:    data/.DS_Store
+    Ignored:    data/TADs/.DS_Store
+    Ignored:    data/TADs/Human_inter_30_KR_contact_domains/.DS_Store
+    Ignored:    data/TADs/scripts/.DS_Store
+    Ignored:    docs/.DS_Store
+    Ignored:    docs/figure/.DS_Store
     Ignored:    output/.DS_Store
 
 Untracked files:
@@ -851,11 +869,27 @@ Untracked files:
     Untracked:  Rplot304.jpeg
     Untracked:  S2A.jpeg
     Untracked:  S2B.jpeg
-    Untracked:  code/mediate.test.regressing.R
+    Untracked:  code/mediation_test.R
     Untracked:  data/Chimp_orthoexon_extended_info.txt
     Untracked:  data/Human_orthoexon_extended_info.txt
     Untracked:  data/Meta_data.txt
-    Untracked:  data/TADs/
+    Untracked:  data/TADs/Arrowhead_individuals/
+    Untracked:  data/TADs/CH.10kb.closest.panTro5
+    Untracked:  data/TADs/CTCF.overlap.computer.sh
+    Untracked:  data/TADs/CTCF/
+    Untracked:  data/TADs/HC.10kb.closest.hg38
+    Untracked:  data/TADs/Human_inter_30_KR_contact_domains_PT6/
+    Untracked:  data/TADs/Rao/
+    Untracked:  data/TADs/TopDom/
+    Untracked:  data/TADs/deprecated/
+    Untracked:  data/TADs/mega.bounds.intersect.c.sh
+    Untracked:  data/TADs/mega.bounds.intersect.merge.sh
+    Untracked:  data/TADs/mega.bounds.rao.sh
+    Untracked:  data/TADs/mega.domains.bedtoolsc.sh
+    Untracked:  data/TADs/mega.domains.rao.sh
+    Untracked:  data/TADs/overlaps/
+    Untracked:  data/TADs/overlaps_rao_style/
+    Untracked:  data/TADs/rao.chimp.subsample.tester.sh
     Untracked:  data/chimp_lengths.txt
     Untracked:  data/counts_iPSC.txt
     Untracked:  data/epigenetic_enrichments/
@@ -881,6 +915,7 @@ Untracked files:
     Untracked:  output/gene.hic.filt.KR.RDS
     Untracked:  output/gene.hic.filt.RDS
     Untracked:  output/gene.hic.filt.VC.RDS
+    Untracked:  output/homer_mediation.rda
     Untracked:  output/juicer.IEE.RPKM.RDS
     Untracked:  output/juicer.IEE_voom_object.RDS
     Untracked:  output/juicer.filt.KR
@@ -889,6 +924,19 @@ Untracked files:
     Untracked:  output/juicer.filt.VC
     Untracked:  output/juicer.filt.VC.final
     Untracked:  output/juicer.filt.VC.lm
+    Untracked:  output/juicer_mediation.rda
+    Untracked:  output/mc_de.rds
+    Untracked:  output/mc_de_homer.rds
+    Untracked:  output/mc_de_juicer.rds
+    Untracked:  output/mc_node.rds
+    Untracked:  output/mc_node_homer.rds
+    Untracked:  output/mc_node_juicer.rds
+    Untracked:  ~/
+
+Unstaged changes:
+    Modified:   analysis/TADs.Rmd
+    Deleted:    analysis/alt_mediation.Rmd
+    Modified:   analysis/enrichment.Rmd
 
 </code></pre>
 <p>
@@ -927,6 +975,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/37c244e18e27708d4e851d2a46b0b1f094c2149c/analysis/juicer_enrichment.Rmd" target="_blank">37c244e</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+<td>
+Update formatting for headers
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/IttaiEres/HiCiPSC/b69c73d4bdd8e8c685d365a3826851259d125c30/docs/juicer_enrichment.html" target="_blank">b69c73d</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-05-05
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -985,7 +1067,9 @@ Update formatting of final output df for juicer VC from linear modeling QC, add 
 </div>
 </div>
 </div>
-<p>###Reading in the data, reformatting for enrichment analyses Here I merely read in the filtered data and create a function to reformat it for a variety of overlap analyses external to R.</p>
+<div id="reading-in-the-data-reformatting-for-enrichment-analyses" class="section level3">
+<h3>Reading in the data, reformatting for enrichment analyses</h3>
+<p>Here I merely read in the filtered data and create a function to reformat it for a variety of overlap analyses external to R.</p>
 <pre class="r"><code>#Now, read in filtered data from juicer_linear_modeling_QC.Rmd.
 data.KR &lt;- fread(&quot;output/juicer.filt.KR.final&quot;, header=TRUE, data.table=FALSE, stringsAsFactors = FALSE, showProgress=FALSE)
 data.VC &lt;- fread(&quot;output/juicer.filt.VC.final&quot;, header=TRUE, data.table=FALSE, stringsAsFactors = FALSE, showProgress = FALSE)
@@ -1051,7 +1135,10 @@ fwrite(chimpairsVC, &quot;data/epigenetic_enrichments/juicer/filt.bins.chimps.VC
 #Next I will take each of these files (well, the human ones, don&#39;t have chromHMM data on chimpanzees) and intersect the bins (separately for bin1 and bin2, can just cut those in unix) against the iPSC 15 state chromHMM annotations, with bedtools intersect -wao -a bin1file.nodups.bed -b iPSC.15state.chromHMM.bed
 
 #Note that the HOMER analyses at this stage seem to be run on de-duplicated bin sets (bin1 and bin2 without dups within them, so removing duplicates at higher FDR). This can be easily dealt with later on here with the deduplicator function later in this doc? I believe? Shouldn&#39;t make a big difference in running the overlaps!</code></pre>
-<p>###Functional enrichments: read-in of files and creation of comprehensive dataframe. Looking at functional categories enriched in my specific bins. Here I pull out several histone mark peak files and chromHMM annotations, overlapping them with my significant Hi-C bins and adding in information from my linear modeling on the contacts as well as RNA-seq differential expression analyses.</p>
+</div>
+<div id="functional-enrichments-read-in-of-files-and-creation-of-comprehensive-dataframe." class="section level3">
+<h3>Functional enrichments: read-in of files and creation of comprehensive dataframe.</h3>
+<p>Looking at functional categories enriched in my specific bins. Here I pull out several histone mark peak files and chromHMM annotations, overlapping them with my significant Hi-C bins and adding in information from my linear modeling on the contacts as well as RNA-seq differential expression analyses.</p>
 <pre class="r"><code>#####First, obtain data frames from the gene_expression.Rmd file, so I can use the promoter information we have from our in-house metaorthoexon trios file.
 gene.hic.KR &lt;- readRDS(&quot;output/gene.hic.filt.KR.RDS&quot;)
 gene.hic.VC &lt;- readRDS(&quot;output/gene.hic.filt.VC.RDS&quot;)
@@ -1359,7 +1446,9 @@ saveRDS(mates.proms.VC.DE.only, file=&quot;data/epigenetic_enrichments/juicer_en
 saveRDS(mates.proms.VC.DC.only, file=&quot;data/epigenetic_enrichments/juicer_enrich_perms/mates.proms.VC.DC.only.RDS&quot;)
 saveRDS(mates.proms.VC.DCDE.only, file=&quot;data/epigenetic_enrichments/juicer_enrich_perms/mates.proms.VC.DCDE.only.RDS&quot;)
 saveRDS(mates.proms.VC.neither.only, file=&quot;data/epigenetic_enrichments/juicer_enrich_perms/mates.proms.VC.neither.only.RDS&quot;)</code></pre>
-<p>###ChromHMM Mark Length Analysis and Normalization</p>
+</div>
+<div id="chromhmm-mark-length-analysis-and-normalization" class="section level3">
+<h3>ChromHMM Mark Length Analysis and Normalization</h3>
 <pre class="r"><code>###CHROM HMM WEIGHTING AND DEDUP/FILE WRITE-OUT FOR KR VALUES
 ###WEIGHTS SECTION
 #Below this I have the analysis I originally did; here I have one where I am weighting chromHMM annotations by the inverse of their mean overlap with the bins. Seb has also suggested looking at it in terms of # of peaks which I can try if this doesn&#39;t look good.
@@ -60989,7 +61078,8 @@ saveRDS(wt.mates.proms.VC.DE.only, file=&quot;data/epigenetic_enrichments/juicer
 saveRDS(wt.mates.proms.VC.DC.only, file=&quot;data/epigenetic_enrichments/juicer_enrich_perms/weights/mates.proms.VC.DC.only.RDS&quot;)
 saveRDS(wt.mates.proms.VC.DCDE.only, file=&quot;data/epigenetic_enrichments/juicer_enrich_perms/weights/mates.proms.VC.DCDE.only.RDS&quot;)
 saveRDS(wt.mates.proms.VC.neither.only, file=&quot;data/epigenetic_enrichments/juicer_enrich_perms/weights/mates.proms.VC.neither.only.RDS&quot;)</code></pre>
-<p>#####ChromHMM Chi-Squared Tests</p>
+<div id="chromhmm-chi-squared-tests" class="section level5">
+<h5>ChromHMM Chi-Squared Tests</h5>
 <pre class="r"><code>####Basic chi-squared tests to check if particular classes of hits are enriched for specific chromHMM marks (i.e. enhancer-associated marks). 
 #First, compare regions making contact with a promoter (not the promoter itself) to those regions that do not do so. I already created DFs of each of these above with duplicates removed: wt.mates.proms.full, and wt.full.no.proms
 proms.KR.assigns &lt;- wt.mates.proms.KR.full$bin2.HMM
@@ -61087,7 +61177,11 @@ X-squared = 0.27047, df = 1, p-value = 0.603</code></pre>
 ###DOESN&#39;T LOOK GOOD with 7_Enh or 7_Enh either; could do one last thing and try combining them if chromHMM visualization ends up being poor--leave for now.
 
 #No enrichment in these data likely due to much smaller dataset</code></pre>
-<p>###ChromHMM Visualization Now, I load in the chromHMM proportion tables from midway2, and visualize them to examine differences in dynamics of regulatory regions for promoter and non-promoter contacts.</p>
+</div>
+</div>
+<div id="chromhmm-visualization" class="section level3">
+<h3>ChromHMM Visualization</h3>
+<p>Now, I load in the chromHMM proportion tables from midway2, and visualize them to examine differences in dynamics of regulatory regions for promoter and non-promoter contacts.</p>
 <pre class="r"><code>#Just a function for calculating proportions of chromHMM annotations in bin sets of the significant hits. Primarily used on midway2, created and tested here. No particular function at this point right now--loading of proportion tables begins shortly after.
 anno.prop.calc &lt;- function(df, col1, col2, startbin, pval.col){
   categories &lt;- unique(c(levels(as.factor(df[,col1])), levels(as.factor(df[,col2]))))
@@ -61133,11 +61227,11 @@ ggplot(data=ggprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(po
 <pre><code>Warning: Removed 1432 rows containing missing values (position_stack).</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/chromHMM%20Visualization-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromHMM Visualization-1">
-Past versions of chromHMM Visualization-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-chromHMM-Visualization-1">
+Past versions of “chromHMM Visualization-1.png”
 </button>
 </p>
-<div id="fig-chromHMM Visualization-1" class="collapse">
+<div id="fig-no-spaces-chromHMM-Visualization-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -61173,11 +61267,11 @@ Ittai Eres
 <pre><code>Warning: Removed 2100 rows containing missing values (position_stack).</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/chromHMM%20Visualization-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromHMM Visualization-2">
-Past versions of chromHMM Visualization-2.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-chromHMM-Visualization-2">
+Past versions of “chromHMM Visualization-2.png”
 </button>
 </p>
-<div id="fig-chromHMM Visualization-2" class="collapse">
+<div id="fig-no-spaces-chromHMM-Visualization-2" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -61225,11 +61319,11 @@ ggplot(data=ggpromDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(
 <pre><code>Warning: Removed 1307 rows containing missing values (position_stack).</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/chromHMM%20Visualization-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromHMM Visualization-3">
-Past versions of chromHMM Visualization-3.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-chromHMM-Visualization-3">
+Past versions of “chromHMM Visualization-3.png”
 </button>
 </p>
-<div id="fig-chromHMM Visualization-3" class="collapse">
+<div id="fig-no-spaces-chromHMM-Visualization-3" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -61265,11 +61359,11 @@ Ittai Eres
 <pre><code>Warning: Removed 1900 rows containing missing values (position_stack).</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/chromHMM%20Visualization-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromHMM Visualization-4">
-Past versions of chromHMM Visualization-4.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-chromHMM-Visualization-4">
+Past versions of “chromHMM Visualization-4.png”
 </button>
 </p>
-<div id="fig-chromHMM Visualization-4" class="collapse">
+<div id="fig-no-spaces-chromHMM-Visualization-4" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -61325,11 +61419,11 @@ ggplot(data=ggprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(po
 <pre><code>Warning: Removed 1291 rows containing missing values (position_stack).</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/chromHMM%20Visualization-5.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromHMM Visualization-5">
-Past versions of chromHMM Visualization-5.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-chromHMM-Visualization-5">
+Past versions of “chromHMM Visualization-5.png”
 </button>
 </p>
-<div id="fig-chromHMM Visualization-5" class="collapse">
+<div id="fig-no-spaces-chromHMM-Visualization-5" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -61366,11 +61460,11 @@ ggplot(data=ggnoprom, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(
 <pre><code>Warning: Removed 1740 rows containing missing values (position_stack).</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/chromHMM%20Visualization-6.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromHMM Visualization-6">
-Past versions of chromHMM Visualization-6.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-chromHMM-Visualization-6">
+Past versions of “chromHMM Visualization-6.png”
 </button>
 </p>
-<div id="fig-chromHMM Visualization-6" class="collapse">
+<div id="fig-no-spaces-chromHMM-Visualization-6" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -61420,11 +61514,11 @@ ggplot(data=ggpromDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_col(
 <pre><code>Warning: Removed 1477 rows containing missing values (position_stack).</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/chromHMM%20Visualization-7.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromHMM Visualization-7">
-Past versions of chromHMM Visualization-7.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-chromHMM-Visualization-7">
+Past versions of “chromHMM Visualization-7.png”
 </button>
 </p>
-<div id="fig-chromHMM Visualization-7" class="collapse">
+<div id="fig-no-spaces-chromHMM-Visualization-7" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -61461,11 +61555,11 @@ ggplot(data=ggprom.noDE, aes(x=bin, group=bin, fill=variable, y=value)) + geom_c
 <pre><code>Warning: Removed 2063 rows containing missing values (position_stack).</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/chromHMM%20Visualization-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromHMM Visualization-8">
-Past versions of chromHMM Visualization-8.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-chromHMM-Visualization-8">
+Past versions of “chromHMM Visualization-8.png”
 </button>
 </p>
-<div id="fig-chromHMM Visualization-8" class="collapse">
+<div id="fig-no-spaces-chromHMM-Visualization-8" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -61750,7 +61844,10 @@ FIGS4 &lt;- plot_grid(S4A, S4B, S4C, S4D, labels=c(&quot;A&quot;, &quot;B&quot;,
 # chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2500, 1500, 600, &quot;Het&quot;, vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.1, ypval=5000) #At 10% FDR
 # chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2500, 1500, 600, &quot;Het&quot;, vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.05, ypval=5000) #At 5% FDR
 # chromHMMplot(chrom.annos, nonproms.DC.df, proms.DC, proms.DE, proms.differential, 10000, 2500, 1500, 600, &quot;Het&quot;, vpdims=c(0.4, 0.4, 0.52, 0.7), vpdims2=c(0.4, 0.4, 0.5, 0.7), vpdims3=c(0.3, 0.3, 0.7, 0.7), vpdims4=c(0.3, 0.3, 0.7, 0.7), vpdims5=c(0.3, 0.3, 0.5, 0.7), FDR = 0.01, ypval=5000) #At 1% FDR</code></pre>
-<p>###Quantitative histone mark enrichments Now, I look at the quantitative enrichment of histone mark peaks from other studies on iPSCs, examining the overlap of these peaks with different classes of Hi-C significant bins.</p>
+</div>
+<div id="quantitative-histone-mark-enrichments" class="section level3">
+<h3>Quantitative histone mark enrichments</h3>
+<p>Now, I look at the quantitative enrichment of histone mark peaks from other studies on iPSCs, examining the overlap of these peaks with different classes of Hi-C significant bins.</p>
 <pre class="r"><code>#######Make a doubled-down data frame for single columns of quantitative enrichments. Really, will need to do differential status-level de-duplication here first, then recombine those to make this simple with ggplot2. Create one huge for looking at differential statuses, and one big one separating out promoters/non promoters (chrom.annos). Also need polarizing ones for DC/not and DE/not, without exclusivity in the case of both. chrom.annos is what was created in the previous chunk for separating out promoters/non promoters. Now, undertake the same process to create the other necessary dfs:
 DE.only.proms.KR &lt;- filter(promoter.contacts.KR, differential==&quot;expression&quot;)
 DC.only.proms.KR &lt;- filter(promoter.contacts.KR, differential==&quot;contact&quot;)
@@ -61777,11 +61874,11 @@ print(prom.DHS)
 print(box.prom.DHS, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-1">
-Past versions of Other quantitative enrichments-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Other-quantitative-enrichments-1">
+Past versions of “Other quantitative enrichments-1.png”
 </button>
 </p>
-<div id="fig-Other quantitative enrichments-1" class="collapse">
+<div id="fig-no-spaces-Other-quantitative-enrichments-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -61824,11 +61921,11 @@ print(prom.Hac)
 print(box.prom.Hac, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-2">
-Past versions of Other quantitative enrichments-2.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Other-quantitative-enrichments-2">
+Past versions of “Other quantitative enrichments-2.png”
 </button>
 </p>
-<div id="fig-Other quantitative enrichments-2" class="collapse">
+<div id="fig-no-spaces-Other-quantitative-enrichments-2" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -61883,11 +61980,11 @@ print(prom.Hme1)
 print(box.prom.Hme1, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-3">
-Past versions of Other quantitative enrichments-3.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Other-quantitative-enrichments-3">
+Past versions of “Other quantitative enrichments-3.png”
 </button>
 </p>
-<div id="fig-Other quantitative enrichments-3" class="collapse">
+<div id="fig-no-spaces-Other-quantitative-enrichments-3" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -61930,11 +62027,11 @@ vp &lt;- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.7)
 print(box.prom.Hme3, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-4">
-Past versions of Other quantitative enrichments-4.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Other-quantitative-enrichments-4">
+Past versions of “Other quantitative enrichments-4.png”
 </button>
 </p>
-<div id="fig-Other quantitative enrichments-4" class="collapse">
+<div id="fig-no-spaces-Other-quantitative-enrichments-4" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -61977,11 +62074,11 @@ vp &lt;- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.5)
 print(box.prom.HK27, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-5.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-5">
-Past versions of Other quantitative enrichments-5.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Other-quantitative-enrichments-5">
+Past versions of “Other quantitative enrichments-5.png”
 </button>
 </p>
-<div id="fig-Other quantitative enrichments-5" class="collapse">
+<div id="fig-no-spaces-Other-quantitative-enrichments-5" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -62040,11 +62137,11 @@ print(prom.DHS)
 print(box.prom.DHS, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-6.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-6">
-Past versions of Other quantitative enrichments-6.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Other-quantitative-enrichments-6">
+Past versions of “Other quantitative enrichments-6.png”
 </button>
 </p>
-<div id="fig-Other quantitative enrichments-6" class="collapse">
+<div id="fig-no-spaces-Other-quantitative-enrichments-6" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -62088,11 +62185,11 @@ print(prom.Hac)
 print(box.prom.Hac, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-7.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-7">
-Past versions of Other quantitative enrichments-7.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Other-quantitative-enrichments-7">
+Past versions of “Other quantitative enrichments-7.png”
 </button>
 </p>
-<div id="fig-Other quantitative enrichments-7" class="collapse">
+<div id="fig-no-spaces-Other-quantitative-enrichments-7" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -62148,11 +62245,11 @@ print(prom.Hme1)
 print(box.prom.Hme1, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-8">
-Past versions of Other quantitative enrichments-8.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Other-quantitative-enrichments-8">
+Past versions of “Other quantitative enrichments-8.png”
 </button>
 </p>
-<div id="fig-Other quantitative enrichments-8" class="collapse">
+<div id="fig-no-spaces-Other-quantitative-enrichments-8" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -62196,11 +62293,11 @@ vp &lt;- grid::viewport(width=0.4, height=0.4, x=0.6, y=0.6)
 print(box.prom.Hme3, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-9.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-9">
-Past versions of Other quantitative enrichments-9.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Other-quantitative-enrichments-9">
+Past versions of “Other quantitative enrichments-9.png”
 </button>
 </p>
-<div id="fig-Other quantitative enrichments-9" class="collapse">
+<div id="fig-no-spaces-Other-quantitative-enrichments-9" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -62244,11 +62341,11 @@ vp &lt;- grid::viewport(width=0.4, height=0.4, x=0.5, y=0.5)
 print(box.prom.HK27, vp=vp)</code></pre>
 <p><img src="figure/juicer_enrichment.Rmd/Other%20quantitative%20enrichments-10.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Other quantitative enrichments-10">
-Past versions of Other quantitative enrichments-10.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Other-quantitative-enrichments-10">
+Past versions of “Other quantitative enrichments-10.png”
 </button>
 </p>
-<div id="fig-Other quantitative enrichments-10" class="collapse">
+<div id="fig-no-spaces-Other-quantitative-enrichments-10" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -62280,7 +62377,7 @@ Ittai Eres
 </table>
 </div>
 </div>
-<br> <br>
+<br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
@@ -62290,7 +62387,7 @@ Ittai Eres
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 3.4.0 (2017-04-21)
 Platform: x86_64-apple-darwin15.6.0 (64-bit)
-Running under: OS X El Capitan 10.11.6
+Running under: macOS  10.14.6
 
 Matrix products: default
 BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
@@ -62304,51 +62401,48 @@ attached base packages:
 [8] base     
 
 other attached packages:
- [1] bedr_1.0.6         forcats_0.4.0      purrr_0.3.2       
- [4] readr_1.3.1        tibble_2.1.1       tidyverse_1.2.1   
- [7] edgeR_3.20.9       RColorBrewer_1.1-2 heatmaply_0.15.2  
+ [1] bedr_1.0.7         forcats_0.4.0      purrr_0.3.2       
+ [4] readr_1.3.1        tibble_2.1.3       tidyverse_1.2.1   
+ [7] edgeR_3.20.9       RColorBrewer_1.1-2 heatmaply_0.16.0  
 [10] viridis_0.5.1      viridisLite_0.3.0  stringr_1.4.0     
 [13] gplots_3.0.1.1     Hmisc_4.2-0        Formula_1.2-3     
-[16] survival_2.44-1    lattice_0.20-38    dplyr_0.8.0.1     
-[19] plotly_4.8.0       ggsignif_0.5.0     cowplot_0.9.4     
-[22] ggplot2_3.1.0      reshape2_1.4.3     data.table_1.12.0 
-[25] tidyr_0.8.3        plyr_1.8.4         limma_3.34.9      
+[16] survival_2.44-1.1  lattice_0.20-38    dplyr_0.8.3       
+[19] plotly_4.9.0       ggsignif_0.6.0     cowplot_0.9.4     
+[22] ggplot2_3.2.1      reshape2_1.4.3     data.table_1.12.0 
+[25] tidyr_1.0.0        plyr_1.8.4         limma_3.34.9      
 
 loaded via a namespace (and not attached):
-  [1] colorspace_1.4-1     class_7.3-15         modeltools_0.2-22   
-  [4] mclust_5.4.3         rprojroot_1.3-2      htmlTable_1.13.1    
-  [7] futile.logger_1.4.3  base64enc_0.1-3      fs_1.2.7            
- [10] rstudioapi_0.10      flexmix_2.3-15       mvtnorm_1.0-8       
- [13] lubridate_1.7.4      xml2_1.2.0           R.methodsS3_1.7.1   
- [16] codetools_0.2-16     splines_3.4.0        robustbase_0.92-8   
- [19] knitr_1.22           jsonlite_1.6         workflowr_1.2.0     
- [22] broom_0.5.1          cluster_2.0.7-1      kernlab_0.9-27      
- [25] R.oo_1.22.0          httr_1.4.0           backports_1.1.3     
- [28] assertthat_0.2.1     Matrix_1.2-15        lazyeval_0.2.2      
- [31] cli_1.1.0            formatR_1.6          acepack_1.4.1       
- [34] htmltools_0.3.6      tools_3.4.0          gtable_0.3.0        
- [37] glue_1.3.1           Rcpp_1.0.1           cellranger_1.1.0    
- [40] trimcluster_0.1-2.1  gdata_2.18.0         nlme_3.1-137        
- [43] iterators_1.0.10     fpc_2.1-11.1         xfun_0.5            
- [46] testthat_2.0.1       rvest_0.3.2          gtools_3.8.1        
- [49] dendextend_1.10.0    DEoptimR_1.0-8       MASS_7.3-51.1       
- [52] scales_1.0.0         TSP_1.1-6            hms_0.4.2           
- [55] parallel_3.4.0       lambda.r_1.2.3       yaml_2.2.0          
- [58] gridExtra_2.3        rpart_4.1-13         latticeExtra_0.6-28 
- [61] stringi_1.4.3        gclus_1.3.2          foreach_1.4.4       
- [64] checkmate_1.9.1      seriation_1.2-3      caTools_1.17.1.2    
- [67] rlang_0.3.3          pkgconfig_2.0.2      prabclus_2.2-7      
- [70] bitops_1.0-6         evaluate_0.13        labeling_0.3        
- [73] htmlwidgets_1.3      tidyselect_0.2.5     magrittr_1.5        
- [76] R6_2.4.0             generics_0.0.2       pillar_1.3.1        
- [79] haven_2.1.0          whisker_0.3-2        foreign_0.8-71      
- [82] withr_2.1.2          nnet_7.3-12          modelr_0.1.4        
- [85] crayon_1.3.4         futile.options_1.0.1 KernSmooth_2.23-15  
- [88] rmarkdown_1.12       locfit_1.5-9.1       grid_3.4.0          
- [91] readxl_1.3.1         git2r_0.25.2         digest_0.6.18       
- [94] diptest_0.75-7       webshot_0.5.1        VennDiagram_1.6.20  
- [97] R.utils_2.8.0        stats4_3.4.0         munsell_0.5.0       
-[100] registry_0.5-1      </code></pre>
+ [1] colorspace_1.4-1     rprojroot_1.3-2      htmlTable_1.13.2    
+ [4] futile.logger_1.4.3  base64enc_0.1-3      fs_1.3.1            
+ [7] rstudioapi_0.10      lubridate_1.7.4      xml2_1.2.2          
+[10] codetools_0.2-16     splines_3.4.0        R.methodsS3_1.7.1   
+[13] knitr_1.22           zeallot_0.1.0        jsonlite_1.6        
+[16] workflowr_1.4.0      broom_0.5.2          cluster_2.0.7-1     
+[19] R.oo_1.22.0          httr_1.4.1           backports_1.1.4     
+[22] assertthat_0.2.1     Matrix_1.2-17        lazyeval_0.2.2      
+[25] cli_1.1.0            formatR_1.7          acepack_1.4.1       
+[28] htmltools_0.3.6      tools_3.4.0          gtable_0.3.0        
+[31] glue_1.3.1           Rcpp_1.0.1           cellranger_1.1.0    
+[34] vctrs_0.2.0          gdata_2.18.0         nlme_3.1-137        
+[37] iterators_1.0.12     xfun_0.5             testthat_2.2.1      
+[40] rvest_0.3.4          lifecycle_0.1.0      gtools_3.8.1        
+[43] dendextend_1.12.0    MASS_7.3-51.4        scales_1.0.0        
+[46] TSP_1.1-7            hms_0.5.1            parallel_3.4.0      
+[49] lambda.r_1.2.4       yaml_2.2.0           gridExtra_2.3       
+[52] rpart_4.1-15         latticeExtra_0.6-28  stringi_1.4.3       
+[55] gclus_1.3.2          foreach_1.4.7        checkmate_1.9.4     
+[58] seriation_1.2-3      caTools_1.17.1.2     rlang_0.4.0         
+[61] pkgconfig_2.0.3      bitops_1.0-6         evaluate_0.13       
+[64] labeling_0.3         htmlwidgets_1.3      tidyselect_0.2.5    
+[67] magrittr_1.5         R6_2.4.0             generics_0.0.2      
+[70] pillar_1.4.2         haven_2.1.1          whisker_0.4         
+[73] foreign_0.8-72       withr_2.1.2          nnet_7.3-12         
+[76] modelr_0.1.5         crayon_1.3.4         futile.options_1.0.1
+[79] KernSmooth_2.23-15   rmarkdown_1.12       locfit_1.5-9.1      
+[82] grid_3.4.0           readxl_1.3.1         git2r_0.26.1        
+[85] digest_0.6.18        webshot_0.5.1        VennDiagram_1.6.20  
+[88] R.utils_2.9.0        munsell_0.5.0        registry_0.5-1      </code></pre>
+</div>
 </div>
 
 
