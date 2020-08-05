@@ -847,6 +847,76 @@ ggplot(data=c_US_pvals$stats, aes(x=-log10(pval.before), y=-log10(pval.after), c
 ```
 Critically, here I see that "regressing out" Hi-C data and trying to model expression again moves many genes from being significantly differentially expressed (at FDR of 5%) to no longer showing differential expression. Seeing most of the hits in the bottom right corner of these visualizations is what confirms this. Reassuringly, I also see stronger correlations between RPKM expression values and normalized Hi-C interaction frequency values for points farther away from the diagonal green line of expectation. However, since this is not a statistical test, I have no assessment of significance. To accomplish this, I compare these results to running the same kind of analysis on permuted data in the next section.
 
+
+###Find the contacts and DE genes that are most highly correlated:
+```{r Finding DE genes to experimentally test DCs effects on}
+hmin_full <- cbind(hmin, h_minFDR_pvals$stats) %>% select(., genes, logFC, AveExpr, adj.P.Val, B, genepos.H, HID, min_FDR_bin.H, min_FDR_pval, min_FDR_B.H, genepos.C, CID, min_FDR_bin.C, min_FDR.C, min_FDR_B.C, "A_21792_HIC", "B_28126_HIC", C_3649_HIC, D_40300_HIC, E_28815_HIC, F_28834_HIC, G_3624_HIC, H_3651_HIC, "A-21792", "B-28126", "C-3649", "D-40300", "E-28815", "F-28834", "G-3624", "H-3651", cor.pear, cor.spear)
+hmin_ranked <- hmin_full[order(-hmin_full$cor.pear),] #Rank by correlation between contact and expression
+hmin_ranked_DE <- filter(hmin_full, adj.P.Val<=0.05&min_FDR_pval<=0.05) #Subset to just DE genes and DC contacts.
+hmin_final <- hmin_ranked_DE[complete.cases(hmin_ranked_DE),] #Get rid of NA rows.
+
+#I am looking for a scenario where chimps have a contact with an enhancer-like element that strongly increases expression, and humans do not have that same contact, presumably because of a CTCF insulation site in between. Hence I want stronger contact leading to increased expression, so subset to only positive correlations between the two:
+hmin_final <- filter(hmin_final, cor.pear>0)
+hmin_final <- hmin_final[order(hmin_final$cor.pear, decreasing = T),]
+
+#Get distances between promoter and contact that is DC:
+hmin_final$Hdist <- hmin_final$genepos.H-as.numeric(gsub(".*-", "",hmin_final$min_FDR_bin.H))
+hmin_final$Cdist <- hmin_final$genepos.C-as.numeric(gsub(".*-", "", hmin_final$min_FDR_bin.C))
+
+#Subset down to only those that are 60kb apart in both species or less:
+hmin_final <- filter(hmin_final, abs(Hdist)<=100000&abs(Cdist<=100000)&abs(Hdist)>=20000&abs(Cdist>=20000))
+
+#Realistically, it will be easier to find the CTCF element in humans. This means I am looking for DC regions where the Beta is negative, and expression is lower in humans as a result of less contact than in chimps (same filtering, really).
+hmin_final <- filter(hmin_final, min_FDR_B.H<0)
+
+#Prepare a BED file of the contacts being made in this final DF to check between them for CTCF binding:
+options(scipen=999)
+myBED <- data.frame(hchr=gsub("-.*", "", hmin_final$min_FDR_bin.H), hgene=as.integer(gsub(".*-", "", hmin_final$HID)), hcontact=as.integer(gsub(".*-", "", hmin_final$min_FDR_bin.H)), cchr=gsub("-.*", "", hmin_final$min_FDR_bin.C), cgene=as.integer(gsub(".*-", "", hmin_final$CID)), ccontact=as.integer(gsub(".*-", "", hmin_final$min_FDR_bin.C)), geneID=hmin_final$genes, cor.pear=hmin_final$cor.pear, cor.spear=hmin_final$cor.spear)
+myBED$hstart <- ifelse(myBED$hgene<myBED$hcontact, myBED$hgene, myBED$hcontact)
+myBED$hend <- ifelse(myBED$hcontact>myBED$hgene, myBED$hcontact, myBED$hgene)
+myBED$DE_beta <- hmin_final$logFC
+myBED$DC_beta <- hmin_final$min_FDR_B.H
+myBED$dist <- hmin_final$Hdist
+#myBED <- as.data.frame(myBED)
+fwrite(myBED, quote = FALSE, "/Users/ittaieres/Desktop/Insulator_Experiment/insulator.candidates.bed", sep="\t", row.names=F, col.names=F)
+#write.table(as.matrix(myBED), quote=FALSE, "/Users/ittaieres/Desktop/Insulator_Experiment/insulator.candidates.bed", sep="\t", col.names=F, row.names=F)
+
+candidates <- fread("/Users/ittaieres/Desktop/Insulator_Experiment/CTCF.filtered.candidates.bed", sep="\t", header=F, data.table=F)
+candidates$ID <- paste(candidates$V1, candidates$V2, candidates$V3, sep="_")
+myBED$ID <- paste(myBED$hchr, myBED$hstart, myBED$hend, sep="_")
+final.merge <- left_join(candidates, myBED, by="ID")
+
+#Write out human and chimp BED files for extracting FASTA sequences so I can check for CTCF motif.
+human.coords <- select(final.merge, hchr, hstart, hend) #Sorted by earlier coords coming first. Need to do this sorting for chimp:
+final.merge$cstart <- ifelse(final.merge$cgene<final.merge$ccontact, final.merge$cgene, final.merge$ccontact)
+final.merge$cend <- ifelse(final.merge$ccontact>final.merge$cgene, final.merge$ccontact, final.merge$cgene)
+chimp.coords <- select(final.merge, cchr, cstart, cend)
+
+fwrite(human.coords, quote=F, "/Users/ittaieres/Desktop/Insulator_Experiment/human.CTCF.filtered.candidates.bed", sep="\t", row.names=F, col.names=F)
+fwrite(chimp.coords, quote=F, "/Users/ittaieres/Desktop/Insulator_Experiment/chimp.CTCF.filtered.candidates.bed", sep="\t", row.names=F, col.names=F)
+
+#Make an average RPKM file for the genes:
+hmin_final$ave.expr.H <- rowMeans(select(hmin_final, "A-21792", "B-28126", "E-28815", "F-28834"))
+hmin_final$ave.expr.C <- rowMeans(select(hmin_final, "C-3649", "D-40300", "G-3624", "H-3651"))
+hgenes <- data.frame(chr=gsub("-.*", "", hmin_final$min_FDR_bin.H), hgene=as.integer(hmin_final$genepos.H), hgene.end=hmin_final$genepos.H+250, hexpr=hmin_final$ave.expr.H, cexpr=hmin_final$ave.expr.C)
+cgenes <- data.frame(chr=gsub("-.*", "", hmin_final$min_FDR_bin.C), cgene=as.integer(hmin_final$genepos.C), cgene.end=hmin_final$genepos.C+250, cexpr=hmin_final$ave.expr.C, hexpr=hmin_final$ave.expr.H)
+hgenes$cstart <- hgenes$hgene+250
+hgenes$cend <- hgenes$hgene.end+250
+cgenes$hstart <- cgenes$cgene+250
+cgenes$hend <- cgenes$cgene.end+250
+
+hgene.h.bedgraph <- select(hgenes, chr, hgene, hgene.end, hexpr)
+hgene.c.bedgraph <- select(hgenes, chr, cstart, cend, cexpr)
+cgene.c.bedgraph <- select(cgenes, chr, cgene, cgene.end, cexpr)
+cgene.h.bedgraph <- select(cgenes, chr, hstart, hend, hexpr)
+
+fwrite(hgene.h.bedgraph, quote=FALSE, "/Users/ittaieres/Desktop/Insulator_Experiment/hgene.h.bedgraph", sep="\t", row.names=F, col.names = F)
+fwrite(hgene.c.bedgraph, quote=FALSE, "/Users/ittaieres/Desktop/Insulator_Experiment/hgene.c.bedgraph", sep="\t", row.names=F, col.names = F)
+fwrite(cgene.c.bedgraph, quote=FALSE, "/Users/ittaieres/Desktop/Insulator_Experiment/cgene.c.bedgraph", sep="\t", row.names=F, col.names = F)
+fwrite(cgene.h.bedgraph, quote=FALSE, "/Users/ittaieres/Desktop/Insulator_Experiment/cgene.h.bedgraph", sep="\t", row.names=F, col.names = F)
+```
+
+
 ###Permutation Visualizations
 Here, I visualize the difference in classes of DE hits changing (either gaining, losing, or maintaining DE status) after "regressing out" the effect of Hi-C from expression. I show distributions of these percentages across 10000 permutations of the data, as compared to the observed percentages.
 ```{r Permutation Visualizations}
@@ -1038,17 +1108,17 @@ Notations:
 
 $Y_g$: length-$N$ gene expression vector for gene $g$.
 
-$X^M_g$: length-$N$ vector for methylation measurements corresponding to samples at gene $g$.
+$X^M_g$: length-$N$ vector for chromatin contact measurements corresponding to samples at gene $g$.
 
-$X^P$: length-$N$ vector for sample phenotype labels.
+$X^P$: length-$N$ vector for sample phenotype labels (species).
 
-$\tau$: estimated total effect of phenotype $X^P$ on expression $Y_g$.
+$\tau$: estimated total effect of phenotype (species) $X^P$ on expression $Y_g$.
 
-$\tau^{\prime}$: estimated effect of phenotype $X^P$ on expression $Y_g$ after controlling for $X^M_g$, or the direct effect of phenotype on expression.
+$\tau^{\prime}$: estimated effect of phenotype (species) $X^P$ on expression $Y_g$ after controlling for contact, $X^M_g$, or the direct effect of phenotype (species) on expression.
 
-$\alpha$: estimated effect of phenotype$X^P$ on the methylation $X^M_g$.
+$\alpha$: estimated effect of phenotype (species) $X^P$ on the chromatin contacts $X^M_g$.
 
-$\beta$: estimated effect of methylation $X^M_g$ on expression $Y_g$ after controlling for phenotype differences.
+$\beta$: estimated effect of chromatin contacts $X^M_g$ on expression $Y_g$ after controlling for phenotype (species) differences.
 
 $\gamma_1, \gamma_2, \gamma_3$: intercepts 
 

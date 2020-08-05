@@ -28,7 +28,7 @@ library(compiler)
 enableJIT(3)
 ```
 
-#QC on QQ Plots
+# QC on QQ Plots
 Having observed inflated p-values in QQ plots from doing linear modeling, as well as a stark asymmetry in the distribution of betas for the species term in the volcano plot, here I move to examine both issues. The QQ plot issue is not truly concerning, as we were not necessarily expecting normality in this set of hits enriched for significant Hi-C contacts. It seems likely that any set of significant Hi-C hits called independently in each species will have some inflation in the significance of a species term for linearly modeling the interaction frequencies. That the QQ plot does not look like a GWAS QQ plot is not truly concerning, however, just to be sure, first I will run a series of QQ plots once again after shuffling some of the metadata labels. This simply ensures the inflation seen is not an artifact of processing. I tackle the volcano plot asymmetry after alleviating QQ plot concerns and doing some further genomic filtering explained below.
 ```{r QQ Plots}
 #This file will examine first the inflation of p-values from the QQ plot at the end of linear_modeling.Rmd, and then the asymmetry seen in the volcano plots from linear modeling.
@@ -97,7 +97,7 @@ newqqplot(-log10(fake4$P.Value), c(0.5, 0.75), "QQ Plot, Shuffled Design SP only
 ```
 These are slightly better, but many show some small degree of deflation. After looking at all these QQ plots concerns about p-value inflation are fairly assuaged, and it's again worth noting that there was no real cause for concern in the first place. Once again, I pulled out significant Hi-C hits from each species, so it makes sense that this set of hits might already be enriched for strong species differences. I conclude that the signal seen in the QQ plot is not an artifact of making incorrect assumptions in linear modeling.
 
-#Filtering on Genomic Differences in Bin Sizes and Pair Distances
+# Filtering on Genomic Differences in Bin Sizes and Pair Distances
 However, we might still be concerned that some of the observed differences are not truly driven by biology, but due to differences in genome builds or other issues induced by liftOver. I now add several other metrics measuring differences in bin sizes and pair distances between humans and chimps, to help identify differences that may be primarily driven by mapping of orthology or different genome builds rather than true biology. I will then subset the QQ plots to particular classes of these hits and see if any pattern emerges. This utilizes the normal set of p-values from the original design conditioned upon discovery in 4 individuals. I also place hits into classes based on differences in bin size or distance between pair mates, and use a 3-dimensional plot to see if any class(es) of hits show strong inflation in their species p-values from linear modeling. This represents one of the final filtering steps.
 ```{r Genomic Differences}
 #To do this, I first have to pull out the mean start and end positions of bins for each of the species from the data:
@@ -195,7 +195,7 @@ table(data.4$disc_species[highclass]) #~1500 H-specific, ~4000 C-specific, ~50k 
 ```
 Now I have obliterated any remaining concerns about the QQ plot inflation, and filtered out another class of Hi-C significant hits where species differences may have been driven by issues with liftOver between genomes.
 
-#Volcano Plot Asymmetry
+# Volcano Plot Asymmetry
 Now, I go to the asymmetry issue seen in the volcano plot on the linear modeling outputs. I first utilize the set of data conditioned upon discovery in 4 individuals, and break this information down on a chromosome-by-chromosome basis to see if there are particular chromosomes driving the asymmetry. Upon observation of chromosome-specific effects I quantify the extent of asymmetry on individual chromosomes using a null expectation of a binomial distribution with 50/50 probability of betas being positive or negative. I then repeat these analyses and visualize them on the final set of filtered data from above.
 ```{r Volcano Plot Asymmetry}
 #Here I once again show the volcano plot for 4 individuals. Observe the stark asymmetry with a pile-up of hits on the left side as compared to the right.
@@ -227,8 +227,11 @@ volcplot.filt <- volcplot.filt[order(volcplot.filt$specorder),]
 ggplot(data=volcplot.filt, aes(x=beta, y=pval, color=species)) + geom_point() + xlab("Log2 Fold Change in Contact Frequency") + ylab("-log10 BH-corrected p-values") + ggtitle("Filtered Contact Frequency Differences") + scale_color_manual(name="Species", labels=c("Both", "Chimp", "Human"), values=c("#F8766D", "#00BA38", "#619CFF")) #+ geom_hline(yintercept=-log10(0.05), color="red") #Modify to add clearer labels, draw points in different order, and add red line at p=0.05 (actually, removed this, not sure it really matters or helps to show that), perfect for presentations.
 
 #FIG2A (same as FIGS9C)
-FIG2A <- ggplot(data=volcplot.filt, aes(x=beta, y=pval, color=species)) + geom_point() + xlab("Log2 Fold Change in Contact Frequency") + ylab("-log10 BH-corrected p-values") + ggtitle("Contact Frequency Differences") + scale_color_manual(name="Species", labels=c("Both", "Chimp", "Human"), values=c("#F8766D", "#00BA38", "#619CFF")) + theme(plot.title=element_text(hjust=0.27))
+FIG2A <- ggplot(data=volcplot.filt, aes(x=beta, y=pval, color=species)) + geom_point() + xlab("Log2 Fold Change in Contact Frequency") + ylab("-log10 BH-corrected p-values") + ggtitle("Contact Frequency Differences") + scale_color_manual(name="Species", labels=c("Both", "Chimp", "Human"), values=c("#F8766D", "#00BA38", "#619CFF")) + theme(plot.title=element_text(hjust=0.5, size=12), axis.text=element_text(size=10))
 #This volcano plot makes it look as though the asymmetry goes away entirely, with both sides of the volcano showing a visually similar number of hits (no longer AS stark of asymmetry).
+
+#Get 2A on graphics device; export as PDF and move to photoshop for paper.
+FIG2A
 
 #If we break this down on a chromosome-by-chromosome basis:
 levels(volcplot.filt$chr)
@@ -239,6 +242,7 @@ levels(volcplot.filt$chr)
 ggplot(volcplot.filt, aes(x=beta, y=pval, color=species)) + geom_point(size=0.001) + ggtitle("Volcano Plots by Chr") + facet_wrap(~as.factor(chr), nrow=5, ncol=5) + guides(color=FALSE) + ylab("-log10 BH-adjusted p-values") + xlab("Log2 Fold Change in Contact Frequency")
 #We can still see that there are certain chromosomes with a lot of asymmetry to them in terms of distribution of significant betas for the linear modeling--chimps still seem to dominate chromosomes 2, 15-17, and some others.
 
+options(scipen=0)
 #Now try to quantify the extent of asymmetry in the chromosomes, with a particular focus on hits that are statistically significant.
 asym.stats <- data.frame(chr=unique(data.filtered$Hchr), binom.p=rep(NA, 24), prop.h=rep(NA, 24), prop.c=rep(NA, 24))
 rownames(asym.stats) <- asym.stats$chr
@@ -263,11 +267,15 @@ asym.stats <- asym.stats[-24,] #Get rid of the Chr. Y row from the asym stats ta
 ggplot(data=volcplot.noY.filt, aes(x=beta, y=pval, color=species)) + geom_point(size=0.001) + ggtitle("Volcano Plots by Chromosome") + facet_wrap(~chr, nrow=5, ncol=5) + guides(color=FALSE) + ylab("-log10 BH-corrected p-values") + xlab("Log2 Fold Change in Contact Frequency") + geom_text(data=asym.stats, aes(x=-4.5, y=0.75, label=paste(round(prop.c*100, digits=1), "%", sep=""), color=NULL), show.legend=FALSE, size=2) + geom_text(data=asym.stats, aes(x=4, y=0.75, label=paste(round(prop.h*100, digits=1), "%", sep=""), color=NULL), show.legend=FALSE, size=2) + geom_text(data=asym.stats, aes(x=0, y=3.75, label=signif(binom.p, digits=3), color=NULL), show.legend=FALSE, size=2) + theme(strip.text=element_text(size=10, lineheight=0.5), axis.text.y=element_text(size=8), axis.text.x=element_text(size=8))
 
 #FIG2B
-FIG2B <- ggplot(data=volcplot.noY.filt, aes(x=beta, y=pval, color=species)) + geom_point(size=0.001) + ggtitle("Volcano Plots by Chromosome") + facet_wrap(~chr, nrow=5, ncol=5) + guides(color=FALSE) + ylab("-log10 BH-corrected p-values") + xlab("Log2 Fold Change in Contact Frequency") + geom_text(data=asym.stats, aes(x=-4.5, y=0.75, label=paste(round(prop.c*100, digits=1), "%", sep=""), color=NULL), show.legend=FALSE, size=2) + geom_text(data=asym.stats, aes(x=4, y=0.75, label=paste(round(prop.h*100, digits=1), "%", sep=""), color=NULL), show.legend=FALSE, size=2) + geom_text(data=asym.stats, aes(x=0, y=3.75, label=signif(binom.p, digits=3), color=NULL), show.legend=FALSE, size=2) + theme(strip.text=element_text(size=10, lineheight=0.5), axis.text.y=element_text(size=8), axis.text.x=element_text(size=8))
+FIG2B <- ggplot(data=volcplot.noY.filt, aes(x=beta, y=pval, color=species)) + geom_point(size=0.001) + ggtitle("Volcano Plots by Chromosome") + facet_wrap(~chr, nrow=5, ncol=5) + guides(color=FALSE) + ylab("-log10 BH-corrected p-values") + xlab("Log2 Fold Change in Contact Frequency") + geom_text(data=asym.stats, aes(x=-4.25, y=0.75, label=paste(round(prop.c*100, digits=1), "%", sep=""), color=NULL), show.legend=FALSE, size=3) + geom_text(data=asym.stats, aes(x=4.25, y=0.75, label=paste(round(prop.h*100, digits=1), "%", sep=""), color=NULL), show.legend=FALSE, size=3) + geom_text(data=asym.stats, aes(x=0, y=4.5, label=signif(binom.p, digits=3), color=NULL), show.legend=FALSE, size=3) + theme(strip.text=element_text(size=10, lineheight=0.5), axis.text.y=element_text(size=10), axis.text.x=element_text(size=10)) + coord_cartesian(xlim=c(-6, 6), ylim=c(0, 5)) + scale_y_continuous(breaks=c(0, 2, 4))
+
+#Get 2B on graphics device to export as PDF and bring into photoshop for paper publication.
+FIG2B
 
 #FIG2
 FIG2 <- plot_grid(FIG2A, FIG2B, labels=c("A", "B"))
-save_plot("~/Desktop/Fig2.tiff", FIG2, ncol=2, nrow=1, base_aspect_ratio=1.6) #Will need to drag into Adobe and edit afterwards as well, to reduce size.
+save_plot("~/Desktop/Fig2.tiff", FIG2, ncol=2, nrow=1, base_aspect_ratio=1.6) #Will need to drag into Adobe and edit afterwards as well, to reduce size. Used this and just took cropped copies of each panel to fit into the psd file for PLOS.
+#save_plot("~/Desktop/Fig2.final.tiff", FIG2, ncol=1, nrow=2, base_height=3, base_width=5)
 ######
 #ggsave('~/Desktop/volcchr.jpg', device="jpeg", antialias="none") This was an earlier attempt at clearing up some image resolution blurriness with the text.
 #ggsave('~/Desktop/volcchr2.jpg', device="jpeg", dpi=5000) #Works well!
@@ -291,6 +299,6 @@ DC.table$C1.end <- DC.table$C1+10000
 DC.table$C2.end <- DC.table$C2+10000
 DC.table <- DC.table[,c(1, 2, 8, 3, 9, 4, 5, 10, 6, 11, 7)]
 colnames(DC.table) <- c("Human.chromosome", "Human.1.start", "Human.1.end", "Human.2.start", "Human.2.end", "Chimp.chromosome", "Chimp.1.start", "Chimp.1.end", "Chimp.2.start", "Chimp.2.end", "DC FDR")
-fwrite(DC.table, "~/Desktop/Paper Drafts/PLOS/Revision/Revision_2/Final?/FINAL/supptables/S10 Table.txt", quote = FALSE, sep="\t")
+#fwrite(DC.table, "~/Desktop/Paper Drafts/PLOS/Revision/Revision_2/Final?/FINAL/supptables/S10 Table.txt", quote = FALSE, sep="\t")
 ```
 From this analysis we have dealt with some quality control issues, and filtered down the data to a final set of biologically significant Hi-C interaction frequencies, many of which appear species-specific. There are clearly strong differences between the species that make their 3D regulatory landscapes divergent. Now, I move to orthogonal gene expression analyses.
