@@ -33,7 +33,7 @@ enableJIT(3)
 ```
 
 
-###Reading in the data, reformatting for enrichment analyses
+### Reading in the data, reformatting for enrichment analyses
 Here I merely read in the filtered data and create a function to reformat it for a variety of overlap analyses external to R.
 ```{r}
 #Now, read in filtered data from juicer_linear_modeling_QC.Rmd.
@@ -103,7 +103,7 @@ fwrite(chimpairsVC, "data/epigenetic_enrichments/juicer/filt.bins.chimps.VC.bedP
 #Note that the HOMER analyses at this stage seem to be run on de-duplicated bin sets (bin1 and bin2 without dups within them, so removing duplicates at higher FDR). This can be easily dealt with later on here with the deduplicator function later in this doc? I believe? Shouldn't make a big difference in running the overlaps!
 ```
 
-###Functional enrichments: read-in of files and creation of comprehensive dataframe.
+### Functional enrichments: read-in of files and creation of comprehensive dataframe.
 Looking at functional categories enriched in my specific bins. Here I pull out several histone mark peak files and chromHMM annotations, overlapping them with my significant Hi-C bins and adding in information from my linear modeling on the contacts as well as RNA-seq differential expression analyses.
 ```{r Functional Bin Enrichments}
 #####First, obtain data frames from the gene_expression.Rmd file, so I can use the promoter information we have from our in-house metaorthoexon trios file.
@@ -415,7 +415,7 @@ saveRDS(mates.proms.VC.DCDE.only, file="data/epigenetic_enrichments/juicer_enric
 saveRDS(mates.proms.VC.neither.only, file="data/epigenetic_enrichments/juicer_enrich_perms/mates.proms.VC.neither.only.RDS")
 ```
 
-###ChromHMM Mark Length Analysis and Normalization
+### ChromHMM Mark Length Analysis and Normalization
 ```{r}
 ###CHROM HMM WEIGHTING AND DEDUP/FILE WRITE-OUT FOR KR VALUES
 ###WEIGHTS SECTION
@@ -624,7 +624,7 @@ saveRDS(wt.mates.proms.VC.DCDE.only, file="data/epigenetic_enrichments/juicer_en
 saveRDS(wt.mates.proms.VC.neither.only, file="data/epigenetic_enrichments/juicer_enrich_perms/weights/mates.proms.VC.neither.only.RDS")
 ```
 
-#####ChromHMM Chi-Squared Tests
+##### ChromHMM Chi-Squared Tests
 ```{r}
 ####Basic chi-squared tests to check if particular classes of hits are enriched for specific chromHMM marks (i.e. enhancer-associated marks). 
 #First, compare regions making contact with a promoter (not the promoter itself) to those regions that do not do so. I already created DFs of each of these above with duplicates removed: wt.mates.proms.full, and wt.full.no.proms
@@ -707,7 +707,7 @@ chisq.test(table2test) #Gets a good p-value, and has the right direction of effe
 #No enrichment in these data likely due to much smaller dataset
 ```
 
-###ChromHMM Visualization
+### ChromHMM Visualization
 Now, I load in the chromHMM proportion tables from midway2, and visualize them to examine differences in dynamics of regulatory regions for promoter and non-promoter contacts.
 ```{r chromHMM Visualization}
 #Just a function for calculating proportions of chromHMM annotations in bin sets of the significant hits. Primarily used on midway2, created and tested here. No particular function at this point right now--loading of proportion tables begins shortly after.
@@ -1059,7 +1059,7 @@ save_plot("~/Desktop/FIGS4.png", FIGS4, ncol=2, nrow=2, base_aspect_ratio = 1.9)
 ```
 
 
-###Quantitative histone mark enrichments
+### Quantitative histone mark enrichments
 Now, I look at the quantitative enrichment of histone mark peaks from other studies on iPSCs, examining the overlap of these peaks with different classes of Hi-C significant bins.
 ```{r Other quantitative enrichments}
 #######Make a doubled-down data frame for single columns of quantitative enrichments. Really, will need to do differential status-level de-duplication here first, then recombine those to make this simple with ggplot2. Create one huge for looking at differential statuses, and one big one separating out promoters/non promoters (chrom.annos). Also need polarizing ones for DC/not and DE/not, without exclusivity in the case of both. chrom.annos is what was created in the previous chunk for separating out promoters/non promoters. Now, undertake the same process to create the other necessary dfs:

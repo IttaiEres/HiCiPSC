@@ -30,7 +30,7 @@ library(compiler)
 library(bedr)
 enableJIT(3)
 ```
-###QC on QQ Plots
+### QC on QQ Plots
 Having observed inflated p-values in QQ plots from doing linear modeling, as well as a stark asymmetry in the distribution of betas for the species term in the volcano plot, here I move to examine both issues. The QQ plot issue is not truly concerning, as we were not necessarily expecting normality in this set of hits enriched for significant Hi-C contacts. It seems likely that any set of significant Hi-C hits called independently in each species will have some inflation in the significance of a species term for linearly modeling the interaction frequencies. That the QQ plot does not look like a GWAS QQ plot is not truly concerning, however, just to be sure, first I will run a series of QQ plots once again after shuffling some of the metadata labels. This simply ensures the inflation seen is not an artifact of processing. I tackle the volcano plot asymmetry after alleviating QQ plot concerns and doing some further genomic filtering explained below.
 ```{r QQ Plots}
 #This file will examine first the inflation of p-values from the QQ plot at the end of linear_modeling.Rmd, and then the asymmetry seen in the volcano plots from linear modeling.
@@ -110,7 +110,7 @@ newqqplot(-log10(fake4$P.Value), c(0.5, 0.75), "QQ Plot, Shuffled Design 4 VC")
 ```
 These are slightly better, but many show some small degree of deflation. After looking at all these QQ plots concerns about p-value inflation are fairly assuaged, and it's again worth noting that there was no real cause for concern in the first place. Once again, I pulled out significant Hi-C hits from each species, so it makes sense that this set of hits might already be enriched for strong species differences. I conclude that the signal seen in the QQ plot is not an artifact of making incorrect assumptions in linear modeling.
 
-###Genomic Differences
+### Genomic Differences
 However, we might still be concerned that some of the observed differences are not truly driven by biology, but due to differences in genome builds or other issues induced by liftOver. I now add several other metrics measuring differences in bin sizes and pair distances between humans and chimps, to help identify differences that may be primarily driven by mapping of orthology or different genome builds rather than true biology. I will then subset the QQ plots to particular classes of these hits and see if any pattern emerges. This utilizes the normal set of p-values from the original design conditioned upon discovery in 4 individuals. I also place hits into classes based on differences in bin size or distance between pair mates, and use a 3-dimensional plot to see if any class(es) of hits show strong inflation in their species p-values from linear modeling. This represents one of the final filtering steps.
 ```{r Genomic Differences}
 #To do this, I first have to pull out the mean start and end positions of bins for each of the species from the data:
@@ -289,7 +289,7 @@ filt.VC <- filt.VC[-highclass,] #Just removed high class since it has the starke
 ```
 Now I have obliterated any remaining concerns about the QQ plot inflation, and filtered out another class of Hi-C significant hits where species differences may have been driven by issues with liftOver between genomes.
 
-###Volcano Plot Asymmetry
+### Volcano Plot Asymmetry
 Now, I go to the asymmetry issue seen in the volcano plot on the linear modeling outputs. I first utilize the set of data conditioned upon discovery in 4 individuals, and break this information down on a chromosome-by-chromosome basis to see if there are particular chromosomes driving the asymmetry. Upon observation of chromosome-specific effects I quantify the extent of asymmetry on individual chromosomes using a null expectation of a binomial distribution with 50/50 probability of betas being positive or negative. I then repeat these analyses and visualize them on the final set of filtered data from above.
 ```{r Volcano Plot Asymmetry}
 #Here I once again show the volcano plot for 4 individuals. Observe the stark asymmetry with a pile-up of hits on the left side as compared to the right.

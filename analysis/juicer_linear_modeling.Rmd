@@ -32,7 +32,7 @@ library(bedr)
 enableJIT(3)
 ```
 
-###Linear Modeling
+### Linear Modeling
 Having performed some basic quality control and filtering on the data, I now move to quantify how well Hi-C interaction frequency values can be predicted from species identity. To accomplish this, I utilize limma to linearly model Hi-C interaction frequencies as a function of all the metadata about each sample's species, sex, and batch. I then add information from linear modeling to the full dataframe, including log-fold changes between species, p-values, betas, and variances. I then make a plot of the mean vs. the log-fold change as an MA plot proxy for quality control. I move on to look at distributions of all the p-values and betas for each of the terms, make some QQ plots to check for normality in the p-values for each term, and represent the log-fold change and p-values in a volcano plot of the data.
 ```{r Linear Modeling}
 ###Read in data, normalized in initial_QC document, with condition of at least 2 individuals for discovery.
