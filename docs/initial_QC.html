@@ -28,12 +28,12 @@
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <script src="site_libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="site_libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="site_libs/plotly-binding-4.9.0/plotly.js"></script>
 <script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="site_libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
 <script src="site_libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="site_libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="site_libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -436,7 +436,7 @@ div.section {
 
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
-<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
 </button>
 </p>
 <div id="workflowr-report" class="collapse">
@@ -445,7 +445,7 @@ div.section {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#report"> Report <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -454,21 +454,21 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-05-08
+<strong>Last updated:</strong> 2020-08-05
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>HiCiPSC/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
 </p>
 <p>
 This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
-  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.2.0). The <em>Report</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.4.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
 </p>
 <hr>
 </div>
-<div id="report" class="tab-pane fade">
+<div id="checks" class="tab-pane fade">
 <div id="workflowr-checks" class="panel-group">
 <div class="panel panel-default">
 <div class="panel-heading">
@@ -533,10 +533,46 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree9298fb93cc74dbe78a2435b9ef60431eaa145c91targetblank9298fb9a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/9298fb93cc74dbe78a2435b9ef60431eaa145c91" target="_blank">9298fb9</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongabsolute"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>File paths:</strong> absolute </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtree9298fb93cc74dbe78a2435b9ef60431eaa145c91targetblank9298fb9a" class="panel-collapse collapse">
+<div id="strongFilepathsstrongabsolute" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Using absolute paths to the files within your workflowr project makes it difficult for you and others to run your code on a different machine. Change the absolute path(s) below to the suggested relative path(s) to make your code more reproducible.
+</p>
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th style="text-align:left;">
+absolute
+</th>
+<th style="text-align:left;">
+relative
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+/Users/ittaieres/HiCiPSC
+</td>
+<td style="text-align:left;">
+.
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtreea34e570ce00197f82bfc2dcfb0e50933fc99223btargetblanka34e570a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/IttaiEres/HiCiPSC/tree/a34e570ce00197f82bfc2dcfb0e50933fc99223b" target="_blank">a34e570</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomIttaiEresHiCiPSCtreea34e570ce00197f82bfc2dcfb0e50933fc99223btargetblanka34e570a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -546,10 +582,14 @@ Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    analysis/.DS_Store
+    Ignored:    analysis/.Rhistory
     Ignored:    code/.DS_Store
     Ignored:    data/.DS_Store
     Ignored:    data/TADs/.DS_Store
+    Ignored:    data/TADs/Human_inter_30_KR_contact_domains/.DS_Store
     Ignored:    data/TADs/scripts/.DS_Store
+    Ignored:    docs/.DS_Store
+    Ignored:    docs/figure/.DS_Store
     Ignored:    output/.DS_Store
 
 Untracked files:
@@ -860,6 +900,7 @@ Untracked files:
     Untracked:  Rplot304.jpeg
     Untracked:  S2A.jpeg
     Untracked:  S2B.jpeg
+    Untracked:  code/mediation_test.R
     Untracked:  data/Chimp_orthoexon_extended_info.txt
     Untracked:  data/Human_orthoexon_extended_info.txt
     Untracked:  data/Meta_data.txt
@@ -867,11 +908,8 @@ Untracked files:
     Untracked:  data/TADs/CH.10kb.closest.panTro5
     Untracked:  data/TADs/CTCF.overlap.computer.sh
     Untracked:  data/TADs/CTCF/
-    Untracked:  data/TADs/Chimp_inter_30_KR_contact_domains/
     Untracked:  data/TADs/HC.10kb.closest.hg38
-    Untracked:  data/TADs/Human_inter_30_KR_contact_domains/
     Untracked:  data/TADs/Human_inter_30_KR_contact_domains_PT6/
-    Untracked:  data/TADs/PT6_inter_30_KR_contact_domains/
     Untracked:  data/TADs/Rao/
     Untracked:  data/TADs/TopDom/
     Untracked:  data/TADs/deprecated/
@@ -908,6 +946,7 @@ Untracked files:
     Untracked:  output/gene.hic.filt.KR.RDS
     Untracked:  output/gene.hic.filt.RDS
     Untracked:  output/gene.hic.filt.VC.RDS
+    Untracked:  output/homer_mediation.rda
     Untracked:  output/juicer.IEE.RPKM.RDS
     Untracked:  output/juicer.IEE_voom_object.RDS
     Untracked:  output/juicer.filt.KR
@@ -916,6 +955,21 @@ Untracked files:
     Untracked:  output/juicer.filt.VC
     Untracked:  output/juicer.filt.VC.final
     Untracked:  output/juicer.filt.VC.lm
+    Untracked:  output/juicer_mediation.rda
+    Untracked:  output/mc_de.rds
+    Untracked:  output/mc_de_homer.rds
+    Untracked:  output/mc_de_juicer.rds
+    Untracked:  output/mc_node.rds
+    Untracked:  output/mc_node_homer.rds
+    Untracked:  output/mc_node_juicer.rds
+    Untracked:  ~/
+
+Unstaged changes:
+    Modified:   analysis/TADs.Rmd
+    Deleted:    analysis/alt_mediation.Rmd
+    Modified:   analysis/enrichment.Rmd
+    Modified:   analysis/gene_expression.Rmd
+    Modified:   analysis/linear_modeling_QC.Rmd
 
 </code></pre>
 <p>
@@ -954,6 +1008,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/a34e570ce00197f82bfc2dcfb0e50933fc99223b/analysis/initial_QC.Rmd" target="_blank">a34e570</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2020-08-05
+</td>
+<td>
+Update formatting for headers
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/IttaiEres/HiCiPSC/2ec80679a5b8ae9928cd8be7253a10cebdcf3fca/docs/initial_QC.html" target="_blank">2ec8067</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-05-09
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1047,7 +1135,9 @@ Initialize website with index and initial QC file.
 </div>
 </div>
 <p>First, load necessary libraries: limma, plyr, tidyr, data.table, reshape2, cowplot, plotly, dplyr, Hmisc, gplots, stringr, heatmaply, RColorBrewer, edgeR, tidyverse, and compiler</p>
-<p>#Initial Data read-in and quality control; Fig S8 First, I read in the data and normalize it with cyclic pairwise loess normalization. These data have come from compiling all of the significant contacts in any individual across species as called by Homer (p&lt;0.01), and then extracting the interaction frequency values for each contact across all individuals. LiftOver was used to convert coordinates between species, with bins being rounded to the nearest 10kb. Here, I look at histograms of the distributions of the contact frequencies on an individual-by-individual basis, to see if they are comparable. I also look at a plot of the mean vs. the variance as an additional quality control metric; this is typically done on RNA-seq count data. In that case, it’s done to check if the normalized data are distributed in a particular fashion (e.g. a poisson model would have a linear mean-variance relationship). In the limma/voom pipeline, count data are log-cpm transformed and a loess trend line of variance vs. mean is then fit to create weights for individual genes to be fed into linear modeling with limma. Since this is not a QC metric typically used for Hi-C data, the only thing I hope to see is no particularly strong relationship between variance and mean.</p>
+<div id="initial-data-read-in-and-quality-control-fig-s8" class="section level1">
+<h1>Initial Data read-in and quality control; Fig S8</h1>
+<p>First, I read in the data and normalize it with cyclic pairwise loess normalization. These data have come from compiling all of the significant contacts in any individual across species as called by Homer (p&lt;0.01), and then extracting the interaction frequency values for each contact across all individuals. LiftOver was used to convert coordinates between species, with bins being rounded to the nearest 10kb. Here, I look at histograms of the distributions of the contact frequencies on an individual-by-individual basis, to see if they are comparable. I also look at a plot of the mean vs. the variance as an additional quality control metric; this is typically done on RNA-seq count data. In that case, it’s done to check if the normalized data are distributed in a particular fashion (e.g. a poisson model would have a linear mean-variance relationship). In the limma/voom pipeline, count data are log-cpm transformed and a loess trend line of variance vs. mean is then fit to create weights for individual genes to be fed into linear modeling with limma. Since this is not a QC metric typically used for Hi-C data, the only thing I hope to see is no particularly strong relationship between variance and mean.</p>
 <pre class="r"><code>###Read in data, normalize it with cyclic loess (pairwise), clean it from any rows that have missing values.
 setwd(&quot;/Users/ittaieres/HiCiPSC&quot;)
 full.data &lt;- fread(&quot;data/final.10kb.homer.df&quot;, header=TRUE, stringsAsFactors = FALSE, data.table=FALSE, showProgress = FALSE)
@@ -1069,11 +1159,11 @@ chi.dists$variable &lt;- gsub(&quot;_norm&quot;, &quot;&quot;, chi.dists$variabl
 ggplot(data=hum.dists, aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle(&quot;Distributions of Homer-Significant Hi-C Contacts; Humans&quot;) + xlab(&quot;Homer-Normalized Interaction Frequency&quot;) + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 4500)) #Human Dist&#39;ns</code></pre>
 <p><img src="figure/initial_QC.Rmd/Initial%20Hi-C%20Data%20Read-in%20and%20QC-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Initial Hi-C Data Read-in and QC-1">
-Past versions of Initial Hi-C Data Read-in and QC-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Initial-Hi-C-Data-Read-in-and-QC-1">
+Past versions of “Initial Hi-C Data Read-in and QC-1.png”
 </button>
 </p>
-<div id="fig-Initial Hi-C Data Read-in and QC-1" class="collapse">
+<div id="fig-no-spaces-Initial-Hi-C-Data-Read-in-and-QC-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1111,11 +1201,11 @@ Ittai Eres
 ggplot(data=chi.dists, aes(x=value)) + geom_histogram(binwidth=0.0009, aes(group=variable)) + facet_wrap(~as.factor(variable)) + ggtitle(&quot;Distributions of Homer-Significant Hi-C Contacts; Chimpanzees&quot;) + xlab(&quot;Homer-Normalized Interaction Frequency&quot;) + coord_cartesian(xlim=c(-6.6, 6.6), ylim=c(0, 4500)) #Chimp Dist&#39;ns</code></pre>
 <p><img src="figure/initial_QC.Rmd/Initial%20Hi-C%20Data%20Read-in%20and%20QC-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Initial Hi-C Data Read-in and QC-2">
-Past versions of Initial Hi-C Data Read-in and QC-2.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Initial-Hi-C-Data-Read-in-and-QC-2">
+Past versions of “Initial Hi-C Data Read-in and QC-2.png”
 </button>
 </p>
-<div id="fig-Initial Hi-C Data Read-in and QC-2" class="collapse">
+<div id="fig-no-spaces-Initial-Hi-C-Data-Read-in-and-QC-2" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1162,11 +1252,11 @@ select(full.data, &quot;A-21792_norm&quot;, &quot;B-28126_norm&quot;, &quot;E-28
   abline(lm(full.data$ALLmean~full.data$ALLvar), col=&quot;red&quot;)}</code></pre>
 <p><img src="figure/initial_QC.Rmd/Initial%20Hi-C%20Data%20Read-in%20and%20QC-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Initial Hi-C Data Read-in and QC-3">
-Past versions of Initial Hi-C Data Read-in and QC-3.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Initial-Hi-C-Data-Read-in-and-QC-3">
+Past versions of “Initial Hi-C Data Read-in and QC-3.png”
 </button>
 </p>
-<div id="fig-Initial Hi-C Data Read-in and QC-3" class="collapse">
+<div id="fig-no-spaces-Initial-Hi-C-Data-Read-in-and-QC-3" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1204,7 +1294,10 @@ summary(lm(full.data$ALLmean~full.data$ALLvar))$r.squared</code></pre>
 <pre class="r"><code>summary(lm(full.data$ALLmean~full.data$ALLvar))$adj.r.squared</code></pre>
 <pre><code>[1] 0.1076113</code></pre>
 <p>On the whole, the distributions look fairly comparable across individuals and species, and the mean vs. variance plots show weak correlation at best between the two metrics. An actual check of the r squared also shows it to be low, at ~0.11. Now knowing the data are comparable in this sense, the next question would be whether they are different enough between the species to separate them from one another with unsupervised clustering and PCA methods.</p>
-<p>#Data clustering with Principal Components Analysis (PCA) and correlation heatmap clustering. Now I use PCA, breaking down the interaction frequency values into principal components that best represent the variability within the data. This technique uses orthogonal transformation to convert the many dimensions in variability of this dataset into a lower-dimensional picture that can be used to separate out functional groups in the data. In this case, the expectation is that the strongest principal component, representing the plurality of the variance, will separate out humans and chimps along its axis, grouping the two species independently, as we expect their interaction frequency values to cluster together. I then also compute pairwise pearson correlations between each of the individuals across all Hi-C contacts, and use unsupervised hierarchical clustering to create a heatmap that once again will group individuals based on similarity in interaction frequency values. Again, I would expect this technique to separate out the species very distinctly from one another.</p>
+</div>
+<div id="data-clustering-with-principal-components-analysis-pca-and-correlation-heatmap-clustering." class="section level1">
+<h1>Data clustering with Principal Components Analysis (PCA) and correlation heatmap clustering.</h1>
+<p>Now I use PCA, breaking down the interaction frequency values into principal components that best represent the variability within the data. This technique uses orthogonal transformation to convert the many dimensions in variability of this dataset into a lower-dimensional picture that can be used to separate out functional groups in the data. In this case, the expectation is that the strongest principal component, representing the plurality of the variance, will separate out humans and chimps along its axis, grouping the two species independently, as we expect their interaction frequency values to cluster together. I then also compute pairwise pearson correlations between each of the individuals across all Hi-C contacts, and use unsupervised hierarchical clustering to create a heatmap that once again will group individuals based on similarity in interaction frequency values. Again, I would expect this technique to separate out the species very distinctly from one another.</p>
 <pre class="r"><code>###Now do principal components analysis (PCA) on these data to see how they separate:
 meta.data &lt;- data.frame(&quot;SP&quot;=c(&quot;H&quot;, &quot;H&quot;, &quot;C&quot;, &quot;C&quot;, &quot;H&quot;, &quot;H&quot;, &quot;C&quot;, &quot;C&quot;), &quot;SX&quot;=c(&quot;F&quot;, &quot;M&quot;, &quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;F&quot;), &quot;Batch&quot;=c(1, 1, 1, 1, 2, 2, 2, 2), &quot;PE_reads&quot;=c(1084472930, 1103077950, 1015696574, 1047650944, 980287418, 1037054332, 930089380, 964085606), &quot;tags_per_BP&quot;=c(0.351291, 0.357315, 0.342325, 0.353097, 0.317553, 0.335937, 0.313494, 0.324936), &quot;inter_reads&quot;=c(0.1825411, 0.1734168, 0.1559306, 0.2010798, 0.1711258, 0.1479523, 0.1604700, 0.1712287)) #need the metadata first to make this interesting; obtain some of this information from my study design and other parts of it from homer&#39;s outputs
 pca &lt;- prcomp(t(full.contacts), scale=TRUE, center=TRUE)
@@ -1213,11 +1306,11 @@ pca &lt;- prcomp(t(full.contacts), scale=TRUE, center=TRUE)
 ggplot(data=as.data.frame(pca$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title=&quot;PCA on normalized Hi-C Contact Frequency&quot;) + guides(color=guide_legend(order=1), size=FALSE, shape=guide_legend(order=2)) + xlab(paste(&quot;PC1 (&quot;, signif(100*summary(pca)$importance[2,1],2), &quot;% of variance)&quot;)) + ylab((paste(&quot;PC2 (&quot;, signif(100*summary(pca)$importance[2,2],2), &quot;% of variance)&quot;))) + labs(color=&quot;Batch&quot;, shape=&quot;Species&quot;) + scale_shape_manual(labels=c(&quot;Chimp&quot;, &quot;Human&quot;), values=c(16, 17)) #PCA shows the species separating nicely along PC1, which explains the highest proportion of the variance (as seen from scree plot below). This is nice and suggests that there ARE true differences in the data between species we are likely to detect here. None of the other PCs correlate with the number of PE reads, the tags per base pair statistic, or the fraction of interchromosomal reads, all from the homer output (not shown).</code></pre>
 <p><img src="figure/initial_QC.Rmd/Clustering%20w/%20PCA%20and%20Heatmaps-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig- PCA and Heatmaps-1">
-Past versions of PCA and Heatmaps-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces--PCA-and-Heatmaps-1">
+Past versions of &quot; PCA and Heatmaps-1.png&quot;
 </button>
 </p>
-<div id="fig- PCA and Heatmaps-1" class="collapse">
+<div id="fig-no-spaces--PCA-and-Heatmaps-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1252,11 +1345,11 @@ Ittai Eres
 <pre class="r"><code>barplot(summary(pca)$importance[2,], xlab=&quot;PCs&quot;, ylab=&quot;Proportion of Variance Explained&quot;, main=&quot;PCA on normalized Hi-C contact frequency&quot;) #Scree plot showing all the PCs and the proportion of the variance they explain.</code></pre>
 <p><img src="figure/initial_QC.Rmd/Clustering%20w/%20PCA%20and%20Heatmaps-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig- PCA and Heatmaps-2">
-Past versions of PCA and Heatmaps-2.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces--PCA-and-Heatmaps-2">
+Past versions of &quot; PCA and Heatmaps-2.png&quot;
 </button>
 </p>
-<div id="fig- PCA and Heatmaps-2" class="collapse">
+<div id="fig-no-spaces--PCA-and-Heatmaps-2" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1297,9 +1390,12 @@ rownames(corheat) &lt;- colnames(corheat)
 #Similar to figure 1B, but done on the whole set of data, without subsetting down to hits found significant in at least 4 individuals (regardless of species).
 heatmaply(corheat, main=&quot;Pairwise Pearson Correlation @ 10kb&quot;, k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))</code></pre>
 <div id="htmlwidget-c151967fee53a3bcc514" style="width:672px;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-c151967fee53a3bcc514">{"x":{"data":[{"x":[4.5,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"y":[1.18517552954421,1.18517552954421,null,1.18517552954421,1.06687081321649,null,1.06687081321649,1.06687081321649,null,1.06687081321649,1.03441233125822,null,1.03441233125822,1.03441233125822,null,1.03441233125822,1.00124047394332,null,1.00124047394332,1.00124047394332,null,1.00124047394332,0,null,1.00124047394332,1.00124047394332,null,1.00124047394332,0,null,1.03441233125822,1.03441233125822,null,1.03441233125822,0,null,1.06687081321649,1.06687081321649,null,1.06687081321649,0],"text":["y: 1.1851755","y: 1.1851755",null,"y: 1.1851755","y: 1.1851755",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0668708","y: 1.0668708"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid,1)","legendgroup":"(#39BEB1,solid,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4.5,1.875,null,1.875,1.875,null,1.875,1,null,1,1,null,1.875,2.75,null,2.75,2.75,null,2.75,2,null,2,2,null,2.75,3.5,null,3.5,3.5,null,3.5,3,null,3,3,null,3.5,4,null,4,4],"y":[1.18517552954421,1.18517552954421,null,1.18517552954421,1.00188827852063,null,1.00188827852063,1.00188827852063,null,1.00188827852063,0,null,1.00188827852063,1.00188827852063,null,1.00188827852063,0.961508716398257,null,0.961508716398257,0.961508716398257,null,0.961508716398257,0,null,0.961508716398257,0.961508716398257,null,0.961508716398257,0.9392561944276,null,0.9392561944276,0.9392561944276,null,0.9392561944276,0,null,0.9392561944276,0.9392561944276,null,0.9392561944276,0],"text":["y: 1.1851755","y: 1.1851755",null,"y: 1.1851755","y: 1.1851755",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid,1)","legendgroup":"(#E495A5,solid,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4.5,1.875,1,2.75,2,3.5,3,4,7.125,6.25,5.5,5,6,7,8],"y":[1.18517552954421,1.00188827852063,0,0.961508716398257,0,0.9392561944276,0,0,1.06687081321649,1.03441233125822,1.00124047394332,0,0,0,0],"text":["y: 1.1851755","y: 1.0018883","y: 0.0000000","y: 0.9615087","y: 0.0000000","y: 0.9392562","y: 0.0000000","y: 0.0000000","y: 1.0668708","y: 1.0344123","y: 1.0012405","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"type":"scatter","mode":"markers","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"xaxis":"x2","yaxis":"y","frame":null},{"x":[1,2,3,4,5,6,7,8],"y":[1,2,3,4,5,6,7,8],"z":[[1,0.141533380681047,0.158839274622791,0.153050453403804,0.0589406966114147,0.0230409524307309,0,0.00437708703382176],[0.141533380681047,1,0.175877488292864,0.176062646102501,0.0740342739152109,0.0453483816077108,0.0212883522049347,0.0243494183113591],[0.158839274622791,0.175877488292864,1,0.194560650524792,0.0962416337564241,0.0539072528015847,0.0322678232360692,0.0305706707847016],[0.153050453403804,0.176062646102501,0.194560650524792,1,0.0969371194063134,0.0551784141031276,0.0295367439769798,0.033060053894094],[0.0589406966114147,0.0740342739152109,0.0962416337564241,0.0969371194063134,1,0.143101641294004,0.117561206778976,0.118110209324742],[0.0230409524307309,0.0453483816077108,0.0539072528015847,0.0551784141031276,0.143101641294004,1,0.124001712649372,0.104693672326057],[0,0.0212883522049347,0.0322678232360692,0.0295367439769798,0.117561206778976,0.124001712649372,1,0.085223977912317],[0.00437708703382176,0.0243494183113591,0.0305706707847016,0.033060053894094,0.118110209324742,0.104693672326057,0.085223977912317,1]],"text":[["row: CF1<br>column: CF1<br>value: 1.0000","row: CF1<br>column: CF2<br>value: 0.2921","row: CF1<br>column: CM1<br>value: 0.3064","row: CF1<br>column: CM2<br>value: 0.3016","row: CF1<br>column: HM2<br>value: 0.2240","row: CF1<br>column: HF2<br>value: 0.1944","row: CF1<br>column: HM1<br>value: 0.1754","row: CF1<br>column: HF1<br>value: 0.1790"],["row: CF2<br>column: CF1<br>value: 0.2921","row: CF2<br>column: CF2<br>value: 1.0000","row: CF2<br>column: CM1<br>value: 0.3205","row: CF2<br>column: CM2<br>value: 0.3206","row: CF2<br>column: HM2<br>value: 0.2365","row: CF2<br>column: HF2<br>value: 0.2128","row: CF2<br>column: HM1<br>value: 0.1930","row: CF2<br>column: HF1<br>value: 0.1955"],["row: CM1<br>column: CF1<br>value: 0.3064","row: CM1<br>column: CF2<br>value: 0.3205","row: CM1<br>column: CM1<br>value: 1.0000","row: CM1<br>column: CM2<br>value: 0.3359","row: CM1<br>column: HM2<br>value: 0.2548","row: CM1<br>column: HF2<br>value: 0.2199","row: CM1<br>column: HM1<br>value: 0.2020","row: CM1<br>column: HF1<br>value: 0.2006"],["row: CM2<br>column: CF1<br>value: 0.3016","row: CM2<br>column: CF2<br>value: 0.3206","row: CM2<br>column: CM1<br>value: 0.3359","row: CM2<br>column: CM2<br>value: 1.0000","row: CM2<br>column: HM2<br>value: 0.2554","row: CM2<br>column: HF2<br>value: 0.2209","row: CM2<br>column: HM1<br>value: 0.1998","row: CM2<br>column: HF1<br>value: 0.2027"],["row: HM2<br>column: CF1<br>value: 0.2240","row: HM2<br>column: CF2<br>value: 0.2365","row: HM2<br>column: CM1<br>value: 0.2548","row: HM2<br>column: CM2<br>value: 0.2554","row: HM2<br>column: HM2<br>value: 1.0000","row: HM2<br>column: HF2<br>value: 0.2934","row: HM2<br>column: HM1<br>value: 0.2724","row: HM2<br>column: HF1<br>value: 0.2728"],["row: HF2<br>column: CF1<br>value: 0.1944","row: HF2<br>column: CF2<br>value: 0.2128","row: HF2<br>column: CM1<br>value: 0.2199","row: HF2<br>column: CM2<br>value: 0.2209","row: HF2<br>column: HM2<br>value: 0.2934","row: HF2<br>column: HF2<br>value: 1.0000","row: HF2<br>column: HM1<br>value: 0.2777","row: HF2<br>column: HF1<br>value: 0.2618"],["row: HM1<br>column: CF1<br>value: 0.1754","row: HM1<br>column: CF2<br>value: 0.1930","row: HM1<br>column: CM1<br>value: 0.2020","row: HM1<br>column: CM2<br>value: 0.1998","row: HM1<br>column: HM2<br>value: 0.2724","row: HM1<br>column: HF2<br>value: 0.2777","row: HM1<br>column: HM1<br>value: 1.0000","row: HM1<br>column: HF1<br>value: 0.2457"],["row: HF1<br>column: CF1<br>value: 0.1790","row: HF1<br>column: CF2<br>value: 0.1955","row: HF1<br>column: CM1<br>value: 0.2006","row: HF1<br>column: CM2<br>value: 0.2027","row: HF1<br>column: HM2<br>value: 0.2728","row: HF1<br>column: HF2<br>value: 0.2618","row: HF1<br>column: HM1<br>value: 0.2457","row: HF1<br>column: HF1<br>value: 1.0000"]],"colorscale":[[0,"#440154"],[0.00437708703382176,"#440256"],[0.0212883522049347,"#46095C"],[0.0230409524307309,"#460A5D"],[0.0243494183113591,"#460A5D"],[0.0295367439769798,"#470C5F"],[0.0305706707847016,"#470D60"],[0.0322678232360692,"#470D60"],[0.033060053894094,"#470D60"],[0.0453483816077108,"#471265"],[0.0539072528015847,"#481668"],[0.0551784141031276,"#481668"],[0.0589406966114147,"#481769"],[0.0740342739152109,"#481C6E"],[0.085223977912317,"#482071"],[0.0962416337564241,"#482475"],[0.0969371194063134,"#482475"],[0.104693672326057,"#482677"],[0.117561206778976,"#472A7A"],[0.118110209324742,"#472A7A"],[0.124001712649372,"#472D7B"],[0.141533380681047,"#46327E"],[0.143101641294004,"#46327E"],[0.153050453403804,"#453581"],[0.158839274622791,"#453882"],[0.175877488292864,"#433D84"],[0.176062646102501,"#433D84"],[0.194560650524792,"#414287"],[1,"#FDE725"]],"type":"heatmap","showscale":false,"autocolorscale":false,"showlegend":false,"xaxis":"x","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1],"y":[1],"name":"99_36d3fb004922f4db2232a5299c6a5935","type":"scatter","mode":"markers","opacity":0,"hoverinfo":"none","showlegend":false,"marker":{"color":[0,1],"colorscale":[[0,"#440154"],[0.0526315789473684,"#481567"],[0.105263157894737,"#482677"],[0.157894736842105,"#453781"],[0.210526315789474,"#3F4788"],[0.263157894736842,"#39558C"],[0.315789473684211,"#32648E"],[0.368421052631579,"#2D718E"],[0.421052631578947,"#287D8E"],[0.473684210526316,"#238A8D"],[0.526315789473684,"#1F968B"],[0.578947368421053,"#20A386"],[0.631578947368421,"#29AF7F"],[0.684210526315789,"#3CBB75"],[0.736842105263158,"#56C667"],[0.789473684210526,"#74D055"],[0.842105263157895,"#94D840"],[0.894736842105263,"#B8DE29"],[0.947368421052632,"#DCE318"],[1,"#FDE725"]],"colorbar":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"thickness":23.04,"title":null,"titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"tickmode":"array","ticktext":["0.2","0.4","0.6","0.8","1.0"],"tickvals":[0.0297983456391227,0.272348759229342,0.514899172819561,0.757449586409781,1],"tickfont":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"ticklen":2,"len":0.5}},"xaxis":"x","yaxis":"y2","frame":null},{"x":[1.18517552954421,1.18517552954421,null,1.18517552954421,1.06687081321649,null,1.06687081321649,1.06687081321649,null,1.06687081321649,1.03441233125822,null,1.03441233125822,1.03441233125822,null,1.03441233125822,1.00124047394332,null,1.00124047394332,1.00124047394332,null,1.00124047394332,0,null,1.00124047394332,1.00124047394332,null,1.00124047394332,0,null,1.03441233125822,1.03441233125822,null,1.03441233125822,0,null,1.06687081321649,1.06687081321649,null,1.06687081321649,0],"y":[4.5,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"text":["y: 1.1851755","y: 1.1851755",null,"y: 1.1851755","y: 1.1851755",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0668708","y: 1.0668708"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid,1)","legendgroup":"(#39BEB1,solid,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1.18517552954421,1.18517552954421,null,1.18517552954421,1.00188827852063,null,1.00188827852063,1.00188827852063,null,1.00188827852063,0,null,1.00188827852063,1.00188827852063,null,1.00188827852063,0.961508716398257,null,0.961508716398257,0.961508716398257,null,0.961508716398257,0,null,0.961508716398257,0.961508716398257,null,0.961508716398257,0.9392561944276,null,0.9392561944276,0.9392561944276,null,0.9392561944276,0,null,0.9392561944276,0.9392561944276,null,0.9392561944276,0],"y":[4.5,1.875,null,1.875,1.875,null,1.875,1,null,1,1,null,1.875,2.75,null,2.75,2.75,null,2.75,2,null,2,2,null,2.75,3.5,null,3.5,3.5,null,3.5,3,null,3,3,null,3.5,4,null,4,4],"text":["y: 1.1851755","y: 1.1851755",null,"y: 1.1851755","y: 1.1851755",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid,1)","legendgroup":"(#E495A5,solid,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1.18517552954421,1.00188827852063,0,0.961508716398257,0,0.9392561944276,0,0,1.06687081321649,1.03441233125822,1.00124047394332,0,0,0,0],"y":[4.5,1.875,1,2.75,2,3.5,3,4,7.125,6.25,5.5,5,6,7,8],"text":["y: 1.1851755","y: 1.0018883","y: 0.0000000","y: 0.9615087","y: 0.0000000","y: 0.9392562","y: 0.0000000","y: 0.0000000","y: 1.0668708","y: 1.0344123","y: 1.0012405","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null}],"layout":{"xaxis":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["CF1","CF2","CM1","CM2","HM2","HF2","HM1","HF1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["CF1","CF2","CM1","CM2","HM2","HF2","HM1","HF1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-45,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y2","title":"","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"xaxis2":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"y2","type":"linear","autorange":false,"range":[0,1.18517552954421],"tickmode":"array","ticktext":["0.0","0.3","0.6","0.9"],"tickvals":[0,0.3,0.6,0.9],"categoryorder":"array","categoryarray":["0.0","0.3","0.6","0.9"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":"","titlefont":{"color":null,"family":null,"size":0},"hoverformat":".2f"},"yaxis2":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["CF1","CF2","CM1","CM2","HM2","HF2","HM1","HF1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["CF1","CF2","CM1","CM2","HM2","HF2","HM1","HF1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":"","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"yaxis":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"x","type":"linear","autorange":false,"range":[0,1.18517552954421],"tickmode":"array","ticktext":["0.0","0.3","0.6","0.9"],"tickvals":[0,0.3,0.6,0.9],"categoryorder":"array","categoryarray":["0.0","0.3","0.6","0.9"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":"","titlefont":{"color":null,"family":null,"size":0},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0.8,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0,"y1":0.8},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.8,"x1":1,"y0":0,"y1":0.8}],"margin":{"t":30,"r":30,"b":50,"l":50},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":1,"yanchor":"top"},"hovermode":"closest","barmode":"relative","paper_bgcolor":"rgba(255,255,255,1)","title":"Pairwise Pearson Correlation @ 10kb"},"attrs":{"d037407d66e9":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"d03768ef6c12":{"colour":{},"shape":{},"size":{},"x":{},"y":{}},"d037cba5f0f":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20]},"d0371bb68672":{"fill":{},"text":{},"x":{},"y":{},"type":"heatmap"},"d03798f4e5c":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"d0371f617eeb":{"colour":{},"shape":{},"size":{},"x":{},"y":{}}},"source":"A","config":{"doubleClick":"reset","modeBarButtonsToAdd":[],"cloud":false,"displaylogo":false,"modeBarButtonsToRemove":["sendDataToCloud","select2d","lasso2d","autoScale2d","hoverClosestCartesian","hoverCompareCartesian","sendDataToCloud"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-c151967fee53a3bcc514">{"x":{"data":[{"x":[4.5,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"y":[1.18517552954421,1.18517552954421,null,1.18517552954421,1.06687081321649,null,1.06687081321649,1.06687081321649,null,1.06687081321649,1.03441233125822,null,1.03441233125822,1.03441233125822,null,1.03441233125822,1.00124047394332,null,1.00124047394332,1.00124047394332,null,1.00124047394332,0,null,1.00124047394332,1.00124047394332,null,1.00124047394332,0,null,1.03441233125822,1.03441233125822,null,1.03441233125822,0,null,1.06687081321649,1.06687081321649,null,1.06687081321649,0],"text":["y: 1.1851755","y: 1.1851755",null,"y: 1.1851755","y: 1.1851755",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0668708","y: 1.0668708"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid)","legendgroup":"(#39BEB1,solid)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4.5,1.875,null,1.875,1.875,null,1.875,1,null,1,1,null,1.875,2.75,null,2.75,2.75,null,2.75,2,null,2,2,null,2.75,3.5,null,3.5,3.5,null,3.5,3,null,3,3,null,3.5,4,null,4,4],"y":[1.18517552954421,1.18517552954421,null,1.18517552954421,1.00188827852063,null,1.00188827852063,1.00188827852063,null,1.00188827852063,0,null,1.00188827852063,1.00188827852063,null,1.00188827852063,0.961508716398257,null,0.961508716398257,0.961508716398257,null,0.961508716398257,0,null,0.961508716398257,0.961508716398257,null,0.961508716398257,0.9392561944276,null,0.9392561944276,0.9392561944276,null,0.9392561944276,0,null,0.9392561944276,0.9392561944276,null,0.9392561944276,0],"text":["y: 1.1851755","y: 1.1851755",null,"y: 1.1851755","y: 1.1851755",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid)","legendgroup":"(#E495A5,solid)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4.5,1.875,1,2.75,2,3.5,3,4,7.125,6.25,5.5,5,6,7,8],"y":[1.18517552954421,1.00188827852063,0,0.961508716398257,0,0.9392561944276,0,0,1.06687081321649,1.03441233125822,1.00124047394332,0,0,0,0],"text":["y: 1.1851755","y: 1.0018883","y: 0.0000000","y: 0.9615087","y: 0.0000000","y: 0.9392562","y: 0.0000000","y: 0.0000000","y: 1.0668708","y: 1.0344123","y: 1.0012405","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"type":"scatter","mode":"markers","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"xaxis":"x2","yaxis":"y","frame":null},{"x":[1,2,3,4,5,6,7,8],"y":[1,2,3,4,5,6,7,8],"z":[[1,0.141533380681047,0.158839274622791,0.153050453403804,0.0589406966114147,0.0230409524307309,0,0.00437708703382176],[0.141533380681047,1,0.175877488292864,0.176062646102501,0.0740342739152109,0.0453483816077108,0.0212883522049347,0.0243494183113591],[0.158839274622791,0.175877488292864,1,0.194560650524792,0.0962416337564241,0.0539072528015847,0.0322678232360692,0.0305706707847016],[0.153050453403804,0.176062646102501,0.194560650524792,1,0.0969371194063134,0.0551784141031276,0.0295367439769798,0.033060053894094],[0.0589406966114147,0.0740342739152109,0.0962416337564241,0.0969371194063134,1,0.143101641294004,0.117561206778976,0.118110209324742],[0.0230409524307309,0.0453483816077108,0.0539072528015847,0.0551784141031276,0.143101641294004,1,0.124001712649372,0.104693672326057],[0,0.0212883522049347,0.0322678232360692,0.0295367439769798,0.117561206778976,0.124001712649372,1,0.085223977912317],[0.00437708703382176,0.0243494183113591,0.0305706707847016,0.033060053894094,0.118110209324742,0.104693672326057,0.085223977912317,1]],"text":[["row: CF1<br>column: CF1<br>value: 1.0000","row: CF1<br>column: CF2<br>value: 0.2921","row: CF1<br>column: CM1<br>value: 0.3064","row: CF1<br>column: CM2<br>value: 0.3016","row: CF1<br>column: HM2<br>value: 0.2240","row: CF1<br>column: HF2<br>value: 0.1944","row: CF1<br>column: HM1<br>value: 0.1754","row: CF1<br>column: HF1<br>value: 0.1790"],["row: CF2<br>column: CF1<br>value: 0.2921","row: CF2<br>column: CF2<br>value: 1.0000","row: CF2<br>column: CM1<br>value: 0.3205","row: CF2<br>column: CM2<br>value: 0.3206","row: CF2<br>column: HM2<br>value: 0.2365","row: CF2<br>column: HF2<br>value: 0.2128","row: CF2<br>column: HM1<br>value: 0.1930","row: CF2<br>column: HF1<br>value: 0.1955"],["row: CM1<br>column: CF1<br>value: 0.3064","row: CM1<br>column: CF2<br>value: 0.3205","row: CM1<br>column: CM1<br>value: 1.0000","row: CM1<br>column: CM2<br>value: 0.3359","row: CM1<br>column: HM2<br>value: 0.2548","row: CM1<br>column: HF2<br>value: 0.2199","row: CM1<br>column: HM1<br>value: 0.2020","row: CM1<br>column: HF1<br>value: 0.2006"],["row: CM2<br>column: CF1<br>value: 0.3016","row: CM2<br>column: CF2<br>value: 0.3206","row: CM2<br>column: CM1<br>value: 0.3359","row: CM2<br>column: CM2<br>value: 1.0000","row: CM2<br>column: HM2<br>value: 0.2554","row: CM2<br>column: HF2<br>value: 0.2209","row: CM2<br>column: HM1<br>value: 0.1998","row: CM2<br>column: HF1<br>value: 0.2027"],["row: HM2<br>column: CF1<br>value: 0.2240","row: HM2<br>column: CF2<br>value: 0.2365","row: HM2<br>column: CM1<br>value: 0.2548","row: HM2<br>column: CM2<br>value: 0.2554","row: HM2<br>column: HM2<br>value: 1.0000","row: HM2<br>column: HF2<br>value: 0.2934","row: HM2<br>column: HM1<br>value: 0.2724","row: HM2<br>column: HF1<br>value: 0.2728"],["row: HF2<br>column: CF1<br>value: 0.1944","row: HF2<br>column: CF2<br>value: 0.2128","row: HF2<br>column: CM1<br>value: 0.2199","row: HF2<br>column: CM2<br>value: 0.2209","row: HF2<br>column: HM2<br>value: 0.2934","row: HF2<br>column: HF2<br>value: 1.0000","row: HF2<br>column: HM1<br>value: 0.2777","row: HF2<br>column: HF1<br>value: 0.2618"],["row: HM1<br>column: CF1<br>value: 0.1754","row: HM1<br>column: CF2<br>value: 0.1930","row: HM1<br>column: CM1<br>value: 0.2020","row: HM1<br>column: CM2<br>value: 0.1998","row: HM1<br>column: HM2<br>value: 0.2724","row: HM1<br>column: HF2<br>value: 0.2777","row: HM1<br>column: HM1<br>value: 1.0000","row: HM1<br>column: HF1<br>value: 0.2457"],["row: HF1<br>column: CF1<br>value: 0.1790","row: HF1<br>column: CF2<br>value: 0.1955","row: HF1<br>column: CM1<br>value: 0.2006","row: HF1<br>column: CM2<br>value: 0.2027","row: HF1<br>column: HM2<br>value: 0.2728","row: HF1<br>column: HF2<br>value: 0.2618","row: HF1<br>column: HM1<br>value: 0.2457","row: HF1<br>column: HF1<br>value: 1.0000"]],"colorscale":[[0,"#440154"],[0.00437708703382176,"#440256"],[0.0212883522049347,"#46095C"],[0.0230409524307309,"#460A5D"],[0.0243494183113591,"#460A5D"],[0.0295367439769798,"#470C5F"],[0.0305706707847016,"#470D60"],[0.0322678232360692,"#470D60"],[0.033060053894094,"#470D60"],[0.0453483816077108,"#471265"],[0.0539072528015847,"#481668"],[0.0551784141031276,"#481668"],[0.0589406966114147,"#481769"],[0.0740342739152109,"#481C6E"],[0.085223977912317,"#482071"],[0.0962416337564241,"#482475"],[0.0969371194063134,"#482475"],[0.104693672326057,"#482677"],[0.117561206778976,"#472A7A"],[0.118110209324742,"#472A7A"],[0.124001712649372,"#472D7B"],[0.141533380681047,"#46327E"],[0.143101641294004,"#46327E"],[0.153050453403804,"#453581"],[0.158839274622791,"#453882"],[0.175877488292864,"#433D84"],[0.176062646102501,"#433D84"],[0.194560650524792,"#414287"],[1,"#FDE725"]],"type":"heatmap","showscale":false,"autocolorscale":false,"showlegend":false,"xaxis":"x","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1],"y":[1],"name":"99_ad57655b21db8349403ac7c60c36cc8e","type":"scatter","mode":"markers","opacity":0,"hoverinfo":"skip","showlegend":false,"marker":{"color":[0,1],"colorscale":[[0,"#440154"],[0.0526315789473684,"#481567"],[0.105263157894737,"#482677"],[0.157894736842105,"#453781"],[0.210526315789474,"#3F4788"],[0.263157894736842,"#39558C"],[0.315789473684211,"#32648E"],[0.368421052631579,"#2D718E"],[0.421052631578947,"#287D8E"],[0.473684210526316,"#238A8D"],[0.526315789473684,"#1F968B"],[0.578947368421053,"#20A386"],[0.631578947368421,"#29AF7F"],[0.684210526315789,"#3CBB75"],[0.736842105263158,"#56C667"],[0.789473684210526,"#74D055"],[0.842105263157895,"#94D840"],[0.894736842105263,"#B8DE29"],[0.947368421052632,"#DCE318"],[1,"#FDE725"]],"colorbar":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"thickness":23.04,"title":null,"titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"tickmode":"array","ticktext":["0.2","0.4","0.6","0.8","1.0"],"tickvals":[0.0297983456391227,0.272348759229342,0.514899172819561,0.757449586409781,1],"tickfont":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"ticklen":2,"len":0.5}},"xaxis":"x","yaxis":"y2","frame":null},{"x":[1.18517552954421,1.18517552954421,null,1.18517552954421,1.06687081321649,null,1.06687081321649,1.06687081321649,null,1.06687081321649,1.03441233125822,null,1.03441233125822,1.03441233125822,null,1.03441233125822,1.00124047394332,null,1.00124047394332,1.00124047394332,null,1.00124047394332,0,null,1.00124047394332,1.00124047394332,null,1.00124047394332,0,null,1.03441233125822,1.03441233125822,null,1.03441233125822,0,null,1.06687081321649,1.06687081321649,null,1.06687081321649,0],"y":[4.5,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"text":["y: 1.1851755","y: 1.1851755",null,"y: 1.1851755","y: 1.1851755",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0012405","y: 1.0012405",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0344123","y: 1.0344123",null,"y: 1.0668708","y: 1.0668708",null,"y: 1.0668708","y: 1.0668708"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid)","legendgroup":"(#39BEB1,solid)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1.18517552954421,1.18517552954421,null,1.18517552954421,1.00188827852063,null,1.00188827852063,1.00188827852063,null,1.00188827852063,0,null,1.00188827852063,1.00188827852063,null,1.00188827852063,0.961508716398257,null,0.961508716398257,0.961508716398257,null,0.961508716398257,0,null,0.961508716398257,0.961508716398257,null,0.961508716398257,0.9392561944276,null,0.9392561944276,0.9392561944276,null,0.9392561944276,0,null,0.9392561944276,0.9392561944276,null,0.9392561944276,0],"y":[4.5,1.875,null,1.875,1.875,null,1.875,1,null,1,1,null,1.875,2.75,null,2.75,2.75,null,2.75,2,null,2,2,null,2.75,3.5,null,3.5,3.5,null,3.5,3,null,3,3,null,3.5,4,null,4,4],"text":["y: 1.1851755","y: 1.1851755",null,"y: 1.1851755","y: 1.1851755",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 1.0018883","y: 1.0018883",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9615087","y: 0.9615087",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562",null,"y: 0.9392562","y: 0.9392562"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid)","legendgroup":"(#E495A5,solid)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1.18517552954421,1.00188827852063,0,0.961508716398257,0,0.9392561944276,0,0,1.06687081321649,1.03441233125822,1.00124047394332,0,0,0,0],"y":[4.5,1.875,1,2.75,2,3.5,3,4,7.125,6.25,5.5,5,6,7,8],"text":["y: 1.1851755","y: 1.0018883","y: 0.0000000","y: 0.9615087","y: 0.0000000","y: 0.9392562","y: 0.0000000","y: 0.0000000","y: 1.0668708","y: 1.0344123","y: 1.0012405","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null}],"layout":{"xaxis":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["CF1","CF2","CM1","CM2","HM2","HF2","HM1","HF1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["CF1","CF2","CM1","CM2","HM2","HF2","HM1","HF1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-45,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y2","title":"","hoverformat":".2f"},"xaxis2":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"y2","type":"linear","autorange":false,"range":[0,1.18517552954421],"tickmode":"array","ticktext":["0.0","0.3","0.6","0.9"],"tickvals":[0,0.3,0.6,0.9],"categoryorder":"array","categoryarray":["0.0","0.3","0.6","0.9"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"yaxis2":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["CF1","CF2","CM1","CM2","HM2","HF2","HM1","HF1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["CF1","CF2","CM1","CM2","HM2","HF2","HM1","HF1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"yaxis":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"x","type":"linear","autorange":false,"range":[0,1.18517552954421],"tickmode":"array","ticktext":["0.0","0.3","0.6","0.9"],"tickvals":[0,0.3,0.6,0.9],"categoryorder":"array","categoryarray":["0.0","0.3","0.6","0.9"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"annotations":[],"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0.8,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0,"y1":0.8},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.8,"x1":1,"y0":0,"y1":0.8}],"images":[],"margin":{"t":30,"r":30,"b":50,"l":50},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":1,"yanchor":"top"},"hovermode":"closest","barmode":"relative","paper_bgcolor":"rgba(255,255,255,1)","title":"Pairwise Pearson Correlation @ 10kb"},"attrs":{"dfe247faed0f":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"dfe22ae198b4":{"colour":{},"shape":{},"size":{},"x":{},"y":{}},"dfe267158174":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20]},"dfe257acb245":{"fill":{},"text":{},"x":{},"y":{},"type":"heatmap"},"dfe24fafbea2":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"dfe21b0ca68d":{"colour":{},"shape":{},"size":{},"x":{},"y":{}}},"source":"A","config":{"doubleClick":"reset","showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["sendDataToCloud","select2d","lasso2d","autoScale2d","hoverClosestCartesian","hoverCompareCartesian","sendDataToCloud"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code>#We can see that all the humans cluster together, as do all the chimps. This is very good, despite the fact that the correlations are fairly low.</code></pre>
-<p>#Variance exploration; Fig S7 Now I look at several metrics to assess variance in the data, checking which species hits were discovered as significant in and how many individuals a given hit was discovered in. I look at this to understand if there are some cutoffs that should be made to reduce the noisiness of the data and maximize the significance of further findings.</p>
+</div>
+<div id="variance-exploration-fig-s7" class="section level1">
+<h1>Variance exploration; Fig S7</h1>
+<p>Now I look at several metrics to assess variance in the data, checking which species hits were discovered as significant in and how many individuals a given hit was discovered in. I look at this to understand if there are some cutoffs that should be made to reduce the noisiness of the data and maximize the significance of further findings.</p>
 <pre class="r"><code>###Add columns to full.data to indicate species of discovery and number of individuals discovered in. These pieces of information are good to know about each of the hits generally, but can also be used to make decisions about filtering out certain classes of hits if variance is associated with any of these metrics.  
 humNAs &lt;- rowSums(is.na(full.data[,1:149])) #148 is when there is no human info. 37 NAs per individual.
 chimpNAs &lt;- rowSums(is.na(full.data[,150:297])) #Same as above of course.
@@ -1322,11 +1418,11 @@ myplot &lt;- data.frame(disc_species=full.data$disc_species, found_in_H=full.dat
 ggplot(data=myplot, aes(group=tot_indiv_IDd, x=tot_indiv_IDd, y=ALLvar)) + geom_boxplot() + ggtitle(&quot;Number of Individuals a Hi-C Hit is Discovered in Relative to Variance&quot;) + xlab(&quot;Number of Individuals Where Hi-C Contact Called Significant&quot;) + ylab(&quot;Variance in Interaction Frequency&quot;)</code></pre>
 <p><img src="figure/initial_QC.Rmd/Variance%20QC-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Variance QC-1">
-Past versions of Variance QC-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Variance-QC-1">
+Past versions of “Variance QC-1.png”
 </button>
 </p>
-<div id="fig-Variance QC-1" class="collapse">
+<div id="fig-no-spaces-Variance-QC-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1364,11 +1460,11 @@ ggplot(data=myplot, aes(group=tot_indiv_IDd, x=tot_indiv_IDd, y=ALLvar)) + geom_
 <pre><code>Warning: Removed 737679 rows containing non-finite values (stat_boxplot).</code></pre>
 <p><img src="figure/initial_QC.Rmd/Variance%20QC-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Variance QC-2">
-Past versions of Variance QC-2.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Variance-QC-2">
+Past versions of “Variance QC-2.png”
 </button>
 </p>
-<div id="fig-Variance QC-2" class="collapse">
+<div id="fig-no-spaces-Variance-QC-2" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1405,7 +1501,10 @@ FIGS7 &lt;- plot_grid(FIGS7A, FIGS7B, labels=c(&quot;A&quot;, &quot;B&quot;), al
 <pre><code>Warning: Removed 737679 rows containing non-finite values (stat_boxplot).</code></pre>
 <pre class="r"><code>save_plot(&quot;~/Desktop/FIGS7A.eps&quot;, FIGS7)</code></pre>
 <p>From this, it would appear that variance drops off drastically after discovery in at least 4 individuals. I observed a similar pattern when looking at number of individuals a hit is discovered in vs. species-specific variances, as well as similar reductions when looking at variance in hits within species vs. number of individuals discovered in (not shown). Hence I now repeat all of the QC analyses done above, but this time conditioned upon discovery in 4 individuals. Moving forward I will ultimately filter out all the hits that were not found in at least 4 individuals, though I sometimes check the full dataset as well just for sanity’s sake.</p>
-<p>#Initial Quality Control Analyses Conditioned Upon Discovery in at Least 4 Individuals; Fig 1 Given the results just seen for variance, I now repeat all the analyses I carried out previously on the data conditioned upon homer discovering a hit as significant in at least 4 individuals. Based upon a reviewer concern, I also check these things for hits that were discovered as significant in all 4 individuals within a given species (i.e. significant contacts that are not “polymorphic”)</p>
+</div>
+<div id="initial-quality-control-analyses-conditioned-upon-discovery-in-at-least-4-individuals-fig-1" class="section level1">
+<h1>Initial Quality Control Analyses Conditioned Upon Discovery in at Least 4 Individuals; Fig 1</h1>
+<p>Given the results just seen for variance, I now repeat all the analyses I carried out previously on the data conditioned upon homer discovering a hit as significant in at least 4 individuals. Based upon a reviewer concern, I also check these things for hits that were discovered as significant in all 4 individuals within a given species (i.e. significant contacts that are not “polymorphic”)</p>
 <pre class="r"><code>#Repeating all QC with the condition of discovery in 4 individuals:
 data.4 &lt;- filter(full.data, tot_indiv_IDd&gt;=4) #Enforcing this condition brings us down from ~3 million hits to ~347k hits.
 data.4.fixed &lt;- filter(full.data, found_in_H==4|found_in_C==4) #Enforcing this reviewer-suggested condition of only including contacts significant in all individuals from a species brings us down to ~164k hits.
@@ -1415,11 +1514,11 @@ ggplot(data=melt(data.4[,c(304:305, 308:309)]), aes(x=value)) + geom_histogram(b
 <pre><code>No id variables; using all as measure variables</code></pre>
 <p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC | 4 Individuals-1">
-Past versions of QC | 4 Individuals-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-|-4-Individuals-1">
+Past versions of “QC | 4 Individuals-1.png”
 </button>
 </p>
-<div id="fig-QC | 4 Individuals-1" class="collapse">
+<div id="fig-no-spaces-QC-|-4-Individuals-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1455,11 +1554,11 @@ Ittai Eres
 <pre><code>No id variables; using all as measure variables</code></pre>
 <p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC | 4 Individuals-2">
-Past versions of QC | 4 Individuals-2.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-|-4-Individuals-2">
+Past versions of “QC | 4 Individuals-2.png”
 </button>
 </p>
-<div id="fig-QC | 4 Individuals-2" class="collapse">
+<div id="fig-no-spaces-QC-|-4-Individuals-2" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1498,11 +1597,11 @@ ggplot(data=melt(data.4.fixed[,c(304:305, 308:309)]), aes(x=value)) + geom_histo
 <pre><code>No id variables; using all as measure variables</code></pre>
 <p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC | 4 Individuals-3">
-Past versions of QC | 4 Individuals-3.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-|-4-Individuals-3">
+Past versions of “QC | 4 Individuals-3.png”
 </button>
 </p>
-<div id="fig-QC | 4 Individuals-3" class="collapse">
+<div id="fig-no-spaces-QC-|-4-Individuals-3" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1538,11 +1637,11 @@ Ittai Eres
 <pre><code>No id variables; using all as measure variables</code></pre>
 <p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC | 4 Individuals-4">
-Past versions of QC | 4 Individuals-4.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-|-4-Individuals-4">
+Past versions of “QC | 4 Individuals-4.png”
 </button>
 </p>
-<div id="fig-QC | 4 Individuals-4" class="collapse">
+<div id="fig-no-spaces-QC-|-4-Individuals-4" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1579,11 +1678,11 @@ Ittai Eres
   abline(lm(data.4$ALLmean~data.4$ALLvar), col=&quot;red&quot;)}</code></pre>
 <p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-5.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC | 4 Individuals-5">
-Past versions of QC | 4 Individuals-5.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-|-4-Individuals-5">
+Past versions of “QC | 4 Individuals-5.png”
 </button>
 </p>
-<div id="fig-QC | 4 Individuals-5" class="collapse">
+<div id="fig-no-spaces-QC-|-4-Individuals-5" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1626,11 +1725,11 @@ Ittai Eres
   abline(lm(data.4.fixed$ALLmean~data.4.fixed$ALLvar), col=&quot;red&quot;)}</code></pre>
 <p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-6.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC | 4 Individuals-6">
-Past versions of QC | 4 Individuals-6.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-|-4-Individuals-6">
+Past versions of “QC | 4 Individuals-6.png”
 </button>
 </p>
-<div id="fig-QC | 4 Individuals-6" class="collapse">
+<div id="fig-no-spaces-QC-|-4-Individuals-6" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1675,11 +1774,11 @@ pca4 &lt;- prcomp(t(data.4[,304:311]), scale=TRUE, center=TRUE)
 ggplot(data=as.data.frame(pca4$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title=&quot;PCA on Normalized Hi-C Contact Frequency&quot;) + guides(color=guide_legend(order=1, title=&quot;Batch&quot;), size=FALSE, shape=guide_legend(order=2, title=&quot;Species&quot;)) + xlab(paste(&quot;PC1 (&quot;, signif(100*summary(pca4)$importance[2,1],2), &quot;% of variance)&quot;)) + ylab((paste(&quot;PC2 (&quot;, signif(100*summary(pca4)$importance[2,2],2), &quot;% of variance)&quot;))) + labs(color=&quot;Batch&quot;, shape=&quot;Species&quot;) + scale_shape_manual(labels=c(&quot;Chimp&quot;, &quot;Human&quot;), values=c(16, 17)) #Metadata hasn&#39;t changed so use the same metadata from above. PCA shows a similar separation along species lines for PC1, with this time it representing 24.171% of the variance (up from 20.49% earlier). This is rather unsurprising, since we have subset down to hits that are more shared than the total set we had before.</code></pre>
 <p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-7.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC | 4 Individuals-7">
-Past versions of QC | 4 Individuals-7.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-|-4-Individuals-7">
+Past versions of “QC | 4 Individuals-7.png”
 </button>
 </p>
-<div id="fig-QC | 4 Individuals-7" class="collapse">
+<div id="fig-no-spaces-QC-|-4-Individuals-7" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1715,11 +1814,11 @@ Ittai Eres
 barplot(summary(pca4)$importance[2,], xlab=&quot;PCs&quot;, ylab=&quot;Proportion of Variance Explained&quot;, main=&quot;PCA on normalized Hi-C contact frequency&quot;) #Scree plot showing all the PCs and the proportion of the variance they explain. This is similar to above, with no PCs beyond a 7th one, and the first PC taking the vast majority of the variance while the others hover near 12%. No variables in experimentation, library prep, sequencing batch, or anything else seem to correlate with these PCs.</code></pre>
 <p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC | 4 Individuals-8">
-Past versions of QC | 4 Individuals-8.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-|-4-Individuals-8">
+Past versions of “QC | 4 Individuals-8.png”
 </button>
 </p>
-<div id="fig-QC | 4 Individuals-8" class="collapse">
+<div id="fig-no-spaces-QC-|-4-Individuals-8" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1754,11 +1853,11 @@ Ittai Eres
 <pre class="r"><code>plot_grid(FIG1A, labels=c(&quot;A&quot;), align=&quot;h&quot;)#, rel_widths = c(1, 0.01))</code></pre>
 <p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-9.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC | 4 Individuals-9">
-Past versions of QC | 4 Individuals-9.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-|-4-Individuals-9">
+Past versions of “QC | 4 Individuals-9.png”
 </button>
 </p>
-<div id="fig-QC | 4 Individuals-9" class="collapse">
+<div id="fig-no-spaces-QC-|-4-Individuals-9" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1775,6 +1874,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/2ec80679a5b8ae9928cd8be7253a10cebdcf3fca/docs/figure/initial_QC.Rmd/QC | 4 Individuals-9.png" target="_blank">2ec8067</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-05-09
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/3d877d7084ebe0a3ee0c5e9abc5efb3c4ede4121/docs/figure/initial_QC.Rmd/QC | 4 Individuals-9.png" target="_blank">3d877d7</a>
@@ -1879,11 +1989,16 @@ corheat4 &lt;- cor(data.4[,304:311], use=&quot;complete.obs&quot;, method=&quot;
 colnames(corheat4) &lt;- c(&quot;H_F1&quot;, &quot;H_M1&quot;, &quot;C_M1&quot;, &quot;C_F1&quot;, &quot;H_M2&quot;, &quot;H_F2&quot;, &quot;C_M2&quot;, &quot;C_F2&quot;) #Better for presentation
 rownames(corheat4) &lt;- colnames(corheat4)
 
+#Change path to make sure orca can be found (in conda path); set mapbox token for orca export.
+Sys.setenv(PATH=&quot;/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/Library/TeX/texbin:/opt/local/bin:/Users/ittaieres/miniconda3/bin/&quot;)
+Sys.setenv(&#39;MAPBOX_TOKEN&#39;=&#39;pk.eyJ1IjoiaXR0YWllcmVzIiwiYSI6ImNqeHVwanphejE3bjIzcHFmY2FvYXIxZXUifQ.rs3I8LoxJcqWBsIhVDiJCQ&#39;)
 #FIG1B
-heatmaply(corheat4, main=&quot;Pairwise Pearson Correlation Clustering @ 10kb&quot;, k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30), cellnote_size=10)#, scale_fill_gradient_fun = ggplot2::scale_fill_gradient2(low = &quot;yellow&quot;, high = &quot;blue&quot;, midpoint = 0.5, limits = c(0, 1)))</code></pre>
+heatmaply(corheat4, main=&quot;Pairwise Pearson Correlation Clustering @ 10kb&quot;, k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30), cellnote_size=10, fontsize_row=10, fontsize_col=10, file=&quot;~/Desktop/Fig1B.pdf&quot;)#, scale_fill_gradient_fun = ggplot2::scale_fill_gradient2(low = &quot;yellow&quot;, high = &quot;blue&quot;, midpoint = 0.5, limits = c(0, 1)))</code></pre>
 <div id="htmlwidget-0b512fae04c6da719799" style="width:672px;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-0b512fae04c6da719799">{"x":{"data":[{"x":[4.625,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"y":[0.785701721253597,0.785701721253597,null,0.785701721253597,0.463357918963573,null,0.463357918963573,0.463357918963573,null,0.463357918963573,0.43605698231264,null,0.43605698231264,0.43605698231264,null,0.43605698231264,0.42863517329007,null,0.42863517329007,0.42863517329007,null,0.42863517329007,0,null,0.42863517329007,0.42863517329007,null,0.42863517329007,0,null,0.43605698231264,0.43605698231264,null,0.43605698231264,0,null,0.463357918963573,0.463357918963573,null,0.463357918963573,0],"text":["y: 0.7857017","y: 0.7857017",null,"y: 0.7857017","y: 0.7857017",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4633579","y: 0.4633579"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid,1)","legendgroup":"(#39BEB1,solid,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4.625,2.125,null,2.125,2.125,null,2.125,1,null,1,1,null,2.125,3.25,null,3.25,3.25,null,3.25,2.5,null,2.5,2.5,null,2.5,2,null,2,2,null,2.5,3,null,3,3,null,3.25,4,null,4,4],"y":[0.785701721253597,0.785701721253597,null,0.785701721253597,0.432195917034341,null,0.432195917034341,0.432195917034341,null,0.432195917034341,0,null,0.432195917034341,0.432195917034341,null,0.432195917034341,0.41317667692587,null,0.41317667692587,0.41317667692587,null,0.41317667692587,0.388881441090047,null,0.388881441090047,0.388881441090047,null,0.388881441090047,0,null,0.388881441090047,0.388881441090047,null,0.388881441090047,0,null,0.41317667692587,0.41317667692587,null,0.41317667692587,0],"text":["y: 0.7857017","y: 0.7857017",null,"y: 0.7857017","y: 0.7857017",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.4131767","y: 0.4131767"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid,1)","legendgroup":"(#E495A5,solid,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4.625,2.125,1,3.25,2.5,2,3,4,7.125,6.25,5.5,5,6,7,8],"y":[0.785701721253597,0.432195917034341,0,0.41317667692587,0.388881441090047,0,0,0,0.463357918963573,0.43605698231264,0.42863517329007,0,0,0,0],"text":["y: 0.7857017","y: 0.4321959","y: 0.0000000","y: 0.4131767","y: 0.3888814","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.4633579","y: 0.4360570","y: 0.4286352","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"type":"scatter","mode":"markers","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"xaxis":"x2","yaxis":"y","frame":null},{"x":[1,2,3,4,5,6,7,8],"y":[1,2,3,4,5,6,7,8],"z":[[1,0.379685516908789,0.391446336388182,0.361992873909541,0.0461251867498212,0.0155614272263319,0,0.00017012853667054],[0.379685516908789,1,0.425527364000444,0.389556408641003,0.0798689070508902,0.0292629274509691,0.0224690711017004,0.0179052496862342],[0.391446336388182,0.425527364000444,1,0.410996368446768,0.086321816358197,0.0379843472126727,0.0243148545167096,0.0247829525901117],[0.361992873909541,0.389556408641003,0.410996368446768,1,0.0710846787781944,0.033263880667018,0.0160220049006587,0.0208268898066415],[0.0461251867498212,0.0798689070508902,0.086321816358197,0.0710846787781944,1,0.369361180898482,0.362583753059596,0.345006834000355],[0.0155614272263319,0.0292629274509691,0.0379843472126727,0.033263880667018,0.369361180898482,1,0.355934297657991,0.335254462351322],[0,0.0224690711017004,0.0243148545167096,0.0160220049006587,0.362583753059596,0.355934297657991,1,0.31539523387547],[0.00017012853667054,0.0179052496862342,0.0247829525901117,0.0208268898066415,0.345006834000355,0.335254462351322,0.31539523387547,1]],"text":[["row: C_F2<br>column: C_F2<br>value: 1.0000","row: C_F2<br>column: C_M2<br>value: 0.7032","row: C_F2<br>column: C_M1<br>value: 0.7089","row: C_F2<br>column: C_F1<br>value: 0.6948","row: C_F2<br>column: H_M2<br>value: 0.5437","row: C_F2<br>column: H_M1<br>value: 0.5291","row: C_F2<br>column: H_F2<br>value: 0.5216","row: C_F2<br>column: H_F1<br>value: 0.5217"],["row: C_M2<br>column: C_F2<br>value: 0.7032","row: C_M2<br>column: C_M2<br>value: 1.0000","row: C_M2<br>column: C_M1<br>value: 0.7252","row: C_M2<br>column: C_F1<br>value: 0.7080","row: C_M2<br>column: H_M2<br>value: 0.5598","row: C_M2<br>column: H_M1<br>value: 0.5356","row: C_M2<br>column: H_F2<br>value: 0.5324","row: C_M2<br>column: H_F1<br>value: 0.5302"],["row: C_M1<br>column: C_F2<br>value: 0.7089","row: C_M1<br>column: C_M2<br>value: 0.7252","row: C_M1<br>column: C_M1<br>value: 1.0000","row: C_M1<br>column: C_F1<br>value: 0.7182","row: C_M1<br>column: H_M2<br>value: 0.5629","row: C_M1<br>column: H_M1<br>value: 0.5398","row: C_M1<br>column: H_F2<br>value: 0.5332","row: C_M1<br>column: H_F1<br>value: 0.5335"],["row: C_F1<br>column: C_F2<br>value: 0.6948","row: C_F1<br>column: C_M2<br>value: 0.7080","row: C_F1<br>column: C_M1<br>value: 0.7182","row: C_F1<br>column: C_F1<br>value: 1.0000","row: C_F1<br>column: H_M2<br>value: 0.5556","row: C_F1<br>column: H_M1<br>value: 0.5375","row: C_F1<br>column: H_F2<br>value: 0.5293","row: C_F1<br>column: H_F1<br>value: 0.5316"],["row: H_M2<br>column: C_F2<br>value: 0.5437","row: H_M2<br>column: C_M2<br>value: 0.5598","row: H_M2<br>column: C_M1<br>value: 0.5629","row: H_M2<br>column: C_F1<br>value: 0.5556","row: H_M2<br>column: H_M2<br>value: 1.0000","row: H_M2<br>column: H_M1<br>value: 0.6983","row: H_M2<br>column: H_F2<br>value: 0.6951","row: H_M2<br>column: H_F1<br>value: 0.6867"],["row: H_M1<br>column: C_F2<br>value: 0.5291","row: H_M1<br>column: C_M2<br>value: 0.5356","row: H_M1<br>column: C_M1<br>value: 0.5398","row: H_M1<br>column: C_F1<br>value: 0.5375","row: H_M1<br>column: H_M2<br>value: 0.6983","row: H_M1<br>column: H_M1<br>value: 1.0000","row: H_M1<br>column: H_F2<br>value: 0.6919","row: H_M1<br>column: H_F1<br>value: 0.6820"],["row: H_F2<br>column: C_F2<br>value: 0.5216","row: H_F2<br>column: C_M2<br>value: 0.5324","row: H_F2<br>column: C_M1<br>value: 0.5332","row: H_F2<br>column: C_F1<br>value: 0.5293","row: H_F2<br>column: H_M2<br>value: 0.6951","row: H_F2<br>column: H_M1<br>value: 0.6919","row: H_F2<br>column: H_F2<br>value: 1.0000","row: H_F2<br>column: H_F1<br>value: 0.6725"],["row: H_F1<br>column: C_F2<br>value: 0.5217","row: H_F1<br>column: C_M2<br>value: 0.5302","row: H_F1<br>column: C_M1<br>value: 0.5335","row: H_F1<br>column: C_F1<br>value: 0.5316","row: H_F1<br>column: H_M2<br>value: 0.6867","row: H_F1<br>column: H_M1<br>value: 0.6820","row: H_F1<br>column: H_F2<br>value: 0.6725","row: H_F1<br>column: H_F1<br>value: 1.0000"]],"colorscale":[[0,"#440154"],[0.00017012853667054,"#440154"],[0.0155614272263319,"#46075A"],[0.0160220049006587,"#46075A"],[0.0179052496862342,"#46085B"],[0.0208268898066415,"#46095C"],[0.0224690711017004,"#46095D"],[0.0243148545167096,"#460A5D"],[0.0247829525901117,"#460A5D"],[0.0292629274509691,"#460C5F"],[0.033263880667018,"#470D60"],[0.0379843472126727,"#470F62"],[0.0461251867498212,"#471365"],[0.0710846787781944,"#481B6D"],[0.0798689070508902,"#481E6F"],[0.086321816358197,"#482071"],[0.31539523387547,"#33638D"],[0.335254462351322,"#31688E"],[0.345006834000355,"#2F6B8E"],[0.355934297657991,"#2E6E8E"],[0.361992873909541,"#2E6F8E"],[0.362583753059596,"#2E6F8E"],[0.369361180898482,"#2D718E"],[0.379685516908789,"#2C738E"],[0.389556408641003,"#2B758E"],[0.391446336388182,"#2A768E"],[0.410996368446768,"#297B8E"],[0.425527364000444,"#277F8E"],[1,"#FDE725"]],"type":"heatmap","showscale":false,"autocolorscale":false,"showlegend":false,"xaxis":"x","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1],"y":[1],"name":"99_18c44904001a50b16317fbd71d23c317","type":"scatter","mode":"markers","opacity":0,"hoverinfo":"none","showlegend":false,"marker":{"color":[0,1],"colorscale":[[0,"#440154"],[0.0526315789473683,"#481567"],[0.105263157894737,"#482677"],[0.157894736842105,"#453781"],[0.210526315789474,"#3F4788"],[0.263157894736842,"#39558C"],[0.315789473684211,"#32648E"],[0.368421052631579,"#2D718E"],[0.421052631578947,"#287D8E"],[0.473684210526316,"#238A8D"],[0.526315789473684,"#1F968B"],[0.578947368421053,"#20A386"],[0.631578947368421,"#29AF7F"],[0.684210526315789,"#3CBB75"],[0.736842105263158,"#56C667"],[0.789473684210526,"#74D055"],[0.842105263157895,"#94D840"],[0.894736842105263,"#B8DE29"],[0.947368421052632,"#DCE318"],[1,"#FDE725"]],"colorbar":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"thickness":23.04,"title":null,"titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"tickmode":"array","ticktext":["0.6","0.7","0.8","0.9","1.0"],"tickvals":[0.163859784000586,0.372894838000439,0.581929892000293,0.790964946000147,1],"tickfont":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"ticklen":2,"len":0.5}},"xaxis":"x","yaxis":"y2","frame":null},{"x":[0.785701721253597,0.785701721253597,null,0.785701721253597,0.463357918963573,null,0.463357918963573,0.463357918963573,null,0.463357918963573,0.43605698231264,null,0.43605698231264,0.43605698231264,null,0.43605698231264,0.42863517329007,null,0.42863517329007,0.42863517329007,null,0.42863517329007,0,null,0.42863517329007,0.42863517329007,null,0.42863517329007,0,null,0.43605698231264,0.43605698231264,null,0.43605698231264,0,null,0.463357918963573,0.463357918963573,null,0.463357918963573,0],"y":[4.625,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"text":["y: 0.7857017","y: 0.7857017",null,"y: 0.7857017","y: 0.7857017",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4633579","y: 0.4633579"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid,1)","legendgroup":"(#39BEB1,solid,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[0.785701721253597,0.785701721253597,null,0.785701721253597,0.432195917034341,null,0.432195917034341,0.432195917034341,null,0.432195917034341,0,null,0.432195917034341,0.432195917034341,null,0.432195917034341,0.41317667692587,null,0.41317667692587,0.41317667692587,null,0.41317667692587,0.388881441090047,null,0.388881441090047,0.388881441090047,null,0.388881441090047,0,null,0.388881441090047,0.388881441090047,null,0.388881441090047,0,null,0.41317667692587,0.41317667692587,null,0.41317667692587,0],"y":[4.625,2.125,null,2.125,2.125,null,2.125,1,null,1,1,null,2.125,3.25,null,3.25,3.25,null,3.25,2.5,null,2.5,2.5,null,2.5,2,null,2,2,null,2.5,3,null,3,3,null,3.25,4,null,4,4],"text":["y: 0.7857017","y: 0.7857017",null,"y: 0.7857017","y: 0.7857017",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.4131767","y: 0.4131767"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid,1)","legendgroup":"(#E495A5,solid,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[0.785701721253597,0.432195917034341,0,0.41317667692587,0.388881441090047,0,0,0,0.463357918963573,0.43605698231264,0.42863517329007,0,0,0,0],"y":[4.625,2.125,1,3.25,2.5,2,3,4,7.125,6.25,5.5,5,6,7,8],"text":["y: 0.7857017","y: 0.4321959","y: 0.0000000","y: 0.4131767","y: 0.3888814","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.4633579","y: 0.4360570","y: 0.4286352","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null}],"layout":{"xaxis":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["C_F2","C_M2","C_M1","C_F1","H_M2","H_M1","H_F2","H_F1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["C_F2","C_M2","C_M1","C_F1","H_M2","H_M1","H_F2","H_F1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-45,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y2","title":"","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"xaxis2":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"y2","type":"linear","autorange":false,"range":[0,0.785701721253597],"tickmode":"array","ticktext":["0.0","0.2","0.4","0.6"],"tickvals":[0,0.2,0.4,0.6],"categoryorder":"array","categoryarray":["0.0","0.2","0.4","0.6"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":"","titlefont":{"color":null,"family":null,"size":0},"hoverformat":".2f"},"yaxis2":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["C_F2","C_M2","C_M1","C_F1","H_M2","H_M1","H_F2","H_F1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["C_F2","C_M2","C_M1","C_F1","H_M2","H_M1","H_F2","H_F1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":"","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"yaxis":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"x","type":"linear","autorange":false,"range":[0,0.785701721253597],"tickmode":"array","ticktext":["0.0","0.2","0.4","0.6"],"tickvals":[0,0.2,0.4,0.6],"categoryorder":"array","categoryarray":["0.0","0.2","0.4","0.6"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":"","titlefont":{"color":null,"family":null,"size":0},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0.8,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0,"y1":0.8},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.8,"x1":1,"y0":0,"y1":0.8}],"margin":{"t":30,"r":30,"b":50,"l":50},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":1,"yanchor":"top"},"hovermode":"closest","barmode":"relative","paper_bgcolor":"rgba(255,255,255,1)","title":"Pairwise Pearson Correlation Clustering @ 10kb"},"attrs":{"d037770f2d68":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"d03756e43e9":{"colour":{},"shape":{},"size":{},"x":{},"y":{}},"d0376dad97af":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20]},"d037280c671a":{"fill":{},"text":{},"x":{},"y":{},"type":"heatmap"},"d03729e6654":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"d0376d501623":{"colour":{},"shape":{},"size":{},"x":{},"y":{}}},"source":"A","config":{"doubleClick":"reset","modeBarButtonsToAdd":[],"cloud":false,"displaylogo":false,"modeBarButtonsToRemove":["sendDataToCloud","select2d","lasso2d","autoScale2d","hoverClosestCartesian","hoverCompareCartesian","sendDataToCloud"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-<pre class="r"><code>#Indeed, we can again see that all the humans cluster together, as do all the chimps. This is very good, and given this new condition, we also see higher within-species correlations for the significant hits, in the 0.6-0.7 range (was much closer to 0.3 before).
+<script type="application/json" data-for="htmlwidget-0b512fae04c6da719799">{"x":{"data":[{"x":[4.625,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"y":[0.785701721253597,0.785701721253597,null,0.785701721253597,0.463357918963573,null,0.463357918963573,0.463357918963573,null,0.463357918963573,0.43605698231264,null,0.43605698231264,0.43605698231264,null,0.43605698231264,0.42863517329007,null,0.42863517329007,0.42863517329007,null,0.42863517329007,0,null,0.42863517329007,0.42863517329007,null,0.42863517329007,0,null,0.43605698231264,0.43605698231264,null,0.43605698231264,0,null,0.463357918963573,0.463357918963573,null,0.463357918963573,0],"text":["y: 0.7857017","y: 0.7857017",null,"y: 0.7857017","y: 0.7857017",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4633579","y: 0.4633579"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid)","legendgroup":"(#39BEB1,solid)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4.625,2.125,null,2.125,2.125,null,2.125,1,null,1,1,null,2.125,3.25,null,3.25,3.25,null,3.25,2.5,null,2.5,2.5,null,2.5,2,null,2,2,null,2.5,3,null,3,3,null,3.25,4,null,4,4],"y":[0.785701721253597,0.785701721253597,null,0.785701721253597,0.432195917034341,null,0.432195917034341,0.432195917034341,null,0.432195917034341,0,null,0.432195917034341,0.432195917034341,null,0.432195917034341,0.41317667692587,null,0.41317667692587,0.41317667692587,null,0.41317667692587,0.388881441090047,null,0.388881441090047,0.388881441090047,null,0.388881441090047,0,null,0.388881441090047,0.388881441090047,null,0.388881441090047,0,null,0.41317667692587,0.41317667692587,null,0.41317667692587,0],"text":["y: 0.7857017","y: 0.7857017",null,"y: 0.7857017","y: 0.7857017",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.4131767","y: 0.4131767"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid)","legendgroup":"(#E495A5,solid)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4.625,2.125,1,3.25,2.5,2,3,4,7.125,6.25,5.5,5,6,7,8],"y":[0.785701721253597,0.432195917034341,0,0.41317667692587,0.388881441090047,0,0,0,0.463357918963573,0.43605698231264,0.42863517329007,0,0,0,0],"text":["y: 0.7857017","y: 0.4321959","y: 0.0000000","y: 0.4131767","y: 0.3888814","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.4633579","y: 0.4360570","y: 0.4286352","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"type":"scatter","mode":"markers","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"xaxis":"x2","yaxis":"y","frame":null},{"x":[1,2,3,4,5,6,7,8],"y":[1,2,3,4,5,6,7,8],"z":[[1,0.379685516908789,0.391446336388182,0.361992873909541,0.0461251867498212,0.0155614272263319,0,0.00017012853667054],[0.379685516908789,1,0.425527364000444,0.389556408641003,0.0798689070508902,0.0292629274509691,0.0224690711017004,0.0179052496862342],[0.391446336388182,0.425527364000444,1,0.410996368446768,0.086321816358197,0.0379843472126727,0.0243148545167096,0.0247829525901117],[0.361992873909541,0.389556408641003,0.410996368446768,1,0.0710846787781944,0.033263880667018,0.0160220049006587,0.0208268898066415],[0.0461251867498212,0.0798689070508902,0.086321816358197,0.0710846787781944,1,0.369361180898482,0.362583753059596,0.345006834000355],[0.0155614272263319,0.0292629274509691,0.0379843472126727,0.033263880667018,0.369361180898482,1,0.355934297657991,0.335254462351322],[0,0.0224690711017004,0.0243148545167096,0.0160220049006587,0.362583753059596,0.355934297657991,1,0.31539523387547],[0.00017012853667054,0.0179052496862342,0.0247829525901117,0.0208268898066415,0.345006834000355,0.335254462351322,0.31539523387547,1]],"text":[["row: C_F2<br>column: C_F2<br>value: 1.0000","row: C_F2<br>column: C_M2<br>value: 0.7032","row: C_F2<br>column: C_M1<br>value: 0.7089","row: C_F2<br>column: C_F1<br>value: 0.6948","row: C_F2<br>column: H_M2<br>value: 0.5437","row: C_F2<br>column: H_M1<br>value: 0.5291","row: C_F2<br>column: H_F2<br>value: 0.5216","row: C_F2<br>column: H_F1<br>value: 0.5217"],["row: C_M2<br>column: C_F2<br>value: 0.7032","row: C_M2<br>column: C_M2<br>value: 1.0000","row: C_M2<br>column: C_M1<br>value: 0.7252","row: C_M2<br>column: C_F1<br>value: 0.7080","row: C_M2<br>column: H_M2<br>value: 0.5598","row: C_M2<br>column: H_M1<br>value: 0.5356","row: C_M2<br>column: H_F2<br>value: 0.5324","row: C_M2<br>column: H_F1<br>value: 0.5302"],["row: C_M1<br>column: C_F2<br>value: 0.7089","row: C_M1<br>column: C_M2<br>value: 0.7252","row: C_M1<br>column: C_M1<br>value: 1.0000","row: C_M1<br>column: C_F1<br>value: 0.7182","row: C_M1<br>column: H_M2<br>value: 0.5629","row: C_M1<br>column: H_M1<br>value: 0.5398","row: C_M1<br>column: H_F2<br>value: 0.5332","row: C_M1<br>column: H_F1<br>value: 0.5335"],["row: C_F1<br>column: C_F2<br>value: 0.6948","row: C_F1<br>column: C_M2<br>value: 0.7080","row: C_F1<br>column: C_M1<br>value: 0.7182","row: C_F1<br>column: C_F1<br>value: 1.0000","row: C_F1<br>column: H_M2<br>value: 0.5556","row: C_F1<br>column: H_M1<br>value: 0.5375","row: C_F1<br>column: H_F2<br>value: 0.5293","row: C_F1<br>column: H_F1<br>value: 0.5316"],["row: H_M2<br>column: C_F2<br>value: 0.5437","row: H_M2<br>column: C_M2<br>value: 0.5598","row: H_M2<br>column: C_M1<br>value: 0.5629","row: H_M2<br>column: C_F1<br>value: 0.5556","row: H_M2<br>column: H_M2<br>value: 1.0000","row: H_M2<br>column: H_M1<br>value: 0.6983","row: H_M2<br>column: H_F2<br>value: 0.6951","row: H_M2<br>column: H_F1<br>value: 0.6867"],["row: H_M1<br>column: C_F2<br>value: 0.5291","row: H_M1<br>column: C_M2<br>value: 0.5356","row: H_M1<br>column: C_M1<br>value: 0.5398","row: H_M1<br>column: C_F1<br>value: 0.5375","row: H_M1<br>column: H_M2<br>value: 0.6983","row: H_M1<br>column: H_M1<br>value: 1.0000","row: H_M1<br>column: H_F2<br>value: 0.6919","row: H_M1<br>column: H_F1<br>value: 0.6820"],["row: H_F2<br>column: C_F2<br>value: 0.5216","row: H_F2<br>column: C_M2<br>value: 0.5324","row: H_F2<br>column: C_M1<br>value: 0.5332","row: H_F2<br>column: C_F1<br>value: 0.5293","row: H_F2<br>column: H_M2<br>value: 0.6951","row: H_F2<br>column: H_M1<br>value: 0.6919","row: H_F2<br>column: H_F2<br>value: 1.0000","row: H_F2<br>column: H_F1<br>value: 0.6725"],["row: H_F1<br>column: C_F2<br>value: 0.5217","row: H_F1<br>column: C_M2<br>value: 0.5302","row: H_F1<br>column: C_M1<br>value: 0.5335","row: H_F1<br>column: C_F1<br>value: 0.5316","row: H_F1<br>column: H_M2<br>value: 0.6867","row: H_F1<br>column: H_M1<br>value: 0.6820","row: H_F1<br>column: H_F2<br>value: 0.6725","row: H_F1<br>column: H_F1<br>value: 1.0000"]],"colorscale":[[0,"#440154"],[0.00017012853667054,"#440154"],[0.0155614272263319,"#46075A"],[0.0160220049006587,"#46075A"],[0.0179052496862342,"#46085B"],[0.0208268898066415,"#46095C"],[0.0224690711017004,"#46095D"],[0.0243148545167096,"#460A5D"],[0.0247829525901117,"#460A5D"],[0.0292629274509691,"#460C5F"],[0.033263880667018,"#470D60"],[0.0379843472126727,"#470F62"],[0.0461251867498212,"#471365"],[0.0710846787781944,"#481B6D"],[0.0798689070508902,"#481E6F"],[0.086321816358197,"#482071"],[0.31539523387547,"#33638D"],[0.335254462351322,"#31688E"],[0.345006834000355,"#2F6B8E"],[0.355934297657991,"#2E6E8E"],[0.361992873909541,"#2E6F8E"],[0.362583753059596,"#2E6F8E"],[0.369361180898482,"#2D718E"],[0.379685516908789,"#2C738E"],[0.389556408641003,"#2B758E"],[0.391446336388182,"#2A768E"],[0.410996368446768,"#297B8E"],[0.425527364000444,"#277F8E"],[1,"#FDE725"]],"type":"heatmap","showscale":false,"autocolorscale":false,"showlegend":false,"xaxis":"x","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1],"y":[1],"name":"99_3ab08b0b6b8d03a70b63c25bbcd33a4e","type":"scatter","mode":"markers","opacity":0,"hoverinfo":"skip","showlegend":false,"marker":{"color":[0,1],"colorscale":[[0,"#440154"],[0.0526315789473683,"#481567"],[0.105263157894737,"#482677"],[0.157894736842105,"#453781"],[0.210526315789474,"#3F4788"],[0.263157894736842,"#39558C"],[0.315789473684211,"#32648E"],[0.368421052631579,"#2D718E"],[0.421052631578947,"#287D8E"],[0.473684210526316,"#238A8D"],[0.526315789473684,"#1F968B"],[0.578947368421053,"#20A386"],[0.631578947368421,"#29AF7F"],[0.684210526315789,"#3CBB75"],[0.736842105263158,"#56C667"],[0.789473684210526,"#74D055"],[0.842105263157895,"#94D840"],[0.894736842105263,"#B8DE29"],[0.947368421052632,"#DCE318"],[1,"#FDE725"]],"colorbar":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"thickness":23.04,"title":null,"titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"tickmode":"array","ticktext":["0.6","0.7","0.8","0.9","1.0"],"tickvals":[0.163859784000586,0.372894838000439,0.581929892000293,0.790964946000147,1],"tickfont":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"ticklen":2,"len":0.5}},"xaxis":"x","yaxis":"y2","frame":null},{"x":[0.785701721253597,0.785701721253597,null,0.785701721253597,0.463357918963573,null,0.463357918963573,0.463357918963573,null,0.463357918963573,0.43605698231264,null,0.43605698231264,0.43605698231264,null,0.43605698231264,0.42863517329007,null,0.42863517329007,0.42863517329007,null,0.42863517329007,0,null,0.42863517329007,0.42863517329007,null,0.42863517329007,0,null,0.43605698231264,0.43605698231264,null,0.43605698231264,0,null,0.463357918963573,0.463357918963573,null,0.463357918963573,0],"y":[4.625,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"text":["y: 0.7857017","y: 0.7857017",null,"y: 0.7857017","y: 0.7857017",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4286352","y: 0.4286352",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4360570","y: 0.4360570",null,"y: 0.4633579","y: 0.4633579",null,"y: 0.4633579","y: 0.4633579"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid)","legendgroup":"(#39BEB1,solid)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[0.785701721253597,0.785701721253597,null,0.785701721253597,0.432195917034341,null,0.432195917034341,0.432195917034341,null,0.432195917034341,0,null,0.432195917034341,0.432195917034341,null,0.432195917034341,0.41317667692587,null,0.41317667692587,0.41317667692587,null,0.41317667692587,0.388881441090047,null,0.388881441090047,0.388881441090047,null,0.388881441090047,0,null,0.388881441090047,0.388881441090047,null,0.388881441090047,0,null,0.41317667692587,0.41317667692587,null,0.41317667692587,0],"y":[4.625,2.125,null,2.125,2.125,null,2.125,1,null,1,1,null,2.125,3.25,null,3.25,3.25,null,3.25,2.5,null,2.5,2.5,null,2.5,2,null,2,2,null,2.5,3,null,3,3,null,3.25,4,null,4,4],"text":["y: 0.7857017","y: 0.7857017",null,"y: 0.7857017","y: 0.7857017",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4321959","y: 0.4321959",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.3888814","y: 0.3888814",null,"y: 0.4131767","y: 0.4131767",null,"y: 0.4131767","y: 0.4131767"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid)","legendgroup":"(#E495A5,solid)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[0.785701721253597,0.432195917034341,0,0.41317667692587,0.388881441090047,0,0,0,0.463357918963573,0.43605698231264,0.42863517329007,0,0,0,0],"y":[4.625,2.125,1,3.25,2.5,2,3,4,7.125,6.25,5.5,5,6,7,8],"text":["y: 0.7857017","y: 0.4321959","y: 0.0000000","y: 0.4131767","y: 0.3888814","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.4633579","y: 0.4360570","y: 0.4286352","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null}],"layout":{"xaxis":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["C_F2","C_M2","C_M1","C_F1","H_M2","H_M1","H_F2","H_F1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["C_F2","C_M2","C_M1","C_F1","H_M2","H_M1","H_F2","H_F1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-45,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y2","title":"","hoverformat":".2f"},"xaxis2":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"y2","type":"linear","autorange":false,"range":[0,0.785701721253597],"tickmode":"array","ticktext":["0.0","0.2","0.4","0.6"],"tickvals":[0,0.2,0.4,0.6],"categoryorder":"array","categoryarray":["0.0","0.2","0.4","0.6"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"yaxis2":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["C_F2","C_M2","C_M1","C_F1","H_M2","H_M1","H_F2","H_F1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["C_F2","C_M2","C_M1","C_F1","H_M2","H_M1","H_F2","H_F1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"yaxis":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"x","type":"linear","autorange":false,"range":[0,0.785701721253597],"tickmode":"array","ticktext":["0.0","0.2","0.4","0.6"],"tickvals":[0,0.2,0.4,0.6],"categoryorder":"array","categoryarray":["0.0","0.2","0.4","0.6"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"annotations":[],"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0.8,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0,"y1":0.8},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.8,"x1":1,"y0":0,"y1":0.8}],"images":[],"margin":{"t":30,"r":30,"b":50,"l":50},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":1,"yanchor":"top"},"hovermode":"closest","barmode":"relative","paper_bgcolor":"rgba(255,255,255,1)","title":"Pairwise Pearson Correlation Clustering @ 10kb"},"attrs":{"dfe2d825f25":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"dfe26a347d10":{"colour":{},"shape":{},"size":{},"x":{},"y":{}},"dfe27917ac5a":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20]},"dfe21227d543":{"fill":{},"text":{},"x":{},"y":{},"type":"heatmap"},"dfe2573adbad":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"dfe2592c6798":{"colour":{},"shape":{},"size":{},"x":{},"y":{}}},"source":"A","config":{"doubleClick":"reset","showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["sendDataToCloud","select2d","lasso2d","autoScale2d","hoverClosestCartesian","hoverCompareCartesian","sendDataToCloud"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>dis &lt;- heatmaply(corheat4, main=&quot;Pairwise Pearson Correlation Clustering @ 10kb&quot;, k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30), cellnote_size=10, fontsize_row=10, fontsize_col=10)
+orca(dis, file=&quot;~/Desktop/Fig1B.pdf&quot;) #Note that this just created a ~ folder in the hicipsc directory, didn&#39;t redirect to home folder.
+#Indeed, we can again see that all the humans cluster together, as do all the chimps. This is very good, and given this new condition, we also see higher within-species correlations for the significant hits, in the 0.6-0.7 range (was much closer to 0.3 before).
 FIG1B &lt;- heatmaply(corheat4, main=&quot;Pairwise Pearson Correlation Clustering @ 10kb&quot;, k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30), plot_method = &quot;ggplot&quot;, return_ppxpy = TRUE)
 
 #FIG1B &lt;- readPNG(&quot;~/Downloads/newplot (16).png&quot;)
@@ -1916,14 +2031,12 @@ pca4 &lt;- prcomp(t(data.4.fixed[,304:311]), scale=TRUE, center=TRUE)
 
 ggplot(data=as.data.frame(pca4$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title=&quot;PCA on Normalized Hi-C Contact Frequency&quot;) + guides(color=guide_legend(order=1, title=&quot;Batch&quot;), size=FALSE, shape=guide_legend(order=2, title=&quot;Species&quot;)) + xlab(paste(&quot;PC1 (&quot;, signif(100*summary(pca4)$importance[2,1],2), &quot;% of variance)&quot;)) + ylab((paste(&quot;PC2 (&quot;, signif(100*summary(pca4)$importance[2,2],2), &quot;% of variance)&quot;))) + labs(color=&quot;Batch&quot;, shape=&quot;Species&quot;) + scale_shape_manual(labels=c(&quot;Chimp&quot;, &quot;Human&quot;), values=c(16, 17)) #Metadata hasn&#39;t changed so use the same metadata from above. PCA shows a similar separation along species lines for PC1, with this time it representing 24.171% of the variance (up from 20.49% earlier). This is rather unsurprising, since we have subset down to hits that are more shared than the total set we had before.</code></pre>
 <p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-11.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>barplot(summary(pca4)$importance[2,], xlab=&quot;PCs&quot;, ylab=&quot;Proportion of Variance Explained&quot;, main=&quot;PCA on normalized Hi-C contact frequency&quot;) #Scree plot showing all the PCs and the proportion of the variance they explain. This is similar to above, with no PCs beyond a 7th one, and the first PC taking the vast majority of the variance while the others hover near 12%. No variables in experimentation, library prep, sequencing batch, or anything else seem to correlate with these PCs.</code></pre>
-<p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-12.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC | 4 Individuals-12">
-Past versions of QC | 4 Individuals-12.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-|-4-Individuals-11">
+Past versions of “QC | 4 Individuals-11.png”
 </button>
 </p>
-<div id="fig-QC | 4 Individuals-12" class="collapse">
+<div id="fig-no-spaces-QC-|-4-Individuals-11" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1940,6 +2053,56 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/2ec80679a5b8ae9928cd8be7253a10cebdcf3fca/docs/figure/initial_QC.Rmd/QC | 4 Individuals-11.png" target="_blank">2ec8067</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-05-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>barplot(summary(pca4)$importance[2,], xlab=&quot;PCs&quot;, ylab=&quot;Proportion of Variance Explained&quot;, main=&quot;PCA on normalized Hi-C contact frequency&quot;) #Scree plot showing all the PCs and the proportion of the variance they explain. This is similar to above, with no PCs beyond a 7th one, and the first PC taking the vast majority of the variance while the others hover near 12%. No variables in experimentation, library prep, sequencing batch, or anything else seem to correlate with these PCs.</code></pre>
+<p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-|-4-Individuals-12">
+Past versions of “QC | 4 Individuals-12.png”
+</button>
+</p>
+<div id="fig-no-spaces-QC-|-4-Individuals-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/2ec80679a5b8ae9928cd8be7253a10cebdcf3fca/docs/figure/initial_QC.Rmd/QC | 4 Individuals-12.png" target="_blank">2ec8067</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-05-09
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/IttaiEres/HiCiPSC/blob/3d877d7084ebe0a3ee0c5e9abc5efb3c4ede4121/docs/figure/initial_QC.Rmd/QC | 4 Individuals-12.png" target="_blank">3d877d7</a>
@@ -2047,6 +2210,43 @@ rownames(corheat4) &lt;- colnames(corheat4)
 #Here I just make a fake PCA plot with some words on it so I can use them as labels on the heatmaply plot (for consistency)
 ggplot(data=as.data.frame(pca4$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title=&quot;Pairwise Pearson Correlation Clustering @ 10kb&quot;) + guides(color=guide_legend(order=1, title=&quot;Pearson Correlation&quot;), size=FALSE, shape=guide_legend(order=2, title=&quot;Species&quot;)) + xlab(paste(&quot;PC1 (&quot;, signif(100*summary(pca4)$importance[2,1],2), &quot;% of variance)&quot;)) + ylab((paste(&quot;PC2 (&quot;, signif(100*summary(pca4)$importance[2,2],2), &quot;% of variance)&quot;))) + labs(color=&quot;Batch&quot;, shape=&quot;Species&quot;) + scale_shape_manual(labels=c(&quot;Chimp&quot;, &quot;Human&quot;), values=c(16, 17))</code></pre>
 <p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-13.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-|-4-Individuals-13">
+Past versions of “QC | 4 Individuals-13.png”
+</button>
+</p>
+<div id="fig-no-spaces-QC-|-4-Individuals-13" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/2ec80679a5b8ae9928cd8be7253a10cebdcf3fca/docs/figure/initial_QC.Rmd/QC | 4 Individuals-13.png" target="_blank">2ec8067</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-05-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#Repeat all this for data conditioned upon a fixed significant Hi-C contact within a species:
 
 corheat4 &lt;- cor(data.4.fixed[,304:311], use=&quot;complete.obs&quot;, method=&quot;pearson&quot;) #Corheat for the full data set, and heatmap
@@ -2056,17 +2256,56 @@ rownames(corheat4) &lt;- colnames(corheat4)
 
 heatmaply(corheat4, main=&quot;Pairwise Pearson Correlation Clustering @ 10kb | 4 Species&quot;, k_row=2, k_col=2, symm=TRUE, margins=c(50, 50, 30, 30))#, scale_fill_gradient_fun = ggplot2::scale_fill_gradient2(low = &quot;yellow&quot;, high = &quot;blue&quot;, midpoint = 0.5, limits = c(0, 1)))</code></pre>
 <div id="htmlwidget-fe3bf943cf6926b1f3d8" style="width:672px;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-fe3bf943cf6926b1f3d8">{"x":{"data":[{"x":[5,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"y":[1.02853938884334,1.02853938884334,null,1.02853938884334,0.224092745244301,null,0.224092745244301,0.224092745244301,null,0.224092745244301,0.212191752406041,null,0.212191752406041,0.212191752406041,null,0.212191752406041,0.209620450344977,null,0.209620450344977,0.209620450344977,null,0.209620450344977,0,null,0.209620450344977,0.209620450344977,null,0.209620450344977,0,null,0.212191752406041,0.212191752406041,null,0.212191752406041,0,null,0.224092745244301,0.224092745244301,null,0.224092745244301,0],"text":["y: 1.0285394","y: 1.0285394",null,"y: 1.0285394","y: 1.0285394",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2240927","y: 0.2240927"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid,1)","legendgroup":"(#39BEB1,solid,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[5,2.875,null,2.875,2.875,null,2.875,1.75,null,1.75,1.75,null,1.75,1,null,1,1,null,1.75,2.5,null,2.5,2.5,null,2.5,2,null,2,2,null,2.5,3,null,3,3,null,2.875,4,null,4,4],"y":[1.02853938884334,1.02853938884334,null,1.02853938884334,0.182277118611981,null,0.182277118611981,0.182277118611981,null,0.182277118611981,0.179121023424388,null,0.179121023424388,0.179121023424388,null,0.179121023424388,0,null,0.179121023424388,0.179121023424388,null,0.179121023424388,0.168562190365173,null,0.168562190365173,0.168562190365173,null,0.168562190365173,0,null,0.168562190365173,0.168562190365173,null,0.168562190365173,0,null,0.182277118611981,0.182277118611981,null,0.182277118611981,0],"text":["y: 1.0285394","y: 1.0285394",null,"y: 1.0285394","y: 1.0285394",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1822771","y: 0.1822771"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid,1)","legendgroup":"(#E495A5,solid,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[5,2.875,1.75,1,2.5,2,3,4,7.125,6.25,5.5,5,6,7,8],"y":[1.02853938884334,0.182277118611981,0.179121023424388,0,0.168562190365173,0,0,0,0.224092745244301,0.212191752406041,0.209620450344977,0,0,0,0],"text":["y: 1.0285394","y: 0.1822771","y: 0.1791210","y: 0.0000000","y: 0.1685622","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.2240927","y: 0.2121918","y: 0.2096205","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"type":"scatter","mode":"markers","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"xaxis":"x2","yaxis":"y","frame":null},{"x":[1,2,3,4,5,6,7,8],"y":[1,2,3,4,5,6,7,8],"z":[[1,0.729279252145501,0.738671732749689,0.724826558481183,0.0444141504821762,0.016420753626825,0,0.0195158196062238],[0.729279252145501,1,0.745349201890105,0.727201668376744,0.0521116054292708,0.0196270431744655,0.00494832513773684,0.022778287765868],[0.738671732749689,0.745349201890105,1,0.737341858688327,0.0579376533794282,0.0231681054670655,0.00729974451247697,0.0255542515811165],[0.724826558481183,0.727201668376744,0.737341858688327,1,0.0549034808584306,0.0289029453713994,0.00980415648313302,0.0314279470042828],[0.0444141504821762,0.0521116054292708,0.0579376533794282,0.0549034808584306,1,0.685985959176462,0.68630086516161,0.679253585469782],[0.016420753626825,0.0196270431744655,0.0231681054670655,0.0289029453713994,0.685985959176462,1,0.681385791211633,0.678434111481512],[0,0.00494832513773684,0.00729974451247697,0.00980415648313302,0.68630086516161,0.681385791211633,1,0.662282129066681],[0.0195158196062238,0.022778287765868,0.0255542515811165,0.0314279470042828,0.679253585469782,0.678434111481512,0.662282129066681,1]],"text":[["row: CF2<br>column: CF2<br>value: 1.0000","row: CF2<br>column: CM2<br>value: 0.8734","row: CF2<br>column: CM1<br>value: 0.8778","row: CF2<br>column: CF1<br>value: 0.8713","row: CF2<br>column: HM2<br>value: 0.5532","row: CF2<br>column: HM1<br>value: 0.5401","row: CF2<br>column: HF2<br>value: 0.5324","row: CF2<br>column: HF1<br>value: 0.5415"],["row: CM2<br>column: CF2<br>value: 0.8734","row: CM2<br>column: CM2<br>value: 1.0000","row: CM2<br>column: CM1<br>value: 0.8809","row: CM2<br>column: CF1<br>value: 0.8724","row: CM2<br>column: HM2<br>value: 0.5568","row: CM2<br>column: HM1<br>value: 0.5416","row: CM2<br>column: HF2<br>value: 0.5347","row: CM2<br>column: HF1<br>value: 0.5430"],["row: CM1<br>column: CF2<br>value: 0.8778","row: CM1<br>column: CM2<br>value: 0.8809","row: CM1<br>column: CM1<br>value: 1.0000","row: CM1<br>column: CF1<br>value: 0.8772","row: CM1<br>column: HM2<br>value: 0.5595","row: CM1<br>column: HM1<br>value: 0.5432","row: CM1<br>column: HF2<br>value: 0.5358","row: CM1<br>column: HF1<br>value: 0.5443"],["row: CF1<br>column: CF2<br>value: 0.8713","row: CF1<br>column: CM2<br>value: 0.8724","row: CF1<br>column: CM1<br>value: 0.8772","row: CF1<br>column: CF1<br>value: 1.0000","row: CF1<br>column: HM2<br>value: 0.5581","row: CF1<br>column: HM1<br>value: 0.5459","row: CF1<br>column: HF2<br>value: 0.5370","row: CF1<br>column: HF1<br>value: 0.5471"],["row: HM2<br>column: CF2<br>value: 0.5532","row: HM2<br>column: CM2<br>value: 0.5568","row: HM2<br>column: CM1<br>value: 0.5595","row: HM2<br>column: CF1<br>value: 0.5581","row: HM2<br>column: HM2<br>value: 1.0000","row: HM2<br>column: HM1<br>value: 0.8532","row: HM2<br>column: HF2<br>value: 0.8533","row: HM2<br>column: HF1<br>value: 0.8500"],["row: HM1<br>column: CF2<br>value: 0.5401","row: HM1<br>column: CM2<br>value: 0.5416","row: HM1<br>column: CM1<br>value: 0.5432","row: HM1<br>column: CF1<br>value: 0.5459","row: HM1<br>column: HM2<br>value: 0.8532","row: HM1<br>column: HM1<br>value: 1.0000","row: HM1<br>column: HF2<br>value: 0.8510","row: HM1<br>column: HF1<br>value: 0.8496"],["row: HF2<br>column: CF2<br>value: 0.5324","row: HF2<br>column: CM2<br>value: 0.5347","row: HF2<br>column: CM1<br>value: 0.5358","row: HF2<br>column: CF1<br>value: 0.5370","row: HF2<br>column: HM2<br>value: 0.8533","row: HF2<br>column: HM1<br>value: 0.8510","row: HF2<br>column: HF2<br>value: 1.0000","row: HF2<br>column: HF1<br>value: 0.8421"],["row: HF1<br>column: CF2<br>value: 0.5415","row: HF1<br>column: CM2<br>value: 0.5430","row: HF1<br>column: CM1<br>value: 0.5443","row: HF1<br>column: CF1<br>value: 0.5471","row: HF1<br>column: HM2<br>value: 0.8500","row: HF1<br>column: HM1<br>value: 0.8496","row: HF1<br>column: HF2<br>value: 0.8421","row: HF1<br>column: HF1<br>value: 1.0000"]],"colorscale":[[0,"#440154"],[0.00494832513773684,"#440356"],[0.00729974451247697,"#450457"],[0.00980415648313302,"#450458"],[0.016420753626825,"#46075A"],[0.0195158196062238,"#46085C"],[0.0196270431744655,"#46085C"],[0.022778287765868,"#460A5D"],[0.0231681054670655,"#460A5D"],[0.0255542515811165,"#460B5E"],[0.0289029453713994,"#460C5F"],[0.0314279470042828,"#470D60"],[0.0444141504821762,"#471264"],[0.0521116054292708,"#481567"],[0.0549034808584306,"#481668"],[0.0579376533794282,"#481769"],[0.662282129066681,"#34B679"],[0.678434111481512,"#3ABA76"],[0.679253585469782,"#3ABA76"],[0.681385791211633,"#3BBB75"],[0.685985959176462,"#3DBC74"],[0.68630086516161,"#3DBC74"],[0.724826558481183,"#50C46A"],[0.727201668376744,"#51C46A"],[0.729279252145501,"#52C569"],[0.737341858688327,"#56C667"],[0.738671732749689,"#57C666"],[0.745349201890105,"#5AC864"],[1,"#FDE725"]],"type":"heatmap","showscale":false,"autocolorscale":false,"showlegend":false,"xaxis":"x","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1],"y":[1],"name":"99_f5b287832b2aac27024542a2632693c6","type":"scatter","mode":"markers","opacity":0,"hoverinfo":"none","showlegend":false,"marker":{"color":[0,1],"colorscale":[[0,"#440154"],[0.0526315789473684,"#481567"],[0.105263157894737,"#482677"],[0.157894736842105,"#453781"],[0.210526315789474,"#3F4788"],[0.263157894736842,"#39558C"],[0.315789473684211,"#32648E"],[0.368421052631579,"#2D718E"],[0.421052631578947,"#287D8E"],[0.473684210526316,"#238A8D"],[0.526315789473684,"#1F968B"],[0.578947368421053,"#20A386"],[0.631578947368421,"#29AF7F"],[0.684210526315789,"#3CBB75"],[0.736842105263158,"#56C667"],[0.789473684210526,"#74D055"],[0.842105263157895,"#94D840"],[0.894736842105263,"#B8DE29"],[0.947368421052632,"#DCE318"],[1,"#FDE725"]],"colorbar":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"thickness":23.04,"title":null,"titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"tickmode":"array","ticktext":["0.6","0.7","0.8","0.9","1.0"],"tickvals":[0.144580184001479,0.358435138001109,0.57229009200074,0.78614504600037,1],"tickfont":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"ticklen":2,"len":0.5}},"xaxis":"x","yaxis":"y2","frame":null},{"x":[1.02853938884334,1.02853938884334,null,1.02853938884334,0.224092745244301,null,0.224092745244301,0.224092745244301,null,0.224092745244301,0.212191752406041,null,0.212191752406041,0.212191752406041,null,0.212191752406041,0.209620450344977,null,0.209620450344977,0.209620450344977,null,0.209620450344977,0,null,0.209620450344977,0.209620450344977,null,0.209620450344977,0,null,0.212191752406041,0.212191752406041,null,0.212191752406041,0,null,0.224092745244301,0.224092745244301,null,0.224092745244301,0],"y":[5,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"text":["y: 1.0285394","y: 1.0285394",null,"y: 1.0285394","y: 1.0285394",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2240927","y: 0.2240927"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid,1)","legendgroup":"(#39BEB1,solid,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1.02853938884334,1.02853938884334,null,1.02853938884334,0.182277118611981,null,0.182277118611981,0.182277118611981,null,0.182277118611981,0.179121023424388,null,0.179121023424388,0.179121023424388,null,0.179121023424388,0,null,0.179121023424388,0.179121023424388,null,0.179121023424388,0.168562190365173,null,0.168562190365173,0.168562190365173,null,0.168562190365173,0,null,0.168562190365173,0.168562190365173,null,0.168562190365173,0,null,0.182277118611981,0.182277118611981,null,0.182277118611981,0],"y":[5,2.875,null,2.875,2.875,null,2.875,1.75,null,1.75,1.75,null,1.75,1,null,1,1,null,1.75,2.5,null,2.5,2.5,null,2.5,2,null,2,2,null,2.5,3,null,3,3,null,2.875,4,null,4,4],"text":["y: 1.0285394","y: 1.0285394",null,"y: 1.0285394","y: 1.0285394",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1822771","y: 0.1822771"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid,1)","legendgroup":"(#E495A5,solid,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1.02853938884334,0.182277118611981,0.179121023424388,0,0.168562190365173,0,0,0,0.224092745244301,0.212191752406041,0.209620450344977,0,0,0,0],"y":[5,2.875,1.75,1,2.5,2,3,4,7.125,6.25,5.5,5,6,7,8],"text":["y: 1.0285394","y: 0.1822771","y: 0.1791210","y: 0.0000000","y: 0.1685622","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.2240927","y: 0.2121918","y: 0.2096205","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null}],"layout":{"xaxis":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["CF2","CM2","CM1","CF1","HM2","HM1","HF2","HF1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["CF2","CM2","CM1","CF1","HM2","HM1","HF2","HF1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-45,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y2","title":"","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"xaxis2":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"y2","type":"linear","autorange":false,"range":[0,1.02853938884334],"tickmode":"array","ticktext":["0.00","0.25","0.50","0.75","1.00"],"tickvals":[0,0.25,0.5,0.75,1],"categoryorder":"array","categoryarray":["0.00","0.25","0.50","0.75","1.00"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":"","titlefont":{"color":null,"family":null,"size":0},"hoverformat":".2f"},"yaxis2":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["CF2","CM2","CM1","CF1","HM2","HM1","HF2","HF1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["CF2","CM2","CM1","CF1","HM2","HM1","HF2","HF1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":"","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"yaxis":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"x","type":"linear","autorange":false,"range":[0,1.02853938884334],"tickmode":"array","ticktext":["0.00","0.25","0.50","0.75","1.00"],"tickvals":[0,0.25,0.5,0.75,1],"categoryorder":"array","categoryarray":["0.00","0.25","0.50","0.75","1.00"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":"","titlefont":{"color":null,"family":null,"size":0},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0.8,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0,"y1":0.8},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.8,"x1":1,"y0":0,"y1":0.8}],"margin":{"t":30,"r":30,"b":50,"l":50},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":1,"yanchor":"top"},"hovermode":"closest","barmode":"relative","paper_bgcolor":"rgba(255,255,255,1)","title":"Pairwise Pearson Correlation Clustering @ 10kb | 4 Species"},"attrs":{"d0375c92da01":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"d0372d26a722":{"colour":{},"shape":{},"size":{},"x":{},"y":{}},"d0371f9d7150":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20]},"d037309189ad":{"fill":{},"text":{},"x":{},"y":{},"type":"heatmap"},"d03769ec572e":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"d0371b4fc356":{"colour":{},"shape":{},"size":{},"x":{},"y":{}}},"source":"A","config":{"doubleClick":"reset","modeBarButtonsToAdd":[],"cloud":false,"displaylogo":false,"modeBarButtonsToRemove":["sendDataToCloud","select2d","lasso2d","autoScale2d","hoverClosestCartesian","hoverCompareCartesian","sendDataToCloud"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-fe3bf943cf6926b1f3d8">{"x":{"data":[{"x":[5,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"y":[1.02853938884334,1.02853938884334,null,1.02853938884334,0.224092745244301,null,0.224092745244301,0.224092745244301,null,0.224092745244301,0.212191752406041,null,0.212191752406041,0.212191752406041,null,0.212191752406041,0.209620450344977,null,0.209620450344977,0.209620450344977,null,0.209620450344977,0,null,0.209620450344977,0.209620450344977,null,0.209620450344977,0,null,0.212191752406041,0.212191752406041,null,0.212191752406041,0,null,0.224092745244301,0.224092745244301,null,0.224092745244301,0],"text":["y: 1.0285394","y: 1.0285394",null,"y: 1.0285394","y: 1.0285394",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2240927","y: 0.2240927"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid)","legendgroup":"(#39BEB1,solid)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[5,2.875,null,2.875,2.875,null,2.875,1.75,null,1.75,1.75,null,1.75,1,null,1,1,null,1.75,2.5,null,2.5,2.5,null,2.5,2,null,2,2,null,2.5,3,null,3,3,null,2.875,4,null,4,4],"y":[1.02853938884334,1.02853938884334,null,1.02853938884334,0.182277118611981,null,0.182277118611981,0.182277118611981,null,0.182277118611981,0.179121023424388,null,0.179121023424388,0.179121023424388,null,0.179121023424388,0,null,0.179121023424388,0.179121023424388,null,0.179121023424388,0.168562190365173,null,0.168562190365173,0.168562190365173,null,0.168562190365173,0,null,0.168562190365173,0.168562190365173,null,0.168562190365173,0,null,0.182277118611981,0.182277118611981,null,0.182277118611981,0],"text":["y: 1.0285394","y: 1.0285394",null,"y: 1.0285394","y: 1.0285394",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1822771","y: 0.1822771"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid)","legendgroup":"(#E495A5,solid)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[5,2.875,1.75,1,2.5,2,3,4,7.125,6.25,5.5,5,6,7,8],"y":[1.02853938884334,0.182277118611981,0.179121023424388,0,0.168562190365173,0,0,0,0.224092745244301,0.212191752406041,0.209620450344977,0,0,0,0],"text":["y: 1.0285394","y: 0.1822771","y: 0.1791210","y: 0.0000000","y: 0.1685622","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.2240927","y: 0.2121918","y: 0.2096205","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"type":"scatter","mode":"markers","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"xaxis":"x2","yaxis":"y","frame":null},{"x":[1,2,3,4,5,6,7,8],"y":[1,2,3,4,5,6,7,8],"z":[[1,0.729279252145501,0.738671732749689,0.724826558481183,0.0444141504821762,0.016420753626825,0,0.0195158196062238],[0.729279252145501,1,0.745349201890105,0.727201668376744,0.0521116054292708,0.0196270431744655,0.00494832513773684,0.022778287765868],[0.738671732749689,0.745349201890105,1,0.737341858688327,0.0579376533794282,0.0231681054670655,0.00729974451247697,0.0255542515811165],[0.724826558481183,0.727201668376744,0.737341858688327,1,0.0549034808584306,0.0289029453713994,0.00980415648313302,0.0314279470042828],[0.0444141504821762,0.0521116054292708,0.0579376533794282,0.0549034808584306,1,0.685985959176462,0.68630086516161,0.679253585469782],[0.016420753626825,0.0196270431744655,0.0231681054670655,0.0289029453713994,0.685985959176462,1,0.681385791211633,0.678434111481512],[0,0.00494832513773684,0.00729974451247697,0.00980415648313302,0.68630086516161,0.681385791211633,1,0.662282129066681],[0.0195158196062238,0.022778287765868,0.0255542515811165,0.0314279470042828,0.679253585469782,0.678434111481512,0.662282129066681,1]],"text":[["row: CF2<br>column: CF2<br>value: 1.0000","row: CF2<br>column: CM2<br>value: 0.8734","row: CF2<br>column: CM1<br>value: 0.8778","row: CF2<br>column: CF1<br>value: 0.8713","row: CF2<br>column: HM2<br>value: 0.5532","row: CF2<br>column: HM1<br>value: 0.5401","row: CF2<br>column: HF2<br>value: 0.5324","row: CF2<br>column: HF1<br>value: 0.5415"],["row: CM2<br>column: CF2<br>value: 0.8734","row: CM2<br>column: CM2<br>value: 1.0000","row: CM2<br>column: CM1<br>value: 0.8809","row: CM2<br>column: CF1<br>value: 0.8724","row: CM2<br>column: HM2<br>value: 0.5568","row: CM2<br>column: HM1<br>value: 0.5416","row: CM2<br>column: HF2<br>value: 0.5347","row: CM2<br>column: HF1<br>value: 0.5430"],["row: CM1<br>column: CF2<br>value: 0.8778","row: CM1<br>column: CM2<br>value: 0.8809","row: CM1<br>column: CM1<br>value: 1.0000","row: CM1<br>column: CF1<br>value: 0.8772","row: CM1<br>column: HM2<br>value: 0.5595","row: CM1<br>column: HM1<br>value: 0.5432","row: CM1<br>column: HF2<br>value: 0.5358","row: CM1<br>column: HF1<br>value: 0.5443"],["row: CF1<br>column: CF2<br>value: 0.8713","row: CF1<br>column: CM2<br>value: 0.8724","row: CF1<br>column: CM1<br>value: 0.8772","row: CF1<br>column: CF1<br>value: 1.0000","row: CF1<br>column: HM2<br>value: 0.5581","row: CF1<br>column: HM1<br>value: 0.5459","row: CF1<br>column: HF2<br>value: 0.5370","row: CF1<br>column: HF1<br>value: 0.5471"],["row: HM2<br>column: CF2<br>value: 0.5532","row: HM2<br>column: CM2<br>value: 0.5568","row: HM2<br>column: CM1<br>value: 0.5595","row: HM2<br>column: CF1<br>value: 0.5581","row: HM2<br>column: HM2<br>value: 1.0000","row: HM2<br>column: HM1<br>value: 0.8532","row: HM2<br>column: HF2<br>value: 0.8533","row: HM2<br>column: HF1<br>value: 0.8500"],["row: HM1<br>column: CF2<br>value: 0.5401","row: HM1<br>column: CM2<br>value: 0.5416","row: HM1<br>column: CM1<br>value: 0.5432","row: HM1<br>column: CF1<br>value: 0.5459","row: HM1<br>column: HM2<br>value: 0.8532","row: HM1<br>column: HM1<br>value: 1.0000","row: HM1<br>column: HF2<br>value: 0.8510","row: HM1<br>column: HF1<br>value: 0.8496"],["row: HF2<br>column: CF2<br>value: 0.5324","row: HF2<br>column: CM2<br>value: 0.5347","row: HF2<br>column: CM1<br>value: 0.5358","row: HF2<br>column: CF1<br>value: 0.5370","row: HF2<br>column: HM2<br>value: 0.8533","row: HF2<br>column: HM1<br>value: 0.8510","row: HF2<br>column: HF2<br>value: 1.0000","row: HF2<br>column: HF1<br>value: 0.8421"],["row: HF1<br>column: CF2<br>value: 0.5415","row: HF1<br>column: CM2<br>value: 0.5430","row: HF1<br>column: CM1<br>value: 0.5443","row: HF1<br>column: CF1<br>value: 0.5471","row: HF1<br>column: HM2<br>value: 0.8500","row: HF1<br>column: HM1<br>value: 0.8496","row: HF1<br>column: HF2<br>value: 0.8421","row: HF1<br>column: HF1<br>value: 1.0000"]],"colorscale":[[0,"#440154"],[0.00494832513773684,"#440356"],[0.00729974451247697,"#450457"],[0.00980415648313302,"#450458"],[0.016420753626825,"#46075A"],[0.0195158196062238,"#46085C"],[0.0196270431744655,"#46085C"],[0.022778287765868,"#460A5D"],[0.0231681054670655,"#460A5D"],[0.0255542515811165,"#460B5E"],[0.0289029453713994,"#460C5F"],[0.0314279470042828,"#470D60"],[0.0444141504821762,"#471264"],[0.0521116054292708,"#481567"],[0.0549034808584306,"#481668"],[0.0579376533794282,"#481769"],[0.662282129066681,"#34B679"],[0.678434111481512,"#3ABA76"],[0.679253585469782,"#3ABA76"],[0.681385791211633,"#3BBB75"],[0.685985959176462,"#3DBC74"],[0.68630086516161,"#3DBC74"],[0.724826558481183,"#50C46A"],[0.727201668376744,"#51C46A"],[0.729279252145501,"#52C569"],[0.737341858688327,"#56C667"],[0.738671732749689,"#57C666"],[0.745349201890105,"#5AC864"],[1,"#FDE725"]],"type":"heatmap","showscale":false,"autocolorscale":false,"showlegend":false,"xaxis":"x","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1],"y":[1],"name":"99_fd68bc56bfd2b8b52e3db6881d3a445d","type":"scatter","mode":"markers","opacity":0,"hoverinfo":"skip","showlegend":false,"marker":{"color":[0,1],"colorscale":[[0,"#440154"],[0.0526315789473684,"#481567"],[0.105263157894737,"#482677"],[0.157894736842105,"#453781"],[0.210526315789474,"#3F4788"],[0.263157894736842,"#39558C"],[0.315789473684211,"#32648E"],[0.368421052631579,"#2D718E"],[0.421052631578947,"#287D8E"],[0.473684210526316,"#238A8D"],[0.526315789473684,"#1F968B"],[0.578947368421053,"#20A386"],[0.631578947368421,"#29AF7F"],[0.684210526315789,"#3CBB75"],[0.736842105263158,"#56C667"],[0.789473684210526,"#74D055"],[0.842105263157895,"#94D840"],[0.894736842105263,"#B8DE29"],[0.947368421052632,"#DCE318"],[1,"#FDE725"]],"colorbar":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"thickness":23.04,"title":null,"titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"tickmode":"array","ticktext":["0.6","0.7","0.8","0.9","1.0"],"tickvals":[0.144580184001479,0.358435138001109,0.57229009200074,0.78614504600037,1],"tickfont":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"ticklen":2,"len":0.5}},"xaxis":"x","yaxis":"y2","frame":null},{"x":[1.02853938884334,1.02853938884334,null,1.02853938884334,0.224092745244301,null,0.224092745244301,0.224092745244301,null,0.224092745244301,0.212191752406041,null,0.212191752406041,0.212191752406041,null,0.212191752406041,0.209620450344977,null,0.209620450344977,0.209620450344977,null,0.209620450344977,0,null,0.209620450344977,0.209620450344977,null,0.209620450344977,0,null,0.212191752406041,0.212191752406041,null,0.212191752406041,0,null,0.224092745244301,0.224092745244301,null,0.224092745244301,0],"y":[5,7.125,null,7.125,7.125,null,7.125,6.25,null,6.25,6.25,null,6.25,5.5,null,5.5,5.5,null,5.5,5,null,5,5,null,5.5,6,null,6,6,null,6.25,7,null,7,7,null,7.125,8,null,8,8],"text":["y: 1.0285394","y: 1.0285394",null,"y: 1.0285394","y: 1.0285394",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2096205","y: 0.2096205",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2121918","y: 0.2121918",null,"y: 0.2240927","y: 0.2240927",null,"y: 0.2240927","y: 0.2240927"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(57,190,177,1)","dash":"solid"},"hoveron":"points","name":"(#39BEB1,solid)","legendgroup":"(#39BEB1,solid)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1.02853938884334,1.02853938884334,null,1.02853938884334,0.182277118611981,null,0.182277118611981,0.182277118611981,null,0.182277118611981,0.179121023424388,null,0.179121023424388,0.179121023424388,null,0.179121023424388,0,null,0.179121023424388,0.179121023424388,null,0.179121023424388,0.168562190365173,null,0.168562190365173,0.168562190365173,null,0.168562190365173,0,null,0.168562190365173,0.168562190365173,null,0.168562190365173,0,null,0.182277118611981,0.182277118611981,null,0.182277118611981,0],"y":[5,2.875,null,2.875,2.875,null,2.875,1.75,null,1.75,1.75,null,1.75,1,null,1,1,null,1.75,2.5,null,2.5,2.5,null,2.5,2,null,2,2,null,2.5,3,null,3,3,null,2.875,4,null,4,4],"text":["y: 1.0285394","y: 1.0285394",null,"y: 1.0285394","y: 1.0285394",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1791210","y: 0.1791210",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1685622","y: 0.1685622",null,"y: 0.1822771","y: 0.1822771",null,"y: 0.1822771","y: 0.1822771"],"type":"scatter","mode":"lines","line":{"width":2.26771653543307,"color":"rgba(228,149,165,1)","dash":"solid"},"hoveron":"points","name":"(#E495A5,solid)","legendgroup":"(#E495A5,solid)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1.02853938884334,0.182277118611981,0.179121023424388,0,0.168562190365173,0,0,0,0.224092745244301,0.212191752406041,0.209620450344977,0,0,0,0],"y":[5,2.875,1.75,1,2.5,2,3,4,7.125,6.25,5.5,5,6,7,8],"text":["y: 1.0285394","y: 0.1822771","y: 0.1791210","y: 0.0000000","y: 0.1685622","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.2240927","y: 0.2121918","y: 0.2096205","y: 0.0000000","y: 0.0000000","y: 0.0000000","y: 0.0000000"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"transparent","opacity":1,"size":null,"symbol":null,"line":{"width":1.88976377952756,"color":"transparent"}},"hoveron":"points","name":"(NA,1)","legendgroup":"(NA,1)","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null}],"layout":{"xaxis":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["CF2","CM2","CM1","CF1","HM2","HM1","HF2","HF1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["CF2","CM2","CM1","CF1","HM2","HM1","HF2","HF1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-45,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y2","title":"","hoverformat":".2f"},"xaxis2":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"y2","type":"linear","autorange":false,"range":[0,1.02853938884334],"tickmode":"array","ticktext":["0.00","0.25","0.50","0.75","1.00"],"tickvals":[0,0.25,0.5,0.75,1],"categoryorder":"array","categoryarray":["0.00","0.25","0.50","0.75","1.00"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"yaxis2":{"domain":[0,0.8],"automargin":true,"type":"linear","autorange":false,"range":[0.5,8.5],"tickmode":"array","ticktext":["CF2","CM2","CM1","CF1","HM2","HM1","HF2","HF1"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["CF2","CM2","CM1","CF1","HM2","HM1","HF2","HF1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"yaxis":{"domain":[0.8,1],"automargin":true,"showticklabels":false,"showgrid":false,"zeroline":false,"anchor":"x","type":"linear","autorange":false,"range":[0,1.02853938884334],"tickmode":"array","ticktext":["0.00","0.25","0.50","0.75","1.00"],"tickvals":[0,0.25,0.5,0.75,1],"categoryorder":"array","categoryarray":["0.00","0.25","0.50","0.75","1.00"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"gridcolor":null,"gridwidth":0,"title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"annotations":[],"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0.8,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.8,"y0":0,"y1":0.8},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.8,"x1":1,"y0":0,"y1":0.8}],"images":[],"margin":{"t":30,"r":30,"b":50,"l":50},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":1,"yanchor":"top"},"hovermode":"closest","barmode":"relative","paper_bgcolor":"rgba(255,255,255,1)","title":"Pairwise Pearson Correlation Clustering @ 10kb | 4 Species"},"attrs":{"dfe25f73f236":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"dfe23522e82f":{"colour":{},"shape":{},"size":{},"x":{},"y":{}},"dfe27cbe8618":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20]},"dfe21523454c":{"fill":{},"text":{},"x":{},"y":{},"type":"heatmap"},"dfe25f76cfc0":{"xend":{},"yend":{},"colour":{},"linetype":{},"size":{},"x":{},"y":{},"type":"scatter"},"dfe271417736":{"colour":{},"shape":{},"size":{},"x":{},"y":{}}},"source":"A","config":{"doubleClick":"reset","showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["sendDataToCloud","select2d","lasso2d","autoScale2d","hoverClosestCartesian","hoverCompareCartesian","sendDataToCloud"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code>#Indeed, we can again see that all the humans cluster together, as do all the chimps. This is very good, and given this new condition, we also see higher within-species correlations for the significant hits, in the 0.6-0.7 range (was much closer to 0.3 before).
 
 #Here I just make a fake PCA plot with some words on it so I can use them as labels on the heatmaply plot (for consistency)
 ggplot(data=as.data.frame(pca4$x), aes(x=PC1, y=PC2, shape=as.factor(meta.data$SP), color=as.factor(meta.data$Batch), size=2)) + geom_point() +labs(title=&quot;Pairwise Pearson Correlation Clustering @ 10kb&quot;) + guides(color=guide_legend(order=1, title=&quot;Pearson Correlation&quot;), size=FALSE, shape=guide_legend(order=2, title=&quot;Species&quot;)) + xlab(paste(&quot;PC1 (&quot;, signif(100*summary(pca4)$importance[2,1],2), &quot;% of variance)&quot;)) + ylab((paste(&quot;PC2 (&quot;, signif(100*summary(pca4)$importance[2,2],2), &quot;% of variance)&quot;))) + labs(color=&quot;Batch&quot;, shape=&quot;Species&quot;) + scale_shape_manual(labels=c(&quot;Chimp&quot;, &quot;Human&quot;), values=c(16, 17))</code></pre>
 <p><img src="figure/initial_QC.Rmd/QC%20%7C%204%20Individuals-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-|-4-Individuals-15">
+Past versions of “QC | 4 Individuals-15.png”
+</button>
+</p>
+<div id="fig-no-spaces-QC-|-4-Individuals-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/IttaiEres/HiCiPSC/blob/2ec80679a5b8ae9928cd8be7253a10cebdcf3fca/docs/figure/initial_QC.Rmd/QC | 4 Individuals-15.png" target="_blank">2ec8067</a>
+</td>
+<td>
+Ittai Eres
+</td>
+<td>
+2019-05-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>###This initial QC suggest quality of the data is high, and has given us some information on how to filter the data before further intrepretation. When working locally, can be helpful to write out both the full dataset and the one conditioned upon 4 individuals, in order to do sanity checks on both later on. Note that a call of identical on something fread in after fwriting it out will still return FALSE with this as floating point can&#39;t represent decimals exactly (see https://stackoverflow.com/questions/9508518/why-are-these-numbers-not-equal or https://cran.r-project.org/doc/FAQ/R-FAQ.html#Why-doesn_0027t-R-think-these-numbers-are-equal_003f):
 fwrite(full.data, &quot;output/full.data.10.init.QC&quot;, quote = TRUE, sep = &quot;\t&quot;, row.names = FALSE, col.names = TRUE, na=&quot;NA&quot;, showProgress = FALSE)
 fwrite(data.4, &quot;output/data.4.init.QC&quot;, quote=FALSE, sep=&quot;\t&quot;, row.names=FALSE, col.names=TRUE, na=&quot;NA&quot;, showProgress = FALSE)
 fwrite(data.4.fixed, &quot;output/data.4.fixed.init.QC&quot;, quote=FALSE, sep=&quot;\t&quot;, row.names=FALSE, col.names=TRUE, na=&quot;NA&quot;, showProgress = FALSE)</code></pre>
-<p>#Homer-specific QC</p>
+</div>
+<div id="homer-specific-qc" class="section level1">
+<h1>Homer-specific QC</h1>
 <pre class="r"><code>#Read in pre-prepped tables of this information.
 rand.frag &lt;- fread(&quot;~/Desktop/Hi-C/homer_QCs/petag.Local.ALL.distn&quot;, header=TRUE, stringsAsFactors = FALSE, data.table=FALSE)
 dist.distn &lt;- fread(&quot;~/Desktop/Hi-C/homer_QCs/petag.Freq.ALL.distn&quot;, header=TRUE, stringsAsFactors = FALSE, data.table=FALSE)
@@ -2079,11 +2318,11 @@ fragdf &lt;- data.frame(local_dist=rand.frag[,1], same=myfrags[,1], opposite=myf
 ggplot(data=fragdf, aes(x=local_dist, group=ID)) + geom_line(aes(y=same, color=ID)) + ggtitle(&quot;Relationship b/t 5&#39; ends of paired reads, same strand&quot;) + xlab(&quot;Local Distance from 5&#39; of 1st read&quot;) + ylab(&quot;Counts per bp&quot;)</code></pre>
 <p><img src="figure/initial_QC.Rmd/HOMER-specific%20QC%20Metrics-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-HOMER-specific QC Metrics-1">
-Past versions of HOMER-specific QC Metrics-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-HOMER-specific-QC-Metrics-1">
+Past versions of “HOMER-specific QC Metrics-1.png”
 </button>
 </p>
-<div id="fig-HOMER-specific QC Metrics-1" class="collapse">
+<div id="fig-no-spaces-HOMER-specific-QC-Metrics-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -2118,11 +2357,11 @@ Ittai Eres
 <pre class="r"><code>ggplot(data=fragdf, aes(x=local_dist, group=ID)) + geom_line(aes(y=opposite, color=ID)) + ggtitle(&quot;Relationship b/t 5&#39; ends of paired reads, opposite strand&quot;) + xlab(&quot;Local Distance from 5&#39; of 1st read&quot;) + ylab(&quot;Counts per bp&quot;)</code></pre>
 <p><img src="figure/initial_QC.Rmd/HOMER-specific%20QC%20Metrics-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-HOMER-specific QC Metrics-2">
-Past versions of HOMER-specific QC Metrics-2.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-HOMER-specific-QC-Metrics-2">
+Past versions of “HOMER-specific QC Metrics-2.png”
 </button>
 </p>
-<div id="fig-HOMER-specific QC Metrics-2" class="collapse">
+<div id="fig-no-spaces-HOMER-specific-QC-Metrics-2" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -2171,11 +2410,11 @@ distdf &lt;- data.frame(dist=rep(mydist$binID, 8), fraction=c(mydist$A_H, mydist
 ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 50000)) + xlab(&quot;Distance Between Mates&quot;) + ylab(&quot;Fraction of Hi-C PE reads&quot;) + ggtitle(&quot;Hi-C Pair Distance Distributions&quot;) #FIGS11B</code></pre>
 <p><img src="figure/initial_QC.Rmd/HOMER-specific%20QC%20Metrics-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-HOMER-specific QC Metrics-3">
-Past versions of HOMER-specific QC Metrics-3.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-HOMER-specific-QC-Metrics-3">
+Past versions of “HOMER-specific QC Metrics-3.png”
 </button>
 </p>
-<div id="fig-HOMER-specific QC Metrics-3" class="collapse">
+<div id="fig-no-spaces-HOMER-specific-QC-Metrics-3" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -2210,11 +2449,11 @@ Ittai Eres
 <pre class="r"><code>ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 100000)) + xlab(&quot;Distance between mates&quot;) + ylab(&quot;Fraction of Hi-C PE reads&quot;) + ggtitle(&quot;Hi-C Pair Distance Distributions&quot;)</code></pre>
 <p><img src="figure/initial_QC.Rmd/HOMER-specific%20QC%20Metrics-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-HOMER-specific QC Metrics-4">
-Past versions of HOMER-specific QC Metrics-4.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-HOMER-specific-QC-Metrics-4">
+Past versions of “HOMER-specific QC Metrics-4.png”
 </button>
 </p>
-<div id="fig-HOMER-specific QC Metrics-4" class="collapse">
+<div id="fig-no-spaces-HOMER-specific-QC-Metrics-4" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -2249,11 +2488,11 @@ Ittai Eres
 <pre class="r"><code>ggplot(data=distdf, aes(x=dist, group=ID)) + geom_line(aes(y=fraction, color=ID, linetype=species)) + coord_cartesian(xlim=c(0, 500000)) + xlab(&quot;Distance Between mates&quot;) + ylab(&quot;Fraction of Hi-C PE reads&quot;) + ggtitle(&quot;Hi-C Pair Distance Distributions&quot;) #FIGS11A</code></pre>
 <p><img src="figure/initial_QC.Rmd/HOMER-specific%20QC%20Metrics-5.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-HOMER-specific QC Metrics-5">
-Past versions of HOMER-specific QC Metrics-5.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-HOMER-specific-QC-Metrics-5">
+Past versions of “HOMER-specific QC Metrics-5.png”
 </button>
 </p>
-<div id="fig-HOMER-specific QC Metrics-5" class="collapse">
+<div id="fig-no-spaces-HOMER-specific-QC-Metrics-5" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -2286,7 +2525,7 @@ Ittai Eres
 </div>
 </div>
 <pre class="r"><code>#Once again, there appears to be no clear separation between species here. There doesn&#39;t even appear to be a batch effect!</code></pre>
-<br> <br>
+<br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
@@ -2296,7 +2535,7 @@ Ittai Eres
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 3.4.0 (2017-04-21)
 Platform: x86_64-apple-darwin15.6.0 (64-bit)
-Running under: OS X El Capitan 10.11.6
+Running under: macOS  10.14.6
 
 Matrix products: default
 BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
@@ -2311,49 +2550,47 @@ attached base packages:
 
 other attached packages:
  [1] forcats_0.4.0      purrr_0.3.2        readr_1.3.1       
- [4] tibble_2.1.1       tidyverse_1.2.1    edgeR_3.20.9      
- [7] RColorBrewer_1.1-2 heatmaply_0.15.2   viridis_0.5.1     
+ [4] tibble_2.1.3       tidyverse_1.2.1    edgeR_3.20.9      
+ [7] RColorBrewer_1.1-2 heatmaply_0.16.0   viridis_0.5.1     
 [10] viridisLite_0.3.0  stringr_1.4.0      gplots_3.0.1.1    
-[13] Hmisc_4.2-0        Formula_1.2-3      survival_2.44-1   
-[16] lattice_0.20-38    dplyr_0.8.0.1      plotly_4.8.0      
-[19] cowplot_0.9.4      ggplot2_3.1.0      reshape2_1.4.3    
-[22] data.table_1.12.0  tidyr_0.8.3        plyr_1.8.4        
+[13] Hmisc_4.2-0        Formula_1.2-3      survival_2.44-1.1 
+[16] lattice_0.20-38    dplyr_0.8.3        plotly_4.9.0      
+[19] cowplot_0.9.4      ggplot2_3.2.1      reshape2_1.4.3    
+[22] data.table_1.12.0  tidyr_1.0.0        plyr_1.8.4        
 [25] limma_3.34.9      
 
 loaded via a namespace (and not attached):
- [1] colorspace_1.4-1    class_7.3-15        modeltools_0.2-22  
- [4] mclust_5.4.3        rprojroot_1.3-2     htmlTable_1.13.1   
- [7] base64enc_0.1-3     fs_1.2.7            rstudioapi_0.10    
-[10] flexmix_2.3-15      mvtnorm_1.0-8       lubridate_1.7.4    
-[13] xml2_1.2.0          codetools_0.2-16    splines_3.4.0      
-[16] robustbase_0.92-8   knitr_1.22          jsonlite_1.6       
-[19] workflowr_1.2.0     broom_0.5.1         cluster_2.0.7-1    
-[22] kernlab_0.9-27      shiny_1.2.0         httr_1.4.0         
-[25] backports_1.1.3     assertthat_0.2.1    Matrix_1.2-15      
-[28] lazyeval_0.2.2      cli_1.1.0           later_0.8.0        
-[31] acepack_1.4.1       htmltools_0.3.6     tools_3.4.0        
-[34] gtable_0.3.0        glue_1.3.1          Rcpp_1.0.1         
-[37] cellranger_1.1.0    trimcluster_0.1-2.1 gdata_2.18.0       
-[40] nlme_3.1-137        iterators_1.0.10    fpc_2.1-11.1       
-[43] crosstalk_1.0.0     xfun_0.5            rvest_0.3.2        
-[46] mime_0.6            gtools_3.8.1        dendextend_1.10.0  
-[49] DEoptimR_1.0-8      MASS_7.3-51.1       scales_1.0.0       
-[52] TSP_1.1-6           hms_0.4.2           promises_1.0.1     
-[55] yaml_2.2.0          gridExtra_2.3       rpart_4.1-13       
-[58] latticeExtra_0.6-28 stringi_1.4.3       gclus_1.3.2        
-[61] foreach_1.4.4       checkmate_1.9.1     seriation_1.2-3    
-[64] caTools_1.17.1.2    rlang_0.3.3         pkgconfig_2.0.2    
-[67] prabclus_2.2-7      bitops_1.0-6        evaluate_0.13      
-[70] htmlwidgets_1.3     labeling_0.3        tidyselect_0.2.5   
-[73] magrittr_1.5        R6_2.4.0            generics_0.0.2     
-[76] pillar_1.3.1        haven_2.1.0         whisker_0.3-2      
-[79] foreign_0.8-71      withr_2.1.2         nnet_7.3-12        
-[82] modelr_0.1.4        crayon_1.3.4        KernSmooth_2.23-15 
-[85] rmarkdown_1.12      locfit_1.5-9.1      grid_3.4.0         
-[88] readxl_1.3.1        git2r_0.25.2        digest_0.6.18      
-[91] diptest_0.75-7      webshot_0.5.1       xtable_1.8-3       
-[94] httpuv_1.5.0        stats4_3.4.0        munsell_0.5.0      
-[97] registry_0.5-1     </code></pre>
+ [1] nlme_3.1-137        bitops_1.0-6        fs_1.3.1           
+ [4] lubridate_1.7.4     webshot_0.5.1       httr_1.4.1         
+ [7] rprojroot_1.3-2     tools_3.4.0         backports_1.1.4    
+[10] R6_2.4.0            rpart_4.1-15        KernSmooth_2.23-15 
+[13] lazyeval_0.2.2      colorspace_1.4-1    nnet_7.3-12        
+[16] withr_2.1.2         processx_3.4.1      tidyselect_0.2.5   
+[19] gridExtra_2.3       git2r_0.26.1        cli_1.1.0          
+[22] rvest_0.3.4         htmlTable_1.13.2    TSP_1.1-7          
+[25] xml2_1.2.2          labeling_0.3        caTools_1.17.1.2   
+[28] scales_1.0.0        checkmate_1.9.4     digest_0.6.18      
+[31] foreign_0.8-72      rmarkdown_1.12      base64enc_0.1-3    
+[34] pkgconfig_2.0.3     htmltools_0.3.6     highr_0.8          
+[37] readxl_1.3.1        htmlwidgets_1.3     rlang_0.4.0        
+[40] rstudioapi_0.10     shiny_1.3.2         generics_0.0.2     
+[43] jsonlite_1.6        crosstalk_1.0.0     gtools_3.8.1       
+[46] acepack_1.4.1       dendextend_1.12.0   magrittr_1.5       
+[49] Matrix_1.2-17       Rcpp_1.0.1          munsell_0.5.0      
+[52] lifecycle_0.1.0     stringi_1.4.3       whisker_0.4        
+[55] yaml_2.2.0          MASS_7.3-51.4       grid_3.4.0         
+[58] promises_1.0.1      gdata_2.18.0        crayon_1.3.4       
+[61] haven_2.1.1         splines_3.4.0       hms_0.5.1          
+[64] locfit_1.5-9.1      ps_1.3.0            zeallot_0.1.0      
+[67] knitr_1.22          pillar_1.4.2        codetools_0.2-16   
+[70] glue_1.3.1          gclus_1.3.2         evaluate_0.13      
+[73] latticeExtra_0.6-28 modelr_0.1.5        httpuv_1.5.2       
+[76] vctrs_0.2.0         foreach_1.4.7       cellranger_1.1.0   
+[79] gtable_0.3.0        assertthat_0.2.1    xfun_0.5           
+[82] mime_0.7            xtable_1.8-4        broom_0.5.2        
+[85] later_0.8.0         seriation_1.2-3     iterators_1.0.12   
+[88] registry_0.5-1      workflowr_1.4.0     cluster_2.0.7-1    </code></pre>
+</div>
 </div>
 
 
