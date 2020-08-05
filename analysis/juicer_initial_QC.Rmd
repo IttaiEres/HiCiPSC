@@ -32,7 +32,7 @@ library(bedr)
 enableJIT(3)
 ```
 
-###Initial Data read-in and quality control
+### Initial Data read-in and quality control
 First, I read in the data and normalize it with cyclic pairwise loess normalization. Then I look at histograms of the distributions of the contact frequencies on an individual-by-individual basis, to see if they are comparable. I also look at a plot of the mean vs. the variance as an additional quality control metric; this is typically done on RNA-seq count data. In that case, it's done to check if the normalized data are distributed in a particular fashion (e.g. a poisson model would have a linear mean-variance relationship). In the limma/voom pipeline, count data are log-cpm transformed and a loess trend line of variance vs. mean is then fit to create weights for individual genes to be fed into linear modeling with limma. Since this is not a QC metric typically used for Hi-C data, the only thing I hope to see is no particularly strong relationship between variance and mean.
 ```{r Initial Hi-C Data Read-in and QC}
 ###Read in VC and KR normalized data, normalize each with cyclic loess (pairwise), clean it from any rows that have missing values.
@@ -150,7 +150,7 @@ select(full.VC, "A-21792_VC", "B-28126_VC", "E-28815_VC", "F-28834_VC", "C-3649_
 ```
 On the whole, the distributions look fairly comparable across individuals and species, and the mean vs. variance plots show weak correlation at best between the two metrics. Now knowing the data are comparable in this sense, the next question would be whether they are different enough between the species to separate them from one another with unsupervised clustering and PCA methods.
 
-###Data clustering with Principal Components Analysis (PCA) and correlation heatmap clustering.
+### Data clustering with Principal Components Analysis (PCA) and correlation heatmap clustering.
 Now I use PCA, breaking down the interaction frequency values into principal components that best represent the variability within the data. This technique uses orthogonal transformation to convert the many dimensions in variability of this dataset into a lower-dimensional picture that can be used to separate out functional groups in the data. In this case, the expectation is that the strongest principal component, representing the plurality of the variance, will separate out humans and chimps along its axis, grouping the two species independently, as we expect their interaction frequency values to cluster together. I then also compute pairwise pearson correlations between each of the individuals across all Hi-C contacts, and use unsupervised hierarchical clustering to create a heatmap that once again will group individuals based on similarity in interaction frequency values. Again, I would expect this technique to separate out the species very distinctly from one another.
 ```{r Clustering w/ PCA and Heatmaps}
 ###Now do principal components analysis (PCA) on these data to see how they separate:
@@ -224,7 +224,7 @@ PC_rsquareds
 #So PC1 correlates strongly and significantly with species, whereas PC4 has some moderate correlation with sex--but nothing else has a significant effect.
 ```
 
-###Variance exploration
+### Variance exploration
 Now I look at several metrics to assess variance in the data, checking which species hits were discovered as significant in and how many individuals a given hit was discovered in. I look at this to understand if there are some cutoffs that should be made to reduce the noisiness of the data and maximize the significance of further findings.
 ```{r Variance QC}
 ###Add columns to full.data to indicate species of discovery and number of individuals discovered in. These pieces of information are good to know about each of the hits generally, but can also be used to make decisions about filtering out certain classes of hits if variance is associated with any of these metrics.  
